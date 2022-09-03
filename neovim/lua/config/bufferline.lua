@@ -13,55 +13,55 @@ if packer_plugins['vscode.nvim'] and packer_plugins['vscode.nvim'].loaded then
   local bg_inactive = c.vscTabOther
   local bg_fill = c.vscLeftDark
 
-  hl.background = {fg = fg_inactive, bg = bg_inactive, nocombine = true}
-  hl.buffer_selected = {fg = fg_selected, bg = bg_selected, nocombine = true}
-  hl.buffer_visible = {fg = fg_visible, bg = bg_visible, nocombine = true}
-  hl.close_button = {fg = fg_inactive, bg = bg_inactive, nocombine = true}
-  hl.close_button_selected = {fg = fg_selected, bg = bg_selected, nocombine = true}
-  hl.close_button_visible = {fg = fg_visible, bg = bg_visible, nocombine = true}
-  hl.diagnostic = {fg = fg_inactive, bg = bg_inactive, nocombine = true}
-  hl.diagnostic_selected = {fg = fg_info, bg = bg_selected, nocombine = true}
-  hl.diagnostic_visible = {fg = fg_visible, bg = bg_visible, nocombine = true}
-  hl.duplicate = {fg = fg_inactive, bg = bg_inactive, nocombine = true}
-  hl.duplicate_selected = {fg = fg_selected, bg = bg_selected, nocombine = true}
-  hl.duplicate_visible = {fg = fg_visible, bg = bg_visible, nocombine = true}
-  hl.error = {fg = fg_inactive, bg = bg_inactive, nocombine = true}
-  hl.error_diagnostic = {fg = fg_inactive, bg = bg_inactive, nocombine = true}
-  hl.error_diagnostic_selected = {fg = fg_error, bg = bg_selected, nocombine = true}
-  hl.error_diagnostic_visible = {fg = fg_visible, bg = bg_visible, nocombine = true}
-  hl.error_selected = {fg = fg_error, bg = bg_selected, nocombine = true}
-  hl.error_visible = {fg = fg_visible, bg = bg_visible, nocombine = true}
-  hl.fill = {bg = bg_fill, nocombine = true}
-  hl.hint = {fg = fg_inactive, bg = bg_inactive, nocombine = true}
-  hl.hint_diagnostic = {fg = fg_inactive, bg = bg_inactive, nocombine = true}
-  hl.hint_diagnostic_selected = {fg = fg_hint, bg = bg_selected, nocombine = true}
-  hl.hint_diagnostic_visible = {fg = fg_visible, bg = bg_visible, nocombine = true}
-  hl.hint_selected = {fg = fg_hint, bg = bg_selected, nocombine = true}
-  hl.hint_visible = {fg = fg_visible, bg = bg_visible, nocombine = true}
-  hl.info = {fg = fg_inactive, bg = bg_inactive, nocombine = true}
-  hl.info_diagnostic = {fg = fg_inactive, bg = bg_inactive, nocombine = true}
-  hl.info_diagnostic_selected = {fg = fg_info, bg = bg_selected, nocombine = true}
-  hl.info_diagnostic_visible = {fg = fg_visible, bg = bg_visible, nocombine = true}
-  hl.info_selected = {fg = fg_info, bg = bg_selected, nocombine = true}
-  hl.info_visible = {fg = fg_visible, bg = bg_visible, nocombine = true}
-  hl.modified = {fg = fg_inactive, bg = bg_inactive, nocombine = true}
-  hl.modified_selected = {fg = fg_selected, bg = bg_selected, nocombine = true}
-  hl.modified_visible = {fg = fg_visible, bg = bg_visible, nocombine = true}
-  hl.pick = {bg = bg_inactive, nocombine = true}
-  hl.pick_selected = {bg = bg_selected, nocombine = true}
-  hl.pick_visible = {bg = bg_visible, nocombine = true}
-  hl.separator = {fg = bg_fill, bg = bg_inactive, nocombine = true}
-  hl.separator_selected = {fg = bg_fill, bg = bg_selected, nocombine = true}
-  hl.separator_visible = {fg = bg_fill, bg = bg_visible, nocombine = true}
-  hl.tab = {fg = fg_inactive, bg = bg_inactive, nocombine = true}
-  hl.tab_close = {bg = bg_fill, nocombine = true}
-  hl.tab_selected = {fg = fg_selected, bg = bg_selected, nocombine = true}
-  hl.warning = {fg = fg_inactive, bg = bg_inactive, nocombine = true}
-  hl.warning_diagnostic = {fg = fg_inactive, bg = bg_inactive, nocombine = true}
-  hl.warning_diagnostic_selected = {fg = fg_warning, bg = bg_selected, nocombine = true}
-  hl.warning_diagnostic_visible = {fg = fg_visible, bg = bg_visible, nocombine = true}
-  hl.warning_selected = {fg = fg_warning, bg = bg_selected, nocombine = true}
-  hl.warning_visible = {fg = fg_visible, bg = bg_visible, nocombine = true}
+  hl.background = {fg = fg_inactive, bg = bg_inactive, bold = false, italic = false}
+  hl.buffer_selected = {fg = fg_selected, bg = bg_selected, bold = false, italic = false}
+  hl.buffer_visible = {fg = fg_visible, bg = bg_visible, bold = false, italic = false}
+  hl.close_button = {fg = fg_inactive, bg = bg_inactive, bold = false, italic = false}
+  hl.close_button_selected = {fg = fg_selected, bg = bg_selected, bold = false, italic = false}
+  hl.close_button_visible = {fg = fg_visible, bg = bg_visible, bold = false, italic = false}
+  hl.diagnostic = {fg = fg_inactive, bg = bg_inactive, bold = false, italic = false}
+  hl.diagnostic_selected = {fg = fg_info, bg = bg_selected, bold = false, italic = false}
+  hl.diagnostic_visible = {fg = fg_visible, bg = bg_visible, bold = false, italic = false}
+  hl.duplicate = {fg = fg_inactive, bg = bg_inactive, bold = false, italic = false}
+  hl.duplicate_selected = {fg = fg_selected, bg = bg_selected, bold = false, italic = false}
+  hl.duplicate_visible = {fg = fg_visible, bg = bg_visible, bold = false, italic = false}
+  hl.error = {fg = fg_inactive, bg = bg_inactive, bold = false, italic = false}
+  hl.error_diagnostic = {fg = fg_inactive, bg = bg_inactive, bold = false, italic = false}
+  hl.error_diagnostic_selected = {fg = fg_error, bg = bg_selected, bold = false, italic = false}
+  hl.error_diagnostic_visible = {fg = fg_visible, bg = bg_visible, bold = false, italic = false}
+  hl.error_selected = {fg = fg_error, bg = bg_selected, bold = false, italic = false}
+  hl.error_visible = {fg = fg_visible, bg = bg_visible, bold = false, italic = false}
+  hl.fill = {bg = bg_fill, bold = false, italic = false}
+  hl.hint = {fg = fg_inactive, bg = bg_inactive, bold = false, italic = false}
+  hl.hint_diagnostic = {fg = fg_inactive, bg = bg_inactive, bold = false, italic = false}
+  hl.hint_diagnostic_selected = {fg = fg_hint, bg = bg_selected, bold = false, italic = false}
+  hl.hint_diagnostic_visible = {fg = fg_visible, bg = bg_visible, bold = false, italic = false}
+  hl.hint_selected = {fg = fg_hint, bg = bg_selected, bold = false, italic = false}
+  hl.hint_visible = {fg = fg_visible, bg = bg_visible, bold = false, italic = false}
+  hl.info = {fg = fg_inactive, bg = bg_inactive, bold = false, italic = false}
+  hl.info_diagnostic = {fg = fg_inactive, bg = bg_inactive, bold = false, italic = false}
+  hl.info_diagnostic_selected = {fg = fg_info, bg = bg_selected, bold = false, italic = false}
+  hl.info_diagnostic_visible = {fg = fg_visible, bg = bg_visible, bold = false, italic = false}
+  hl.info_selected = {fg = fg_info, bg = bg_selected, bold = false, italic = false}
+  hl.info_visible = {fg = fg_visible, bg = bg_visible, bold = false, italic = false}
+  hl.modified = {fg = fg_inactive, bg = bg_inactive, bold = false, italic = false}
+  hl.modified_selected = {fg = fg_selected, bg = bg_selected, bold = false, italic = false}
+  hl.modified_visible = {fg = fg_visible, bg = bg_visible, bold = false, italic = false}
+  hl.pick = {bg = bg_inactive, bold = false, italic = false}
+  hl.pick_selected = {bg = bg_selected, bold = false, italic = false}
+  hl.pick_visible = {bg = bg_visible, bold = false, italic = false}
+  hl.separator = {fg = bg_fill, bg = bg_inactive, bold = false, italic = false}
+  hl.separator_selected = {fg = bg_fill, bg = bg_selected, bold = false, italic = false}
+  hl.separator_visible = {fg = bg_fill, bg = bg_visible, bold = false, italic = false}
+  hl.tab = {fg = fg_inactive, bg = bg_inactive, bold = false, italic = false}
+  hl.tab_close = {bg = bg_fill, bold = false, italic = false}
+  hl.tab_selected = {fg = fg_selected, bg = bg_selected, bold = false, italic = false}
+  hl.warning = {fg = fg_inactive, bg = bg_inactive, bold = false, italic = false}
+  hl.warning_diagnostic = {fg = fg_inactive, bg = bg_inactive, bold = false, italic = false}
+  hl.warning_diagnostic_selected = {fg = fg_warning, bg = bg_selected, bold = false, italic = false}
+  hl.warning_diagnostic_visible = {fg = fg_visible, bg = bg_visible, bold = false, italic = false}
+  hl.warning_selected = {fg = fg_warning, bg = bg_selected, bold = false, italic = false}
+  hl.warning_visible = {fg = fg_visible, bg = bg_visible, bold = false, italic = false}
 end
 
 require('bufferline').setup {
@@ -91,7 +91,9 @@ require('bufferline').setup {
         text_align = 'center'
       }
     },
-    indicator_icon = ' ',
+    indicator = {
+      icon = ' '
+    },
     show_close_icon = false
   },
   highlights = hl
