@@ -196,9 +196,7 @@ return require('packer').startup(function(use)
       require('mappings').nvimtree()
     end,
     config = function()
-      require'nvim-tree'.setup {
-        auto_close = true
-      }
+      require'nvim-tree'.setup()
     end
   }
 end)

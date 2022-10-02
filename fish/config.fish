@@ -9,6 +9,7 @@ if type -q xclip
   alias pbcopy='xclip -selection clipboard'
   alias pbpaste='xclip -selection clipboard -o'
 end
+alias python='python3'
 
 set -g fish_color_autosuggestion brblack
 set -g fish_color_command blue
