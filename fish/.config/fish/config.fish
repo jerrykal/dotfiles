@@ -1,6 +1,11 @@
 set -gx fish_greeting ''
 set -gx EDITOR nvim
 
+# Path
+fish_add_path ~/.cargo/bin
+fish_add_path ~/.local/bin
+
+# Aliases
 if type -q exa
   alias ls='exa'
   alias tree='exa --tree'
