@@ -1,14 +1,48 @@
-vim.o.background = "dark"
+local colors = require("kanagawa.colors").setup()
+require("kanagawa").setup({
+  globalStatus = true,
+  overrides = {
+    Search = { fg = "NONE", bg = colors.bg_search },
 
-local c = require("vscode.colors")
-require("vscode").setup({
-  -- Tweak some colors
-  color_overrides = {
-    vscSearch = "#613214",
-  },
-  group_overrides = {
-    ["@string.escape"] = { fg = c.vscYellowOrange, bold = true },
-    CursorLine = { bg = c.vscBack },
-    NvimTreeCursorLine = { bg = c.vscLeftDark },
+    TelescopeNormal = { bg = colors.bg_dim },
+    TelescopeBorder = { fg = colors.bg_dim, bg = colors.bg_dim },
+    TelescopeTitle = { fg = colors.bg_light3, bold = true },
+    TelescopePromptNormal = { bg = colors.bg_light0 },
+    TelescopePromptBorder = { fg = colors.bg_light0, bg = colors.bg_light0 },
+    TelescopeResultsNormal = { bg = "#1a1a22" },
+    TelescopeResultsBorder = { fg = "#1a1a22", bg = "#1a1a22" },
+    TelescopePreviewNormal = { bg = colors.bg_dim },
+    TelescopePreviewBorder = { bg = colors.bg_dim, fg = colors.bg_dim },
+
+    NavicIconsFile = { fg = colors.springViolet2 },
+    NavicIconsModule = { fg = colors.boatYellow2 },
+    NavicIconsNamespace = { fg = colors.springViolet2 },
+    NavicIconsPackage = { fg = colors.springViolet1 },
+    NavicIconsClass = { fg = colors.surimiOrange },
+    NavicIconsMethod = { fg = colors.crystalBlue },
+    NavicIconsProperty = { fg = colors.waveAqua2 },
+    NavicIconsField = { fg = colors.waveAqua1 },
+    NavicIconsConstructor = { fg = colors.surimiOrange },
+    NavicIconsEnum = { fg = colors.boatYellow2 },
+    NavicIconsInterface = { fg = colors.carpYellow },
+    NavicIconsFunction = { fg = colors.crystalBlue },
+    NavicIconsVariable = { fg = colors.oniViolet },
+    NavicIconsConstant = { fg = colors.oniViolet },
+    NavicIconsString = { fg = colors.springGreen },
+    NavicIconsNumber = { fg = colors.sakuraPink },
+    NavicIconsBoolean = { fg = colors.surimiOrange },
+    NavicIconsArray = { fg = colors.waveAqua2 },
+    NavicIconsObject = { fg = colors.surimiOrange },
+    NavicIconsKey = { fg = colors.oniViolet },
+    NavicIconsNull = { fg = colors.carpYellow },
+    NavicIconsEnumMember = { fg = colors.carpYellow },
+    NavicIconsStruct = { fg = colors.surimiOrange },
+    NavicIconsEvent = { fg = colors.surimiOrange },
+    NavicIconsOperator = { fg = colors.springViolet2 },
+    NavicIconsTypeParameter = { fg = colors.springBlue },
+    NavicText = { fg = colors.fujiWhite },
+    NavicSeparator = { fg = colors.fujiWhite },
   },
 })
+
+vim.cmd([[colorscheme kanagawa]])

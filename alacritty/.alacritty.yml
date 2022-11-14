@@ -18,49 +18,45 @@ draw_bold_text_with_bright_colors: true
 
 colors:
   primary:
-   background: '#1e1e1e'
-   foreground: '#d4d4d4'
+    background: '0x1f1f28'
+    foreground: '0xdcd7ba'
   cursor:
-   text: CellBackground
-   cursor: '#aeafad'
+   text: '0x1f1f28'
+   cursor: '0xc8c093'
   vi_mode_cursor:
-   text: CellBackground
-   cursor: '#aeafad'
-  search:
-    matches:
-     foreground: CellForeground
-     background: '#515c6a'
-    focused_match:
-     foreground: CellForeground
-     background: '#613214'
-  selection:
-   text: CellForeground
-   background: '#264f78'
+   text: '0x1f1f28'
+   cursor: '0xc8c093'
   normal:
-   black:   '#000000'
-   red:     '#cd3131'
-   green:   '#0dbc79'
-   yellow:  '#e5e510'
-   blue:    '#2472c8'
-   magenta: '#bc3fbc'
-   cyan:    '#11a8cd'
-   white:   '#e5e5e5'
+    black:   '0x090618'
+    red:     '0xc34043'
+    green:   '0x76946a'
+    yellow:  '0xc0a36e'
+    blue:    '0x7e9cd8'
+    magenta: '0x957fb8'
+    cyan:    '0x6a9589'
+    white:   '0xc8c093'
   bright:
-   black:   '#666666'
-   red:     '#f14c4c'
-   green:   '#23d18b'
-   yellow:  '#f5f543'
-   blue:    '#3b8eea'
-   magenta: '#d670d6'
-   cyan:    '#29b8db'
-   white:   '#e5e5e5'
+    black:   '0x727169'
+    red:     '0xe82424'
+    green:   '0x98bb6c'
+    yellow:  '0xe6c384'
+    blue:    '0x7fb4ca'
+    magenta: '0x938aa9'
+    cyan:    '0x7aa89f'
+    white:   '0xdcd7ba'
+  selection:
+    background: '0x2d4f67'
+    foreground: '0xc8c093'
+  indexed_colors:
+    - { index: 16, color: '0xffa066' }
+    - { index: 17, color: '0xff5d62' }
 
 alt_send_esc: true
      
 cursor:
   style:
     shape: Block
-    blinking: On
+    blinking: Always
   unfocused_hollow: true
 
 mouse:

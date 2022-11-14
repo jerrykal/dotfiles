@@ -48,19 +48,20 @@ map("x", "N", "'nN'[v:searchforward]", { expr = true })
 map("o", "N", "'nN'[v:searchforward]", { expr = true })
 
 -- Trouble
-map("n", "<leader>xx", "<cmd>TroubleToggle<cr>", { silent = true, noremap = true })
-map("n", "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", { silent = true, noremap = true })
-map("n", "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>", { silent = true, noremap = true })
-map("n", "<leader>xl", "<cmd>TroubleToggle loclist<cr>", { silent = true, noremap = true })
-map("n", "<leader>xq", "<cmd>TroubleToggle quickfix<cr>", { silent = true, noremap = true })
+map("n", "<leader>tt", "<cmd>TroubleToggle<cr>", { silent = true, noremap = true })
+map("n", "<leader>tw", "<cmd>TroubleToggle workspace_diagnostics<cr>", { silent = true, noremap = true })
+map("n", "<leader>td", "<cmd>TroubleToggle document_diagnostics<cr>", { silent = true, noremap = true })
+map("n", "<leader>tl", "<cmd>TroubleToggle loclist<cr>", { silent = true, noremap = true })
+map("n", "<leader>tq", "<cmd>TroubleToggle quickfix<cr>", { silent = true, noremap = true })
 map("n", "gR", "<cmd>TroubleToggle lsp_references<cr>", { silent = true, noremap = true })
 
 -- BBye
-map("n", "<leader>d", "<cmd>Bdelete<CR>", { silent = true })
-map("n", "<leader>D", "<cmd>Bdelete!<CR>", { silent = true })
+map("n", "<leader>x", "<cmd>Bdelete<CR>", { silent = true })
+map("n", "<leader>X", "<cmd>Bdelete!<CR>", { silent = true })
 
 -- Bufferline
 map("n", "\\", "<cmd>BufferLinePick<CR>", { silent = true })
+map("n", "|", "<cmd>BufferLinePickClose<CR>", { silent = true })
 map("n", "<leader>]", "<cmd>BufferLineCycleNext<CR>", { silent = true })
 map("n", "<leader>[", "<cmd>BufferLineCyclePrev<CR>", { silent = true })
 map("n", "<leader>1", "<cmd>BufferLineGoToBuffer 1<CR>", { silent = true })
@@ -80,10 +81,6 @@ map("n", "<leader>ff", "<cmd>Telescope find_files no_ignore=true hidden=true<CR>
 map("n", "<leader>fg", "<cmd>Telescope live_grep<CR>")
 map("n", "<leader>fh", "<cmd>Telescope help_tags<CR>")
 map("n", "<leader>fr", "<cmd>Telescope oldfiles<CR>")
-map("n", "<C-p>", "<cmd>Telescope find_files no_ignore=true hidden=true<CR>")
-
--- Undotree
-map("n", "<leader>u", "<cmd>UndotreeToggle<CR>")
 
 -- NvimTree
 map("n", "<C-n>", "<cmd>NvimTreeToggle<CR>")

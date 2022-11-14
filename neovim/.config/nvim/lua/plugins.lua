@@ -30,8 +30,8 @@ return require("packer").startup(function(use)
   use({
     "ggandor/leap.nvim",
     config = function()
-      require('leap').add_default_mappings()
-    end
+      require("leap").add_default_mappings()
+    end,
   })
 
   use({
@@ -71,18 +71,7 @@ return require("packer").startup(function(use)
   })
 
   use({
-    "mbbill/undotree",
-    cmd = "UndotreeToggle",
-    config = function()
-      vim.g.undotree_SetFocusWhenToggle = 1
-      vim.g.undotree_SplitWidth = 40
-      vim.g.undotree_WindowLayout = 3
-    end,
-  })
-
-  use({
     "rmagatti/auto-session",
-    event = "VimEnter",
     config = function()
       require("auto-session").setup({
         log_level = "error",
@@ -103,7 +92,7 @@ return require("packer").startup(function(use)
         context_char = "▏",
         show_current_context = true,
         filetype_exclude = { "NvimTree" },
-        buftype_exclude = { "terminal", "help" },
+        buftype_exclude = { "terminal", "help", "prompt" },
       })
     end,
   })
@@ -118,8 +107,7 @@ return require("packer").startup(function(use)
 
   -- Color Scheme
   use({
-    "Mofiqul/vscode.nvim",
-    event = "VimEnter",
+    "rebelot/kanagawa.nvim",
     config = function()
       require("config.colorscheme")
     end,
@@ -128,7 +116,7 @@ return require("packer").startup(function(use)
   -- Statusline
   use({
     "nvim-lualine/lualine.nvim",
-    after = "vscode.nvim",
+    after = "kanagawa.nvim",
     config = function()
       require("config.lualine")
     end,
@@ -137,7 +125,7 @@ return require("packer").startup(function(use)
   -- Bufferline
   use({
     "akinsho/bufferline.nvim",
-    after = "vscode.nvim",
+    after = "kanagawa.nvim",
     config = function()
       require("config.bufferline")
     end,
@@ -206,12 +194,13 @@ return require("packer").startup(function(use)
   -- Treesitter
   use({
     "nvim-treesitter/nvim-treesitter",
+    requires = {
+      "nvim-treesitter/nvim-treesitter-context",
+      "nvim-treesitter/nvim-treesitter-textobjects",
+    },
     run = ":TSUpdate",
     config = function()
-      require("nvim-treesitter.configs").setup({
-        ensure_installed = "all",
-        highlight = { enable = true },
-      })
+      require("config.treesitter")
     end,
   })
 

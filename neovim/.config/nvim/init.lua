@@ -7,17 +7,18 @@ local g = vim.g
 local opt = vim.opt
 
 -- General options
+opt.laststatus=3
 opt.colorcolumn = { 81 }
 opt.completeopt = { "menu", "menuone", "noselect" }
-opt.cursorline = true
-opt.guicursor = opt.guicursor + "a:blinkon1"
+-- opt.cursorline = true
+opt.guicursor:append("a:blinkon1")
 opt.lazyredraw = true
 opt.mouse = "a"
 opt.mousemoveevent = true
 opt.number = true
 opt.pumheight = 12
 opt.relativenumber = true
-opt.sessionoptions = opt.sessionoptions + "globals"
+opt.sessionoptions:append("globals")
 opt.showmode = false
 opt.signcolumn = "yes"
 opt.termguicolors = true
