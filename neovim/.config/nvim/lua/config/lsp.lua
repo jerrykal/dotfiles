@@ -1,14 +1,21 @@
 require("mason").setup()
-
-local mason_lsp = require("mason-lspconfig")
-mason_lsp.setup({
+require("mason-lspconfig").setup({
   automatic_installation = true,
 })
 
 -- Setup lsp servers
 local servers = {
   clangd = {},
-  pyright = {},
+  pyright = {
+    settings = {
+      python = {
+        analysis = {
+          diagnosticMode = "openFilesOnly",
+          typeCheckingMode = "off",
+        },
+      },
+    },
+  },
   sumneko_lua = {
     settings = {
       Lua = {
@@ -97,7 +104,7 @@ require("fidget").setup()
 
 -- Setup diagnostics
 vim.diagnostic.config({
-  virtual_text = false,
+  virtual_text = { prefix = "● " },
 })
 vim.fn.sign_define("DiagnosticSignError", { text = "", numhl = "DiagnosticError" })
 vim.fn.sign_define("DiagnosticSignWarn", { text = "", numhl = "DiagnosticWarn" })

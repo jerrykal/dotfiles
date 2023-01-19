@@ -17,7 +17,7 @@ require("nvim-tree").setup({
     },
     icons = {
       show = {
-        git = false,
+        -- git = false,
       },
     },
   },

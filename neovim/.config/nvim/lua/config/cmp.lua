@@ -48,8 +48,9 @@ cmp.setup({
     end,
   },
   formatting = {
+    fields = { "kind", "abbr" },
     format = function(_, vim_item)
-      vim_item.kind = (cmp_kinds[vim_item.kind] or "") .. vim_item.kind
+      vim_item.kind = cmp_kinds[vim_item.kind] or ""
       return vim_item
     end,
   },
@@ -58,7 +59,7 @@ cmp.setup({
     ["<C-f>"] = cmp.mapping.scroll_docs(4),
     ["<C-Space>"] = cmp.mapping.complete(),
     ["<C-e>"] = cmp.mapping.abort(),
-    ["<CR>"] = cmp.mapping.confirm({ select = true }),
+    ["<CR>"] = cmp.mapping.confirm({ select = false }),
     ["<Tab>"] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_next_item()
@@ -79,6 +80,22 @@ cmp.setup({
         fallback()
       end
     end, { "i", "s" }),
+  }),
+})
+
+cmp.setup.cmdline({ "/", "?" }, {
+  mapping = cmp.mapping.preset.cmdline(),
+  sources = {
+    { name = "buffer" },
+  },
+})
+
+cmp.setup.cmdline(":", {
+  mapping = cmp.mapping.preset.cmdline(),
+  sources = cmp.config.sources({
+    { name = "path" },
+  }, {
+    { name = "cmdline" },
   }),
 })
 

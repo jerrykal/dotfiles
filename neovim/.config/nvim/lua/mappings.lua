@@ -55,6 +55,13 @@ map("n", "<leader>tl", "<cmd>TroubleToggle loclist<cr>", { silent = true, norema
 map("n", "<leader>tq", "<cmd>TroubleToggle quickfix<cr>", { silent = true, noremap = true })
 map("n", "gR", "<cmd>TroubleToggle lsp_references<cr>", { silent = true, noremap = true })
 
+-- Goto Preview
+map("n", "gpd", require('goto-preview').goto_preview_definition, {noremap = true})
+map("n", "gpt", require('goto-preview').goto_preview_type_definition, {noremap = true})
+map("n", "gpi", require('goto-preview').goto_preview_implementation, {noremap = true})
+map("n", "gpr", require('goto-preview').goto_preview_references, {noremap = true})
+map("n", "gP", require('goto-preview').close_all_win, {noremap = true})
+
 -- BBye
 map("n", "<leader>x", "<cmd>Bdelete<CR>", { silent = true })
 map("n", "<leader>X", "<cmd>Bdelete!<CR>", { silent = true })
@@ -62,8 +69,10 @@ map("n", "<leader>X", "<cmd>Bdelete!<CR>", { silent = true })
 -- Bufferline
 map("n", "\\", "<cmd>BufferLinePick<CR>", { silent = true })
 map("n", "|", "<cmd>BufferLinePickClose<CR>", { silent = true })
-map("n", "<leader>]", "<cmd>BufferLineCycleNext<CR>", { silent = true })
-map("n", "<leader>[", "<cmd>BufferLineCyclePrev<CR>", { silent = true })
+map("n", "<tab>", "<cmd>BufferLineCycleNext<CR>", { silent = true })
+map("n", "<s-tab>", "<cmd>BufferLineCyclePrev<CR>", { silent = true })
+map("n", "<C-right>", "<cmd>BufferLineMoveNext<CR>", { silent = true })
+map("n", "<C-left>", "<cmd>BufferLineMovePrev<CR>", { silent = true })
 map("n", "<leader>1", "<cmd>BufferLineGoToBuffer 1<CR>", { silent = true })
 map("n", "<leader>2", "<cmd>BufferLineGoToBuffer 2<CR>", { silent = true })
 map("n", "<leader>3", "<cmd>BufferLineGoToBuffer 3<CR>", { silent = true })
@@ -82,5 +91,5 @@ map("n", "<leader>fg", "<cmd>Telescope live_grep<CR>")
 map("n", "<leader>fh", "<cmd>Telescope help_tags<CR>")
 map("n", "<leader>fr", "<cmd>Telescope oldfiles<CR>")
 
--- NvimTree
-map("n", "<C-n>", "<cmd>NvimTreeToggle<CR>")
+-- Neotree
+map("n", "<C-n>", "<cmd>Neotree toggle<CR>")

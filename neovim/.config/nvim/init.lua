@@ -7,11 +7,8 @@ local g = vim.g
 local opt = vim.opt
 
 -- General options
-opt.laststatus=3
 opt.colorcolumn = { 81 }
 opt.completeopt = { "menu", "menuone", "noselect" }
--- opt.cursorline = true
-opt.guicursor:append("a:blinkon1")
 opt.lazyredraw = true
 opt.mouse = "a"
 opt.mousemoveevent = true
@@ -19,12 +16,12 @@ opt.number = true
 opt.pumheight = 12
 opt.relativenumber = true
 opt.sessionoptions:append("globals")
-opt.showmode = false
 opt.signcolumn = "yes"
 opt.termguicolors = true
 opt.textwidth = 80
 opt.timeoutlen = 500
 opt.updatetime = 250
+opt.scrolloff = 1
 
 -- Indentation options
 opt.expandtab = true
@@ -54,6 +51,18 @@ vim.cmd([[command! PackerStatus lua require('plugins').status()]])
 vim.cmd([[command! PackerSync lua require('plugins').sync()]])
 vim.cmd([[command! PackerUpdate lua require('plugins').update()]])
 
+-- Statusline
+opt.laststatus = 3
+opt.statusline = "%!v:lua.require'statusline'.setup()"
+
 -- Mappings
 g.mapleader = " "
 require("mappings")
+
+-- Autocommands
+vim.cmd([[
+  augroup FormatOptions
+    autocmd!
+    autocmd BufEnter * setlocal fo-=t fo-=c fo-=r fo-=o
+  augroup END
+]])

@@ -1,3 +1,16 @@
+# Activate pipenv shell on startup if available
+__pipenv_shell_activate
+
+# Activate zoxide
+if type -q zoxide
+  zoxide init fish | source
+end
+
+# Active Starship prompt
+if type -q starship
+  starship init fish | source
+end
+
 set -gx fish_greeting ''
 set -gx EDITOR nvim
 

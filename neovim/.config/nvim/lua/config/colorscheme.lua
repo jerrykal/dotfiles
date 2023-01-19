@@ -2,6 +2,7 @@ local colors = require("kanagawa.colors").setup()
 require("kanagawa").setup({
   globalStatus = true,
   overrides = {
+    CursorLine = { bg = colors.bg_light0 },
     Search = { fg = "NONE", bg = colors.bg_search },
 
     TelescopeNormal = { bg = colors.bg_dim },
@@ -42,6 +43,20 @@ require("kanagawa").setup({
     NavicIconsTypeParameter = { fg = colors.springBlue },
     NavicText = { fg = colors.fujiWhite },
     NavicSeparator = { fg = colors.fujiWhite },
+
+    IlluminatedWordText = { bg = colors.bg_light1 },
+    IlluminatedWordRead = { bg = colors.bg_light1 },
+    IlluminatedWordWrite = { bg = colors.bg_light1 },
+
+    NeoTreeDimText = { fg = colors.bg_light2 },
+    NeoTreeDotfile = { fg = colors.fg_comment },
+    NeoTreeDirectoryName = { fg = colors.fg },
+    NeoTreeDirectoryIcon = { fg = "#c09553" },
+    NeoTreeFileIcon = { fg = colors.fg },
+    NeoTreeTabInactive = { fg = colors.fg_comment, bg = colors.bg },
+    NeoTreeTabActive = { fg = colors.fg, bg = colors.bg_light1 },
+    NeoTreeTabSeparatorInactive = { fg = colors.bg_dark, bg = colors.bg },
+    NeoTreeTabSeparatorActive = { fg = colors.bg_dark, bg = colors.bg_light1 },
   },
 })
 

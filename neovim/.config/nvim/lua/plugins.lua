@@ -21,6 +21,11 @@ return require("packer").startup(function(use)
   })
 
   use({
+    "Vimjas/vim-python-pep8-indent",
+    ft = { "python" },
+  })
+
+  use({
     "tpope/vim-repeat",
     keys = {
       { "n", "." },
@@ -47,6 +52,16 @@ return require("packer").startup(function(use)
     event = "InsertEnter",
     config = function()
       require("nvim-autopairs").setup()
+    end,
+  })
+
+  use({
+    "RRethy/vim-illuminate",
+    event = "BufReadPre",
+    config = function()
+      require("illuminate").configure({
+        filetypes_denylist = { "neo-tree" },
+      })
     end,
   })
 
@@ -91,7 +106,7 @@ return require("packer").startup(function(use)
         char = "▏",
         context_char = "▏",
         show_current_context = true,
-        filetype_exclude = { "NvimTree" },
+        filetype_exclude = { "neo-tree", "Trouble" },
         buftype_exclude = { "terminal", "help", "prompt" },
       })
     end,
@@ -101,7 +116,7 @@ return require("packer").startup(function(use)
     "folke/trouble.nvim",
     cmd = "TroubleToggle",
     config = function()
-      require("trouble").setup({})
+      require("trouble").setup()
     end,
   })
 
@@ -110,15 +125,6 @@ return require("packer").startup(function(use)
     "rebelot/kanagawa.nvim",
     config = function()
       require("config.colorscheme")
-    end,
-  })
-
-  -- Statusline
-  use({
-    "nvim-lualine/lualine.nvim",
-    after = "kanagawa.nvim",
-    config = function()
-      require("config.lualine")
     end,
   })
 
@@ -147,6 +153,12 @@ return require("packer").startup(function(use)
       require("config.lsp")
     end,
   })
+  use({
+    "rmagatti/goto-preview",
+    config = function()
+      require("goto-preview").setup({})
+    end,
+  })
 
   -- Autocompletion
   use({
@@ -154,6 +166,7 @@ return require("packer").startup(function(use)
     module = "cmp",
     requires = {
       "hrsh7th/cmp-buffer",
+      "hrsh7th/cmp-cmdline",
       "hrsh7th/cmp-nvim-lua",
       "hrsh7th/cmp-path",
       "saadparwaiz1/cmp_luasnip",
@@ -189,6 +202,14 @@ return require("packer").startup(function(use)
         require("telescope").load_extension("fzf")
       end,
     },
+    use({
+      "prochri/telescope-all-recent.nvim",
+      requires = { "kkharji/sqlite.lua" },
+      after = "telescope.nvim",
+      config = function()
+        require("telescope-all-recent").setup({})
+      end,
+    }),
   })
 
   -- Treesitter
@@ -208,16 +229,23 @@ return require("packer").startup(function(use)
   use({
     "lewis6991/gitsigns.nvim",
     config = function()
-      require("gitsigns").setup()
+      require("config.gitsigns")
+    end,
+  })
+  use({
+    "TimUntersberger/neogit",
+    config = function()
+      require("neogit").setup()
     end,
   })
 
   -- File Explorer
   use({
-    "kyazdani42/nvim-tree.lua",
-    cmd = "NvimTreeToggle",
+    "nvim-neo-tree/neo-tree.nvim",
+    branch = "v2.x",
+    cmd = "Neotree",
     config = function()
-      require("config.nvim-tree")
+      require("config.neo-tree")
     end,
   })
 end)
