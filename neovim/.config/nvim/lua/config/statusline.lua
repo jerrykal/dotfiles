@@ -63,6 +63,7 @@ local M = {}
 M.setup = function()
   if
     vim.bo.filetype == "neo-tree"
+    or vim.bo.filetype == "lazy"
     or vim.bo.buftype == "help"
     or vim.bo.buftype == "prompt"
     or vim.bo.buftype == "terminal"
