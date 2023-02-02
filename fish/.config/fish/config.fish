@@ -1,33 +1,32 @@
-# Activate pipenv shell on startup if available
-__pipenv_shell_activate
-
 # Activate zoxide
 if type -q zoxide
-  zoxide init fish | source
+   zoxide init fish | source
 end
 
-# Active Starship prompt
+# Activate starship
 if type -q starship
-  starship init fish | source
+    starship init fish | source
 end
 
-set -gx fish_greeting ''
+set -gx fish_greeting ""
 set -gx EDITOR nvim
 
 # Path
 fish_add_path ~/.cargo/bin
 fish_add_path ~/.local/bin
 
+# Updates PATH for the Google Cloud SDK.
+if [ -f "$HOME/.google-cloud-sdk/path.fish.inc" ]; . "$HOME/.google-cloud-sdk/path.fish.inc"; end
+
 # Aliases
 if type -q exa
-  alias ls='exa'
-  alias tree='exa --tree'
+   alias ls="exa --group-directories-first"
+   alias tree="ls --tree"
 end
 if type -q xclip
-  alias pbcopy='xclip -selection clipboard'
-  alias pbpaste='xclip -selection clipboard -o'
+   alias pbcopy="xclip -selection clipboard"
+   alias pbpaste="xclip -selection clipboard -o"
 end
-alias python='python3'
 
 # Kanagawa Fish shell theme
 # A template was taken and modified from Tokyonight:
