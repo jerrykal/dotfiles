@@ -1,9 +1,9 @@
 -- Show git branch name and status
 local function git_status()
-  if vim.b.gitsigns_head == nil then
+  if vim.g.loaded_fugitive == nil or vim.fn.FugitiveIsGitDir() == 0 then
     return ""
   end
-  return string.format("  שׂ %s %s ", vim.b.gitsigns_head, vim.b.gitsigns_status)
+  return string.format("  שׂ %s %s ", vim.fn.FugitiveHead(), vim.b.gitsigns_status)
 end
 
 -- Show lsp diagnostics results on current buffer
@@ -38,7 +38,7 @@ local function filetype()
   local icon = require("nvim-web-devicons").get_icon_by_filetype(vim.bo.filetype)
   return string.format(
     " %s %s  ",
-    icon,
+    icon and icon or "",
     vim.bo.filetype:gsub("(%l)(%w*)", function(a, b)
       return string.upper(a) .. b
     end)
@@ -61,14 +61,15 @@ local fileformat = vim.bo.fileformat:upper()
 local M = {}
 
 M.setup = function()
-  if
-    vim.bo.filetype == "neo-tree"
-    or vim.bo.filetype == "lazy"
-    or vim.bo.buftype == "help"
-    or vim.bo.buftype == "prompt"
-    or vim.bo.buftype == "terminal"
+  if vim.bo.buftype == "Trouble"
+      or vim.bo.buftype == "mason"
+      or vim.bo.buftype == "prompt"
+      or vim.bo.buftype == "terminal"
+      or vim.bo.filetype == "help"
+      or vim.bo.filetype == "lazy"
+      or vim.bo.filetype == "neo-tree"
   then
-    return ""
+    return string.format("  %s %%=%s  ", lsp_diagnostic(), lineinfo)
   else
     return string.format(
       "%s  %s%%=%s   %s   %s   %s  %s",

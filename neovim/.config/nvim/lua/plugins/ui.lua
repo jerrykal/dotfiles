@@ -1,33 +1,74 @@
 return {
   -- Icons
-  { "kyazdani42/nvim-web-devicons" },
+  {
+    "kyazdani42/nvim-web-devicons",
+  },
 
   -- UI components
   { "MunifTanjim/nui.nvim" },
 
-  -- Floating winbar
+  -- Better vim.notify
   {
-    "b0o/incline.nvim",
-    event = "BufReadPre",
-    config = function()
-      local colors = require("kanagawa.colors").setup()
-      require("incline").setup({
-        hide = {
-          only_win = true,
+    "rcarriga/nvim-notify",
+    lazy = false,
+    opts = {
+      stages = "static",
+      timeout = 3000,
+      on_open = function(win)
+        vim.api.nvim_win_set_config(win, { border = "single" })
+      end,
+      max_height = function()
+        return math.floor(vim.o.lines * 0.75)
+      end,
+      max_width = function()
+        return math.floor(vim.o.columns * 0.75)
+      end,
+    },
+    config = function(_, opts)
+      require("notify").setup(opts)
+      vim.notify = require("notify")
+    end,
+  },
+
+  -- Animation
+  {
+    "echasnovski/mini.animate",
+    event = "VeryLazy",
+    opts = function()
+      -- don't use animate when scrolling with the mouse
+      local mouse_scrolled = false
+      for _, scroll in ipairs({ "Up", "Down" }) do
+        local key = "<ScrollWheel" .. scroll .. ">"
+        vim.keymap.set({ "", "i" }, key, function()
+          mouse_scrolled = true
+          return key
+        end, { expr = true })
+      end
+
+      local animate = require("mini.animate")
+      return {
+        cursor = { enable = false },
+        open = { enable = false },
+        close = { enable = false },
+        resize = {
+          timing = animate.gen_timing.linear({ duration = 100, unit = "total" }),
         },
-        highlight = {
-          groups = {
-            InclineNormal = { guifg = colors.fg, guibg = colors.bg_light1 },
-            InclineNormalNC = { guifg = colors.fg_comment, guibg = colors.bg_dark },
-          },
+        scroll = {
+          timing = animate.gen_timing.linear({ duration = 100, unit = "total" }),
+          subscroll = animate.gen_subscroll.equal({
+            predicate = function(total_scroll)
+              if mouse_scrolled then
+                mouse_scrolled = false
+                return false
+              end
+              return total_scroll > 1
+            end,
+          }),
         },
-        window = { margin = { vertical = 0, horizontal = 1 } },
-        render = function(props)
-          local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ":t")
-          local icon, color = require("nvim-web-devicons").get_icon_color(filename)
-          return { { icon, guifg = color }, { " " }, { filename } }
-        end,
-      })
+      }
+    end,
+    config = function(_, opts)
+      require("mini.animate").setup(opts)
     end,
   },
 
@@ -53,8 +94,13 @@ return {
       return {
         options = {
           modified_icon = "",
-          close_command = "Bdelete! %d",
-          right_mouse_command = "Bdelete! %d",
+          truncate_names = false,
+          close_command = function(buffer)
+            require("mini.bufremove").delete(buffer, true)
+          end,
+          right_mouse_command = function(buffer)
+            require("mini.bufremove").delete(buffer, true)
+          end,
           diagnostics = "nvim_lsp",
           diagnostics_update_in_insert = false,
           diagnostics_indicator = function(_, _, diagnostics_dict, _)
@@ -151,8 +197,7 @@ return {
       char = "▏",
       context_char = "▏",
       show_current_context = true,
-      filetype_exclude = { "neo-tree", "Trouble", "lazy" },
-      buftype_exclude = { "terminal", "help", "prompt" },
+      filetype_exclude = { "neo-tree", "Trouble", "lazy", "help", "mason" },
     },
   },
 

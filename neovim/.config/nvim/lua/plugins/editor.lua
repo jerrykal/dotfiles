@@ -11,13 +11,14 @@ return {
         winbar = true,
         tab_labels = {
           filesystem = "  Files ",
-          buffers = "  Buffers ",
+          buffers = "  Buffers ",
           git_status = "  Git ",
           diagnostics = " 裂Diagnostics ",
         },
         content_layout = "center",
       },
       filesystem = {
+        use_libuv_file_watcher = true,
         follow_current_file = true,
         filtered_items = {
           visible = true,
@@ -68,82 +69,54 @@ return {
     },
   },
 
-  -- Telescope
-  {
-    "nvim-telescope/telescope.nvim",
-    dependencies = {
-      {
-        "nvim-telescope/telescope-fzf-native.nvim",
-        build = "make",
-        config = function()
-          require("telescope").load_extension("fzf")
-        end,
-      },
-    },
-    cmd = "Telescope",
-    opts = {
-      defaults = {
-        cycle_layout_list = { "horizontal", "vertical" },
-        pickers = {
-          live_grep = {
-            -- Search hidden files
-            additional_args = function(_)
-              return { "--hidden" }
-            end,
-          },
-        },
-        layout_config = {
-          vertical = {
-            preview_height = 0.5,
-          },
-          flex = {
-            flip_columns = 160,
-          },
-          horizontal = {
-            preview_width = 0.5,
-          },
-          height = 0.85,
-          width = 0.85,
-          preview_cutoff = 0,
-        },
-        vimgrep_arguments = {
-          "rg",
-          "--color=never",
-          "--no-heading",
-          "--with-filename",
-          "--line-number",
-          "--column",
-          "--smart-case",
-          "--hidden",
-        },
-        prompt_prefix = "   ",
-        selection_caret = "  ",
-        entry_prefix = "  ",
-        layout_strategy = "flex",
-        file_ignore_patterns = {
-          ".git",
-          "node_modules",
-        },
-      },
-    },
-  },
-
   -- Open terminal in splitscreen
   {
     "akinsho/toggleterm.nvim",
     keys = "<c-\\>",
     opts = {
       open_mapping = [[<c-\>]],
+      direction = "float",
+      highlights = {
+        FloatBorder = {
+          link = "FloatBorder",
+        },
+      },
       size = 15,
       persist_size = true,
       shade_terminals = false,
+      auto_scroll = false,
+    },
+  },
+
+  -- Automatically resize window
+  {
+    "anuvyklack/windows.nvim",
+    event = "WinNew",
+    dependencies = {
+      "anuvyklack/middleclass",
+      -- "anuvyklack/animation.nvim",
+    },
+    opts = function()
+      vim.o.winwidth = 5
+      vim.o.winminwidth = 5
+      vim.o.equalalways = false
+    end,
+    config = true,
+  },
+
+  -- TODO: comments
+  {
+    "folke/todo-comments.nvim",
+    event = "BufReadPost",
+    opts = {
+      signs = false,
     },
   },
 
   -- Jump to any location with ease
   {
     "ggandor/leap.nvim",
-    keys = { "gs", "s", "S" },
+    event = "BufReadPost",
     config = function()
       require("leap").add_default_mappings()
     end,
@@ -161,8 +134,10 @@ return {
 
   -- Delete buffer
   {
-    "famiu/bufdelete.nvim",
-    cmd = { "Bdelete", "Bwipeout" },
+    "echasnovski/mini.bufremove",
+    config = function()
+      require("mini.bufremove").setup()
+    end,
   },
 
   -- Better diagnostics list and others
@@ -175,7 +150,7 @@ return {
   -- Better matchit/paren
   {
     "andymass/vim-matchup",
-    event = "BufReadPost",
+    event = "BufReadPre",
     config = function()
       vim.g.matchup_matchparen_offscreen = { method = "popup" }
     end,
@@ -189,21 +164,28 @@ return {
       spelling = {
         enable = true,
       },
+      icons = {
+        breadcrumb = "",
+        separator = " ",
+      },
     },
     config = function(_, opts)
       local wk = require("which-key")
       wk.setup(opts)
       wk.register({
-        ["cs"] = { name = "Change Surrounding" },
-        ["ds"] = { name = "Delete Surrounding" },
-        ["ys"] = { name = "Yank Surrounding" },
-        ["gp"] = { name = "+preview" },
         ["<leader>c"] = { name = "+code" },
-        ["<leader>h"] = { name = "+git hunk" },
-        ["<leader>r"] = { name = "+re" },
+        ["<leader>d"] = { name = "+debugger" },
         ["<leader>f"] = { name = "+file/find" },
+        ["<leader>h"] = { name = "+git_hunk" },
+        ["<leader>m"] = { name = "+markdown" },
+        ["<leader>r"] = { name = "+rename" },
+        ["<leader>s"] = { name = "+search" },
         ["<leader>t"] = { name = "+trouble" },
         ["<leader>w"] = { name = "+workspace" },
+        ["cs"] = { name = "Change Surrounding" },
+        ["ds"] = { name = "Delete Surrounding" },
+        ["gp"] = { name = "+preview" },
+        ["ys"] = { name = "Yank Surrounding" },
       })
     end,
   },
@@ -212,5 +194,5 @@ return {
     "luukvbaal/stabilize.nvim",
     event = "BufNew",
     config = true,
-  }
+  },
 }

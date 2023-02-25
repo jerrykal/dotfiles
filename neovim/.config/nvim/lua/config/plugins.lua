@@ -21,7 +21,6 @@ require("lazy").setup({
     version = false,
   },
   install = {
-    missing = false,
     colorscheme = { "kanagawa", "habamax" },
   },
   checker = { enable = true },

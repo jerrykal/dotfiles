@@ -9,8 +9,17 @@ return {
       require("kanagawa").setup({
         globalStatus = true,
         overrides = {
+          -- Have to add this line to make pumblend work
+          NormalNC = { bg = colors.bg },
+
           CursorLine = { bg = colors.bg_light0 },
+          FloatBorder = { fg = colors.bg_light2, bg = colors.bg },
           Search = { fg = "NONE", bg = colors.bg_search },
+
+          ["@constructor"] = { fg = colors.ty },
+
+          debugBreakpoint = { fg = colors.samuraiRed },
+          debugPC = { bg = colors.diff.text },
 
           TelescopeNormal = { bg = colors.bg_dim },
           TelescopeBorder = { fg = colors.bg_dim, bg = colors.bg_dim },
@@ -22,6 +31,10 @@ return {
           TelescopePreviewNormal = { bg = colors.bg_dim },
           TelescopePreviewBorder = { bg = colors.bg_dim, fg = colors.bg_dim },
 
+          CmpItemAbbr = { fg = colors.fg_menu, bg = "None" },
+          CmpItemAbbrDeprecated = { fg = colors.fg_comment, bg = "None", strikethrough = true },
+          CmpItemAbbrMatch = { fg = colors.fn, bg = "None" },
+          CmpItemAbbrMatchFuzzy = { link = "CmpItemAbbrMatch" },
           CmpItemKindClass = { fg = colors.surimiOrange },
           CmpItemKindConstant = { fg = colors.oniViolet },
           CmpItemKindConstructor = { fg = colors.surimiOrange },
@@ -84,10 +97,16 @@ return {
           NeoTreeTabSeparatorActive = { fg = colors.bg_dark, bg = colors.bg_light1 },
           NeoTreeGitUntracked = { link = "GitSignsAdd" },
 
-          IndentBlanklineChar = { fg = colors.bg_light0 },
-          IndentBlanklineSpaceChar = { fg = colors.bg_light0 },
-          IndentBlanklineSpaceCharBlankline = { fg = colors.bg_light0 },
-          IndentBlanklineContextChar = { fg = colors.bg_light1 },
+          IndentBlanklineChar = { fg = colors.bg_light1 },
+          IndentBlanklineSpaceChar = { fg = colors.bg_light1 },
+          IndentBlanklineSpaceCharBlankline = { fg = colors.bg_light1 },
+          IndentBlanklineContextChar = { fg = colors.bg_light2 },
+
+          NotifyERRORBorder = { link = "FloatBorder" },
+          NotifyWARNBorder = { link = "FloatBorder" },
+          NotifyINFOBorder = { link = "FloatBorder" },
+          NotifyDEBUGBorder = { link = "FloatBorder" },
+          NotifyTRACEBorder = { link = "FloatBorder" },
         },
       })
 

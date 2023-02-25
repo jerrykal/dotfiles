@@ -16,13 +16,13 @@ return {
           settings = {
             python = {
               analysis = {
-                diagnosticMode = "openFilesOnly",
+                diagnosticMode = "workspace",
                 typeCheckingMode = "off",
               },
             },
           },
         },
-        sumneko_lua = {
+        lua_ls = {
           settings = {
             Lua = {
               diagnostics = { globals = { "vim" } },
@@ -43,7 +43,7 @@ return {
       local on_attach = function(client, buffer)
         require("plugins.lsp.keymaps").setup(client, buffer)
       end
-      local capabilities = require("cmp_nvim_lsp").default_capabilities()
+      local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
       for server, server_opts in pairs(opts.servers) do
         server_opts.on_attach = on_attach
@@ -57,6 +57,7 @@ return {
       -- Setup diagnostics
       vim.diagnostic.config({
         virtual_text = { prefix = "● " },
+        serverity_sort = true,
       })
       vim.fn.sign_define("DiagnosticSignError", { text = "", numhl = "DiagnosticError" })
       vim.fn.sign_define("DiagnosticSignWarn", { text = "", numhl = "DiagnosticWarn" })
@@ -107,6 +108,10 @@ return {
   -- Previewing native LSP's goto definition, type definition, implementation, and references calls in floating windows
   {
     "rmagatti/goto-preview",
-    config = true,
+    opts = {
+      post_open_hook = function(_, win)
+        vim.api.nvim_win_set_option(win, "winhighlight", "Normal:")
+      end,
+    },
   },
 }

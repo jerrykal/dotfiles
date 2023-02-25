@@ -41,4 +41,10 @@ return {
       end,
     },
   },
+
+  -- Fugitive
+  {
+    "tpope/vim-fugitive",
+    event = "VeryLazy",
+  },
 }
