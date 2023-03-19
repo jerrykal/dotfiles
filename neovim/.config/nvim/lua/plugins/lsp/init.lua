@@ -32,6 +32,7 @@ return {
             },
           },
         },
+        bashls = {},
       },
     },
     config = function(_, opts)
@@ -78,6 +79,7 @@ return {
           nls.builtins.formatting.black,
           nls.builtins.formatting.isort,
           nls.builtins.formatting.stylua,
+          nls.builtins.formatting.shfmt.with({ extra_args = { "-i", "2" } }),
         },
       }
     end,
@@ -92,6 +94,8 @@ return {
         "black",
         "isort",
         "stylua",
+        "shfmt",
+        "shellcheck",
       },
     },
     config = function(_, opts)

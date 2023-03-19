@@ -148,18 +148,3 @@ map("n", "<c-w>z", "<cmd>WindowsMaximize<cr>", { desc = "Maximize Current Window
 map("n", "<c-w>_", "<cmd>WindowsMaximizeVertically<cr>", { desc = "Maximize Current Window Vertically" })
 map("n", "<c-w>|", "<cmd>WindowsMaximizeHorizontally<cr>", { desc = "Maximize Current Window Horizontally" })
 map("n", "<c-w>=", "<cmd>WindowsEqualize<cr>", { desc = "Equalize Windows" })
-
--- Spectre
-map("n", "<leader>sr", function()
-  require("spectre").open()
-end, { desc = "Replace in files (Spectre)" })
-
--- Peek.nvim
-map("n", "<leader>mp", function()
-  local peek = require("peek")
-  if peek.is_open() then
-    peek.close()
-  else
-    peek.open()
-  end
-end, { desc = "Toggle Markdown Preview" })

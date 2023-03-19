@@ -1,0 +1,65 @@
+abbr -a lsl ls -l
+abbr -a lsa ls -a
+abbr -a lsal ls -al
+
+abbr -a rmr rm -r
+abbr -a rmrf rm -rf
+
+abbr -a rs rsync -avh
+
+# vim
+abbr vi nvim
+abbr vim nvim
+
+# git
+abbr -a g git
+abbr -a gi git init
+abbr -a ga git add
+abbr -a gaa git add --all
+abbr -a gc git commit -v
+abbr -a gcm git commit -m
+abbr -a gst git status
+abbr -a gss git status -s
+abbr -a gl git log
+abbr -a glo git log --oneline
+abbr -a gd git diff
+abbr -a gds git diff --staged
+abbr -a gls git ls-files
+abbr -a gp git push
+
+# conda
+abbr -a ca conda activate
+abbr -a cda conda deactivate
+abbr -a ci conda install
+abbr -a ccr conda create
+abbr -a ce conda env
+abbr -a cee conda env export
+abbr -a cec conda env create
+abbr -a cer conda env remove
+abbr -a cel conda env list
+abbr -a cl conda list
+
+# python
+abbr -a py python
+abbr -a pipl pip list
+abbr -a pipi pip install
+abbr -a pipir pip install -r requirements.txt
+abbr -a pipx pip uninstall
+abbr -a pipsh pip show
+abbr -a pipsr pip search
+abbr -a pipfr pip freeze
+abbr -a jl jupyter-lab
+abbr -a --set-cursor tsb tensorboard --logdir=%
+
+# gcloud
+abbr -a gcp gcloud compute
+
+# mutagen
+abbr -a msc mutagen sync create
+abbr -a msl mutagen sync list
+abbr -a msm mutagen sync monitor
+abbr -a msf mutagen sync flush
+abbr -a msp mutagen sync pause
+abbr -a msr mutagen sync resume
+abbr -a msrs mutagen sync reset
+abbr -a mst mutagen sync terminate

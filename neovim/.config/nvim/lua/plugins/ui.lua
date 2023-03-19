@@ -79,17 +79,17 @@ return {
     opts = function()
       -- Define colors for bufferline
       local colors = require("kanagawa.colors").setup()
-      local fg_selected = colors.fg
-      local fg_visible = colors.fg_comment
-      local fg_inactive = colors.fg_comment
-      local fg_error = colors.diag.error
-      local fg_warning = colors.diag.warning
-      local fg_info = colors.diag.info
-      local fg_hint = colors.diag.hint
-      local bg_selected = colors.bg_light1
-      local bg_visible = colors.bg_light1
-      local bg_inactive = colors.bg
-      local bg_fill = colors.bg_dark
+      local fg_selected = colors.theme.ui.fg
+      local fg_visible = colors.theme.ui.fg_comment
+      local fg_inactive = colors.theme.ui.fg_comment
+      local fg_error = colors.theme.diag.error
+      local fg_warning = colors.theme.diag.warning
+      local fg_info = colors.theme.diag.info
+      local fg_hint = colors.theme.diag.hint
+      local bg_selected = colors.theme.ui.bg_p2
+      local bg_visible = colors.theme.ui.bg_p2
+      local bg_inactive = colors.theme.ui.bg
+      local bg_fill = colors.theme.ui.bg_m3
 
       return {
         options = {

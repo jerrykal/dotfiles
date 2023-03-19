@@ -5,14 +5,11 @@ shell:
     - '-c'
     - 'tmux attach || tmux'
 
-window:
-  startup_mode: Fullscreen
-
 font:
   normal:
-    family: Iosevka Nerd Font
+    family: JetBrains Mono Nerd Font
     style: Medium
-  size: 11
+  size: 10
 
 draw_bold_text_with_bright_colors: true
 
@@ -51,6 +48,41 @@ colors:
     - { index: 16, color: '0xffa066' }
     - { index: 17, color: '0xff5d62' }
 
+# colors:
+#   primary:
+#     background: '0x181616'
+#     foreground: '0xc5c9c5'
+#   cursor:
+#    text: '0x181616'
+#    cursor: '0xc8c093'
+#   vi_mode_cursor:
+#    text: '0x181616'
+#    cursor: '0xc8c093'
+#   normal:
+#     black:   '0x0d0c0c'
+#     red:     '0xc4746e'
+#     green:   '0x8a9a7b'
+#     yellow:  '0xc4b28a'
+#     blue:    '0x8ba4b0'
+#     magenta: '0xa292a3'
+#     cyan:    '0x8ea4a2'
+#     white:   '0xc8c093'
+#   bright:
+#     black:   '0xa6a69c'
+#     red:     '0xe46876'
+#     green:   '0x87a987'
+#     yellow:  '0xe6c384'
+#     blue:    '0x7fb4ca'
+#     magenta: '0x938aa9'
+#     cyan:    '0x7aa89f'
+#     white:   '0xc5c9c5'
+#   selection:
+#     background: '0x2d4f67'
+#     foreground: '0xc8c093'
+#   indexed_colors:
+#     - { index: 16, color: '0xb6927b' }
+#     - { index: 17, color: '0xb98d7b' }
+
 alt_send_esc: true
      
 cursor:
@@ -66,7 +98,6 @@ key_bindings:
   - { key: F11, action: ToggleFullscreen }
 
   - { key: T,    mods: Shift|Control, command: { program: "tmux", args: ["new-window", "-c", "#{pane_current_path}"] } }
-  - { key: N,    mods: Shift|Control, command: { program: "tmux", args: ["new-session"] } }
   - { key: W,    mods: Shift|Control, command: { program: "tmux", args: ["kill-pane"] } }
   - { key: Q,    mods: Shift|Control, command: { program: "tmux", args: ["detach-client"] } }
   - { key: Key1, mods: Alt,           command: { program: "tmux", args: ["select-window", "-t", ":=1"] } }
@@ -79,6 +110,8 @@ key_bindings:
   - { key: Key8, mods: Alt,           command: { program: "tmux", args: ["select-window", "-t", ":=8"] } }
   - { key: Key9, mods: Alt,           command: { program: "tmux", args: ["select-window", "-t", ":=9"] } }
   - { key: Key0, mods: Alt,           command: { program: "tmux", args: ["select-window", "-t", ":=10"] } }
+
+  - { key: N, mods: Shift|Control, command: { program: "alacritty", args: ["--command", "tmux", "new-session"] } }
 
   #- { key: Paste,                                       action: Paste          }
   #- { key: Copy,                                        action: Copy           }

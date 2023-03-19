@@ -78,7 +78,7 @@ return {
         sources = cmp.config.sources({
           { name = "nvim_lsp" },
           { name = "luasnip" },
-          -- { name = "path" },
+          { name = "path" },
           { name = "buffer" },
         }),
         snippet = {
@@ -147,7 +147,21 @@ return {
   {
     "kylechui/nvim-surround",
     event = "BufReadPost",
-    config = true,
+    opts = {
+      -- Change surround keymaps so it does not conflict with leap.nvim's keymap
+      keymaps = {
+        insert = "<C-g>z",
+        insert_line = "<C-g>Z",
+        normal = "gz",
+        normal_cur = "gZ",
+        normal_line = "gzz",
+        normal_cur_line = "gZZ",
+        visual = "gz",
+        visual_line = "gZ",
+        delete = "gzd",
+        change = "gzr",
+      },
+    },
   },
 
   -- Auto pairs
@@ -173,14 +187,12 @@ return {
     ft = { "python" },
   },
 
-  -- Textobject for indentations
+  -- More text objects
   {
-    "michaeljsmith/vim-indent-object",
-    keys = {
-      { "ai", mode = { "v", "o" } },
-      { "ii", mode = { "v", "o" } },
-      { "aI", mode = { "v", "o" } },
-      { "iI", mode = { "v", "o" } },
+    "chrisgrieser/nvim-various-textobjs",
+    event = "BufReadPost",
+    opts = {
+      useDefaultKeymaps = true,
     },
   },
 }
