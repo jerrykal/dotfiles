@@ -1,4 +1,15 @@
 return {
+  -- Noice
+  {
+    "folke/noice.nvim",
+    event = "VeryLazy",
+    opts = {
+      cmdline = { enabled = false },
+      messages = { enabled = false },
+      lsp = { progress = { enabled = false } },
+    },
+  },
+
   -- Icons
   {
     "kyazdani42/nvim-web-devicons",
@@ -30,48 +41,6 @@ return {
     end,
   },
 
-  -- Animation
-  {
-    "echasnovski/mini.animate",
-    event = "VeryLazy",
-    opts = function()
-      -- don't use animate when scrolling with the mouse
-      local mouse_scrolled = false
-      for _, scroll in ipairs({ "Up", "Down" }) do
-        local key = "<ScrollWheel" .. scroll .. ">"
-        vim.keymap.set({ "", "i" }, key, function()
-          mouse_scrolled = true
-          return key
-        end, { expr = true })
-      end
-
-      local animate = require("mini.animate")
-      return {
-        cursor = { enable = false },
-        open = { enable = false },
-        close = { enable = false },
-        resize = {
-          timing = animate.gen_timing.linear({ duration = 100, unit = "total" }),
-        },
-        scroll = {
-          timing = animate.gen_timing.linear({ duration = 100, unit = "total" }),
-          subscroll = animate.gen_subscroll.equal({
-            predicate = function(total_scroll)
-              if mouse_scrolled then
-                mouse_scrolled = false
-                return false
-              end
-              return total_scroll > 1
-            end,
-          }),
-        },
-      }
-    end,
-    config = function(_, opts)
-      require("mini.animate").setup(opts)
-    end,
-  },
-
   -- Bufferline
   {
     "akinsho/bufferline.nvim",
@@ -80,8 +49,8 @@ return {
       -- Define colors for bufferline
       local colors = require("kanagawa.colors").setup()
       local fg_selected = colors.theme.ui.fg
-      local fg_visible = colors.theme.ui.fg_comment
-      local fg_inactive = colors.theme.ui.fg_comment
+      local fg_visible = colors.theme.syn.comment
+      local fg_inactive = colors.theme.syn.comment
       local fg_error = colors.theme.diag.error
       local fg_warning = colors.theme.diag.warning
       local fg_info = colors.theme.diag.info
@@ -203,51 +172,61 @@ return {
 
   -- LSP symbol navigation for winbar
   {
-    "SmiteshP/nvim-navic",
-    lazy = true,
-    opts = {
-      icons = {
-        File = " ",
-        Module = " ",
-        Namespace = " ",
-        Package = " ",
-        Class = " ",
-        Method = " ",
-        Property = " ",
-        Field = " ",
-        Constructor = " ",
-        Enum = " ",
-        Interface = " ",
-        Function = " ",
-        Variable = " ",
-        Constant = " ",
-        String = " ",
-        Number = " ",
-        Boolean = " ",
-        Array = " ",
-        Object = " ",
-        Key = " ",
-        Null = " ",
-        EnumMember = " ",
-        Struct = " ",
-        Event = " ",
-        Operator = " ",
-        TypeParameter = " ",
-      },
-      highlight = true,
-      separator = "  ",
+    "utilyre/barbecue.nvim",
+    event = "BufReadPre",
+    dependencies = {
+      "SmiteshP/nvim-navic",
     },
-    init = function()
-      vim.api.nvim_create_autocmd("LspAttach", {
-        callback = function(args)
-          local buffer = args.buf
-          local client = vim.lsp.get_client_by_id(args.data.client_id)
-          if client.server_capabilities.documentSymbolProvider then
-            require("nvim-navic").attach(client, buffer)
-            vim.wo.winbar = "  %{%v:lua.require'nvim-navic'.get_location()%}"
-          end
-        end,
-      })
+    opts = function()
+      local c = require("kanagawa.lib.color")
+      local colors = require("kanagawa.colors").setup()
+      local palette = colors.palette
+      local theme = colors.theme
+      local fg_normal = tostring(c(theme.ui.whitespace):brighten(0.3))
+      return {
+        theme = {
+          normal = { fg = fg_normal },
+          ellipsis = { fg = fg_normal },
+          separator = { fg = fg_normal },
+          modified = { fg = fg_normal },
+          dirname = { fg = fg_normal },
+          basename = { fg = fg_normal },
+          context = { fg = fg_normal },
+          context_array = { fg = palette.waveAqua2 },
+          context_boolean = { fg = palette.surimiOrange },
+          context_class = { fg = palette.surimiOrange },
+          context_constant = { fg = palette.oniViolet },
+          context_constructor = { fg = palette.surimiOrange },
+          context_enum = { fg = palette.boatYellow2 },
+          context_enummember = { fg = palette.carpYellow },
+          context_event = { fg = palette.surimiOrange },
+          context_field = { fg = palette.waveAqua1 },
+          context_file = { fg = palette.springViolet2 },
+          context_function = { fg = palette.crystalBlue },
+          context_interface = { fg = palette.carpYellow },
+          context_key = { fg = palette.oniViolet },
+          context_method = { fg = palette.crystalBlue },
+          context_module = { fg = palette.boatYellow2 },
+          context_namespace = { fg = palette.springViolet2 },
+          context_null = { fg = palette.carpYellow },
+          context_number = { fg = palette.sakuraPink },
+          context_object = { fg = palette.surimiOrange },
+          context_operator = { fg = palette.springViolet2 },
+          context_package = { fg = palette.springViolet1 },
+          context_property = { fg = palette.waveAqua2 },
+          context_string = { fg = palette.springGreen },
+          context_struct = { fg = palette.surimiOrange },
+          context_typeparameter = { fg = palette.springBlue },
+          context_variable = { fg = palette.oniViolet },
+        },
+      }
     end,
+  },
+
+  -- Automatically switch between relative and absolute line numbers
+  {
+    "cpea2506/relative-toggle.nvim",
+    event = "BufReadPre",
+    config = true,
   },
 }

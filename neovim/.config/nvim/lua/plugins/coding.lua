@@ -1,4 +1,16 @@
 return {
+  -- Github copilot
+  {
+    "zbirenbaum/copilot.lua",
+    build = ":Copilot auth",
+    event = "InsertEnter",
+    opts = {
+      suggestion = {
+        auto_trigger = true,
+      }
+    },
+  },
+
   -- Snippets
   {
     "L3MON4D3/LuaSnip",
@@ -181,11 +193,11 @@ return {
     config = true,
   },
 
-  -- Nicer python indentation
-  {
-    "Vimjas/vim-python-pep8-indent",
-    ft = { "python" },
-  },
+  -- -- Nicer python indentation
+  -- {
+  --   "Vimjas/vim-python-pep8-indent",
+  --   ft = { "python" },
+  -- },
 
   -- More text objects
   {

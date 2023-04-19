@@ -8,6 +8,13 @@ return {
       "j-hui/fidget.nvim",
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
+      {
+
+        "SmiteshP/nvim-navbuddy",
+        dependencies = {
+          "SmiteshP/nvim-navic",
+        },
+      },
     },
     opts = {
       servers = {
@@ -26,9 +33,9 @@ return {
           settings = {
             Lua = {
               diagnostics = { globals = { "vim" } },
-            },
-            format = {
-              enable = false,
+              format = {
+                enable = false,
+              },
             },
           },
         },
@@ -42,13 +49,19 @@ return {
 
       -- Setup lsp servers
       local on_attach = function(client, buffer)
+        require("nvim-navbuddy").attach(client, buffer)
         require("plugins.lsp.keymaps").setup(client, buffer)
       end
       local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
       for server, server_opts in pairs(opts.servers) do
         server_opts.on_attach = on_attach
+
+        if server == "clangd" then
+          capabilities.offsetEncoding = { "utf-16" }
+        end
         server_opts.capabilities = capabilities
+
         require("lspconfig")[server].setup(server_opts)
       end
 

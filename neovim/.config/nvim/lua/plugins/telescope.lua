@@ -13,6 +13,8 @@ return {
     cmd = "Telescope",
     opts = {
       defaults = {
+        winblend = 10,
+        borderchars = { " ", " ", " ", " ", " ", " ", " ", " " },
         cycle_layout_list = { "horizontal", "vertical" },
         pickers = {
           live_grep = {

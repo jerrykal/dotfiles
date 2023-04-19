@@ -3,7 +3,12 @@ local function git_status()
   if vim.g.loaded_fugitive == nil or vim.fn.FugitiveIsGitDir() == 0 then
     return ""
   end
-  return string.format("  שׂ %s %s ", vim.fn.FugitiveHead(), vim.b.gitsigns_status)
+
+  if vim.b.gitsigns_status == nil then
+    return string.format("  שׂ %s ", vim.fn.FugitiveHead())
+  else
+    return string.format("  שׂ %s %s ", vim.fn.FugitiveHead(), vim.b.gitsigns_status)
+  end
 end
 
 -- Show lsp diagnostics results on current buffer

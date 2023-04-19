@@ -5,26 +5,14 @@ return {
       "rcarriga/nvim-dap-ui",
     },
     config = function()
-      vim.fn.sign_define(
-        "DapBreakpoint",
-        { text = "", texthl = "debugBreakpoint", linehl = "", numhl = "" }
-      )
+      vim.fn.sign_define("DapBreakpoint", { text = "", texthl = "debugBreakpoint", linehl = "", numhl = "" })
       vim.fn.sign_define(
         "DapBreakpointCondition",
         { text = "", texthl = "debugBreakpoint", linehl = "", numhl = "" }
       )
-      vim.fn.sign_define(
-        "DapBreakpointRejected",
-        { text = "", texthl = "debugBreakpoint", linehl = "", numhl = "" }
-      )
-      vim.fn.sign_define(
-        "DapLogPoint",
-        { text = "", texthl = "debugBreakpoint", linehl = "", numhl = "" }
-      )
-      vim.fn.sign_define(
-        "DapStopped",
-        { text = "", texthl = "DiagnosticWarn", linehl = "debugPC", numhl = "" }
-      )
+      vim.fn.sign_define("DapBreakpointRejected", { text = "", texthl = "debugBreakpoint", linehl = "", numhl = "" })
+      vim.fn.sign_define("DapLogPoint", { text = "", texthl = "debugBreakpoint", linehl = "", numhl = "" })
+      vim.fn.sign_define("DapStopped", { text = "", texthl = "DiagnosticWarn", linehl = "debugPC", numhl = "" })
     end,
   },
 

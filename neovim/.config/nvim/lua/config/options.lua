@@ -6,9 +6,8 @@ local opt = vim.opt
 
 -- General options
 opt.completeopt = { "menu", "menuone", "noselect" }
-opt.formatoptions = "jroqln"
 opt.guicursor:append("a:Cursor/lCursor")
-opt.lazyredraw = true
+opt.cursorline = true
 opt.list = true
 opt.listchars = { extends = "›", precedes = "‹" }
 opt.mouse = "a"
@@ -18,12 +17,13 @@ opt.pumblend = 10
 opt.pumheight = 10
 opt.relativenumber = true
 opt.scrolloff = 1
-opt.sessionoptions = "buffers,curdir,folds,winpos,winsize"
+opt.sessionoptions="blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
 opt.shortmess:append("I")
 opt.sidescrolloff = 5
 opt.signcolumn = "yes:1"
 opt.splitbelow = true
 opt.splitright = true
+opt.splitkeep = "screen"
 opt.termguicolors = true
 opt.textwidth = 80
 opt.timeoutlen = 300

@@ -5,15 +5,27 @@ return {
     branch = "v2.x",
     cmd = "Neotree",
     opts = {
+      close_if_last_window = true,
       enable_modified_markers = false,
       use_popups_for_input = false,
       source_selector = {
         winbar = true,
-        tab_labels = {
-          filesystem = "  Files ",
-          buffers = "  Buffers ",
-          git_status = "  Git ",
-          diagnostics = " 裂Diagnostics ",
+        sources = {
+          {
+            source = "filesystem",
+            display_name = "  Files ",
+          },
+          {
+            display_name = "  Buffers ",
+          },
+          {
+            source = "buffers",
+            display_name = "  Git ",
+          },
+          {
+            source = "git_status",
+            display_name = " 裂Diagnostics ",
+          },
         },
         content_layout = "center",
       },
@@ -94,7 +106,6 @@ return {
     event = "WinNew",
     dependencies = {
       "anuvyklack/middleclass",
-      -- "anuvyklack/animation.nvim",
     },
     opts = function()
       vim.o.winwidth = 5
@@ -188,11 +199,5 @@ return {
         ["ys"] = { name = "Yank Surrounding" },
       })
     end,
-  },
-
-  {
-    "luukvbaal/stabilize.nvim",
-    event = "BufNew",
-    config = true,
   },
 }

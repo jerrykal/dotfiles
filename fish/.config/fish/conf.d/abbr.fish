@@ -1,4 +1,5 @@
 abbr -a lsl ls -l
+abbr -a ls1 ls -1
 abbr -a lsa ls -a
 abbr -a lsal ls -al
 
@@ -26,6 +27,9 @@ abbr -a gd git diff
 abbr -a gds git diff --staged
 abbr -a gls git ls-files
 abbr -a gp git push
+abbr -a grm git rm
+abbr -a gC git checkout
+abbr -a gr git reset
 
 # conda
 abbr -a ca conda activate
@@ -38,6 +42,7 @@ abbr -a cec conda env create
 abbr -a cer conda env remove
 abbr -a cel conda env list
 abbr -a cl conda list
+abbr -a clc condalocal
 
 # python
 abbr -a py python

@@ -3,7 +3,7 @@ vim.api.nvim_create_autocmd("FileType", {
   pattern = "python",
   callback = function()
     vim.opt_local.colorcolumn = { 89 }
-  end
+  end,
 })
 
 -- Lua specific config
@@ -13,17 +13,17 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.opt_local.colorcolumn = { 121 }
     vim.opt_local.shiftwidth = 2
     vim.opt_local.tabstop = 2
-  end
+  end,
 })
 
 -- C/C++ specific config
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = {"c", "cpp"},
+  pattern = { "c", "cpp" },
   callback = function()
     vim.opt_local.colorcolumn = { 81 }
     vim.opt_local.shiftwidth = 2
     vim.opt_local.tabstop = 2
-  end
+  end,
 })
 
 -- Shell script specific config
@@ -33,5 +33,13 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.opt_local.colorcolumn = { 81 }
     vim.opt_local.shiftwidth = 2
     vim.opt_local.tabstop = 2
-  end
+  end,
+})
+
+-- Disable auto comment when press enter
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "*",
+  callback = function()
+    vim.opt_local.formatoptions:remove({ "t", "c", "r", "o" })
+  end,
 })

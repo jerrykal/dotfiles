@@ -28,10 +28,10 @@ map("i", ".", ".<c-g>u")
 map("i", ";", ";<c-g>u")
 
 -- Window navigation
-map("n", "<c-h>", "<C-w>h")
-map("n", "<c-j>", "<C-w>j")
-map("n", "<c-k>", "<C-w>k")
-map("n", "<c-l>", "<C-w>l")
+map("n", "<c-h>", "<c-w>h")
+map("n", "<c-j>", "<c-w>j")
+map("n", "<c-k>", "<c-w>k")
+map("n", "<c-l>", "<c-w>l")
 
 -- Save file
 map("i", "<c-s>", "<cmd>:w<cr>")
@@ -48,6 +48,11 @@ map("o", "n", "'Nn'[v:searchforward]", { expr = true })
 map("n", "N", "'nN'[v:searchforward]", { expr = true })
 map("x", "N", "'nN'[v:searchforward]", { expr = true })
 map("o", "N", "'nN'[v:searchforward]", { expr = true })
+
+-- Command mode mapping
+map("c", "<c-a>", "<home>")
+map("c", "<c-f>", "<right>")
+map("c", "<c-b>", "<left>")
 
 -- lazy
 map("n", "<leader>l", "<cmd>:Lazy<cr>", { desc = "Lazy" })

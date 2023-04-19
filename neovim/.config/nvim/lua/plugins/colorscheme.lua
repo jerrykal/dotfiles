@@ -12,7 +12,7 @@ return {
             wave = {
               ui = {
                 bg_gutter = "#1F1F28",
-              }
+              },
             },
           },
         },
@@ -23,7 +23,8 @@ return {
             -- Have to add this line to make pumblend work
             NormalNC = { bg = theme.ui.bg },
 
-            CursorLine = { bg = theme.ui.bg_p1 },
+            CursorLine = { bg = theme.ui.bg },
+            CursorLineNr = { fg = theme.ui.special },
             FloatBorder = { fg = theme.ui.whitespace, bg = theme.ui.bg },
             Search = { fg = "NONE", bg = theme.ui.bg_search },
 
@@ -33,13 +34,11 @@ return {
             debugBreakpoint = { fg = palette.samuraiRed },
             debugPC = { bg = theme.diff.text },
 
-            TelescopeNormal = { bg = theme.ui.bg_dim },
-            TelescopeBorder = { fg = theme.ui.bg_dim, bg = theme.ui.bg_dim },
             TelescopeTitle = { fg = theme.ui.special, bold = true },
             TelescopePromptNormal = { bg = theme.ui.bg_p1 },
             TelescopePromptBorder = { fg = theme.ui.bg_p1, bg = theme.ui.bg_p1 },
-            TelescopeResultsNormal = { bg = "#1a1a22" },
-            TelescopeResultsBorder = { fg = "#1a1a22", bg = "#1a1a22" },
+            TelescopeResultsNormal = { fg = theme.ui.fg_dim, bg = theme.ui.bg_m1 },
+            TelescopeResultsBorder = { fg = theme.ui.bg_m1, bg = theme.ui.bg_m1 },
             TelescopePreviewNormal = { bg = theme.ui.bg_dim },
             TelescopePreviewBorder = { bg = theme.ui.bg_dim, fg = theme.ui.bg_dim },
 
@@ -119,6 +118,8 @@ return {
             NotifyINFOBorder = { link = "FloatBorder" },
             NotifyDEBUGBorder = { link = "FloatBorder" },
             NotifyTRACEBorder = { link = "FloatBorder" },
+
+            DiagnosticUnnecessary = {},
           }
         end,
       })

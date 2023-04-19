@@ -12,14 +12,18 @@ return {
       ensure_installed = "all",
       highlight = { enable = true },
       matchup = { enable = true },
-      -- incremental_selection = {
-      --   enable = true,
-      --   keymaps = {
-      --     init_selection = "<tab>",
-      --     node_incremental = "<tab>",
-      --     node_decremental = "<s-tab>",
-      --   },
-      -- },
+      indent = {
+        enable = true,
+        -- disable = { "python" },
+      },
+      incremental_selection = {
+        enable = true,
+        keymaps = {
+          init_selection = "+",
+          node_incremental = "+",
+          node_decremental = "-",
+        },
+      },
       textobjects = {
         select = {
           enable = true,

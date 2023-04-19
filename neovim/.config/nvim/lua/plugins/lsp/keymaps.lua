@@ -30,6 +30,8 @@ function M.setup(_, buffer)
   vim.keymap.set("v", "<leader>F", function()
     vim.lsp.buf.format({ async = true })
   end, { desc = "Format Range" }, bufopts)
+
+  vim.keymap.set("n", "<leader>n", require("nvim-navbuddy").open, bufopts)
 end
 
 function M.diagnostic_goto(next, severity)
