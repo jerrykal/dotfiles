@@ -2,7 +2,7 @@ return {
   -- File explorer
   {
     "nvim-neo-tree/neo-tree.nvim",
-    branch = "v2.x",
+    branch = "v3.x",
     cmd = "Neotree",
     opts = {
       close_if_last_window = true,
@@ -20,18 +20,20 @@ return {
           },
           {
             source = "buffers",
-            display_name = "  Git ",
+            display_name = "  Git ",
           },
           {
             source = "git_status",
-            display_name = " 裂Diagnostics ",
+            display_name = " 󰒡 Diagnostics ",
           },
         },
         content_layout = "center",
       },
       filesystem = {
         use_libuv_file_watcher = true,
-        follow_current_file = true,
+        follow_current_file = {
+          enable = true,
+        },
         filtered_items = {
           visible = true,
           hide_dotfiles = false,
@@ -65,10 +67,10 @@ return {
         },
         diagnostics = {
           symbols = {
-            hint = "  ",
-            info = "  ",
-            warn = "  ",
-            error = "  ",
+            hint = "  ",
+            info = "  ",
+            warn = "  ",
+            error = "  ",
           },
           highlights = {
             hint = "DiagnosticSignHint",
@@ -100,21 +102,6 @@ return {
     },
   },
 
-  -- Automatically resize window
-  {
-    "anuvyklack/windows.nvim",
-    event = "WinNew",
-    dependencies = {
-      "anuvyklack/middleclass",
-    },
-    opts = function()
-      vim.o.winwidth = 5
-      vim.o.winminwidth = 5
-      vim.o.equalalways = false
-    end,
-    config = true,
-  },
-
   -- TODO: comments
   {
     "folke/todo-comments.nvim",
@@ -137,7 +124,7 @@ return {
   {
     "RRethy/vim-illuminate",
     event = "BufReadPre",
-    opts = { filetypes_denylist = { "neo-tree" } },
+    opts = { filetypes_denylist = { "neo-tree", "aerial" } },
     config = function(_, opts)
       require("illuminate").configure(opts)
     end,
@@ -178,6 +165,9 @@ return {
       icons = {
         breadcrumb = "",
         separator = " ",
+      },
+      window = {
+        winblend = 10,
       },
     },
     config = function(_, opts)

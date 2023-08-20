@@ -82,7 +82,7 @@ return {
           offsets = {
             {
               filetype = "neo-tree",
-              text = "File Explorer",
+              text = "EXPLORER",
               text_align = "center",
             },
             {
@@ -222,6 +222,30 @@ return {
       }
     end,
   },
+
+  -- Automatically resize window
+  {
+    "anuvyklack/windows.nvim",
+    event = "WinNew",
+    dependencies = {
+      "anuvyklack/middleclass",
+    },
+    opts = {
+      autowidth = {
+        enable = false,
+      },
+      animation = {
+        enable = false,
+      },
+    },
+    config = function(_, opts)
+      vim.o.winwidth = 5
+      vim.o.winminwidth = 5
+      vim.o.equalalways = false
+      require("windows").setup(opts)
+    end,
+  },
+
 
   -- Automatically switch between relative and absolute line numbers
   {

@@ -27,12 +27,6 @@ map("i", ",", ",<c-g>u")
 map("i", ".", ".<c-g>u")
 map("i", ";", ";<c-g>u")
 
--- Window navigation
-map("n", "<c-h>", "<c-w>h")
-map("n", "<c-j>", "<c-w>j")
-map("n", "<c-k>", "<c-w>k")
-map("n", "<c-l>", "<c-w>l")
-
 -- Save file
 map("i", "<c-s>", "<cmd>:w<cr>")
 map("n", "<c-s>", "<cmd>:w<cr><esc>")
@@ -153,3 +147,6 @@ map("n", "<c-w>z", "<cmd>WindowsMaximize<cr>", { desc = "Maximize Current Window
 map("n", "<c-w>_", "<cmd>WindowsMaximizeVertically<cr>", { desc = "Maximize Current Window Vertically" })
 map("n", "<c-w>|", "<cmd>WindowsMaximizeHorizontally<cr>", { desc = "Maximize Current Window Horizontally" })
 map("n", "<c-w>=", "<cmd>WindowsEqualize<cr>", { desc = "Equalize Windows" })
+
+-- Aerial
+map("n", "<leader>a", "<cmd>AerialToggle<cr>", { desc = "Toggle Aerial" })

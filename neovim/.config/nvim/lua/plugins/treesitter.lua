@@ -2,20 +2,18 @@ return {
   -- Treesitter
   {
     "nvim-treesitter/nvim-treesitter",
-    event = "BufReadPost",
+    event = { "BufReadPost", "BufNewFile" },
     dependencies = {
-      { "nvim-treesitter/nvim-treesitter-context", config = true },
       "nvim-treesitter/nvim-treesitter-textobjects",
+      "windwp/nvim-ts-autotag",
     },
     build = ":TSUpdate",
     opts = {
       ensure_installed = "all",
       highlight = { enable = true },
       matchup = { enable = true },
-      indent = {
-        enable = true,
-        -- disable = { "python" },
-      },
+      autotag = { enable = true },
+      -- indent = { enable = true },
       incremental_selection = {
         enable = true,
         keymaps = {

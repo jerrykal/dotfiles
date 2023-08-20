@@ -12,6 +12,10 @@ abbr -a rs rsync -avh
 abbr vi nvim
 abbr vim nvim
 
+# tmux
+abbr -a t tmux
+abbr -a ta tmux attach
+
 # git
 abbr -a g git
 abbr -a gi git init
@@ -30,6 +34,7 @@ abbr -a gp git push
 abbr -a grm git rm
 abbr -a gC git checkout
 abbr -a gr git reset
+abbr -a gco git checkout
 
 # conda
 abbr -a ca conda activate
@@ -56,15 +61,15 @@ abbr -a pipfr pip freeze
 abbr -a jl jupyter-lab
 abbr -a --set-cursor tsb tensorboard --logdir=%
 
-# gcloud
-abbr -a gcp gcloud compute
-
 # mutagen
 abbr -a msc mutagen sync create
 abbr -a msl mutagen sync list
+abbr -a msll mutagen sync list --long
 abbr -a msm mutagen sync monitor
 abbr -a msf mutagen sync flush
 abbr -a msp mutagen sync pause
+abbr -a mspa mutagen sync pause --all
 abbr -a msr mutagen sync resume
+abbr -a msra mutagen sync resume --all
 abbr -a msrs mutagen sync reset
 abbr -a mst mutagen sync terminate

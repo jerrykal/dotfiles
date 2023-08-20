@@ -7,7 +7,7 @@ return {
     opts = {
       suggestion = {
         auto_trigger = true,
-      }
+      },
     },
   },
 
@@ -190,14 +190,16 @@ return {
       { "gc", mode = { "n", "v" } },
       { "gb", mode = { "n", "v" } },
     },
-    config = true,
+    opts = {
+      ignore = "^$",
+    },
   },
 
   -- -- Nicer python indentation
-  -- {
-  --   "Vimjas/vim-python-pep8-indent",
-  --   ft = { "python" },
-  -- },
+  {
+    "Vimjas/vim-python-pep8-indent",
+    ft = { "python" },
+  },
 
   -- More text objects
   {

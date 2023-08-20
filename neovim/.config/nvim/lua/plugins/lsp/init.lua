@@ -5,7 +5,7 @@ return {
     event = "BufReadPre",
     dependencies = {
       "hrsh7th/cmp-nvim-lsp",
-      "j-hui/fidget.nvim",
+      { "j-hui/fidget.nvim", tag = "legacy" },
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
       {
@@ -23,8 +23,7 @@ return {
           settings = {
             python = {
               analysis = {
-                diagnosticMode = "workspace",
-                typeCheckingMode = "off",
+                diagnosticMode = "openFilesOnly",
               },
             },
           },
@@ -129,6 +128,46 @@ return {
       post_open_hook = function(_, win)
         vim.api.nvim_win_set_option(win, "winhighlight", "Normal:")
       end,
+    },
+  },
+
+  -- Symbol outlines
+  {
+    "stevearc/aerial.nvim",
+    cmd = "AerialToggle",
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+    },
+    opts = {
+      backends = { "lsp", "treesitter", "markdown", "man" },
+      layout = {
+        min_width = 28,
+        default_direction = "right",
+        placement = "edge",
+      },
+      attach_mode = "global",
+      filter_kind = false,
+      icons = {
+        Class = " ",
+        Constant = " ",
+        Constructor = " ",
+        Enum = " ",
+        EnumMember = " ",
+        Event = " ",
+        Field = " ",
+        File = " ",
+        Function = " ",
+        Interface = " ",
+        Key = " ",
+        Method = " ",
+        Module = " ",
+        Operator = " ",
+        Property = " ",
+        String = " ",
+        Struct = " ",
+        TypeParameter = " ",
+        Variable = " ",
+      },
     },
   },
 }

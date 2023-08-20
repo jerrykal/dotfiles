@@ -5,9 +5,9 @@ local function git_status()
   end
 
   if vim.b.gitsigns_status == nil then
-    return string.format("  שׂ %s ", vim.fn.FugitiveHead())
+    return string.format("   %s ", vim.fn.FugitiveHead())
   else
-    return string.format("  שׂ %s %s ", vim.fn.FugitiveHead(), vim.b.gitsigns_status)
+    return string.format("   %s %s ", vim.fn.FugitiveHead(), vim.b.gitsigns_status)
   end
 end
 
@@ -23,7 +23,7 @@ local function lsp_diagnostic()
     count[k] = vim.tbl_count(vim.diagnostic.get(0, { severity = level }))
   end
 
-  return string.format(" %d  %d", count["errors"], count["warnings"])
+  return string.format(" %d  %d", count["errors"], count["warnings"])
 end
 
 -- Show file encoding
@@ -66,13 +66,14 @@ local fileformat = vim.bo.fileformat:upper()
 local M = {}
 
 M.setup = function()
-  if vim.bo.buftype == "Trouble"
-      or vim.bo.buftype == "mason"
-      or vim.bo.buftype == "prompt"
-      or vim.bo.buftype == "terminal"
-      or vim.bo.filetype == "help"
-      or vim.bo.filetype == "lazy"
-      or vim.bo.filetype == "neo-tree"
+  if
+    vim.bo.buftype == "Trouble"
+    or vim.bo.buftype == "mason"
+    or vim.bo.buftype == "prompt"
+    or vim.bo.buftype == "terminal"
+    or vim.bo.filetype == "help"
+    or vim.bo.filetype == "lazy"
+    or vim.bo.filetype == "neo-tree"
   then
     return string.format("  %s %%=%s  ", lsp_diagnostic(), lineinfo)
   else

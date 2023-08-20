@@ -8,7 +8,10 @@ return {
     event = "VimEnter",
     opts = {
       log_level = "error",
-      pre_save_cmds = { "tabdo NeoTreeClose" },
+      pre_save_cmds = {
+        "tabdo Neotree close",
+        "tabdo AerialCloseAll",
+      },
     },
     config = function(_, opts)
       -- Close lazy and re-open it after restoring session

@@ -41,6 +41,7 @@ return {
             TelescopeResultsBorder = { fg = theme.ui.bg_m1, bg = theme.ui.bg_m1 },
             TelescopePreviewNormal = { bg = theme.ui.bg_dim },
             TelescopePreviewBorder = { bg = theme.ui.bg_dim, fg = theme.ui.bg_dim },
+            TelescopeSelection = { bg = theme.ui.bg_visual },
 
             CmpItemAbbr = { fg = theme.ui.pmenu.fg, bg = "None" },
             CmpItemAbbrDeprecated = { fg = theme.syn.comment, bg = "None", strikethrough = true },
@@ -101,7 +102,7 @@ return {
             NeoTreeDotfile = { fg = theme.syn.comment },
             NeoTreeDirectoryName = { fg = theme.ui.fg },
             NeoTreeFileIcon = { fg = theme.ui.fg },
-            NeoTreeTabInactive = { fg = theme.ui.fg_comment, bg = theme.ui.bg },
+            NeoTreeTabInactive = { fg = theme.syn.comment, bg = theme.ui.bg },
             NeoTreeTabActive = { fg = theme.ui.fg, bg = theme.ui.bg_p2 },
             NeoTreeTabSeparatorInactive = { fg = theme.ui.bg_m3, bg = theme.ui.bg },
             NeoTreeTabSeparatorActive = { fg = theme.ui.bg_m3, bg = theme.ui.bg_p2 },
