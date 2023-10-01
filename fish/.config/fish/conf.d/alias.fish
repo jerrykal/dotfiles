@@ -7,3 +7,5 @@ if type -q xclip
    alias pbcopy="xclip -selection clipboard"
    alias pbpaste="xclip -selection clipboard -o"
 end
+
+alias ssh="TERM=xterm-256color $(which ssh)"

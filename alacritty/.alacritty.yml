@@ -1,5 +1,11 @@
+window:
+  startup_mode: "Maximized"
+  decorations: "none"
+  option_as_alt: "Both"
+  dynamic_padding: true
+
 shell:
-  program: /bin/bash
+  program: /bin/zsh
   args:
     - '-l'
     - '-c'
@@ -7,9 +13,8 @@ shell:
 
 font:
   normal:
-    family: JetBrains Mono Nerd Font
-    style: Medium
-  size: 10
+    family: JetBrainsMono Nerd Font
+  size: 13
 
 draw_bold_text_with_bright_colors: true
 
@@ -48,43 +53,6 @@ colors:
     - { index: 16, color: '0xffa066' }
     - { index: 17, color: '0xff5d62' }
 
-# colors:
-#   primary:
-#     background: '0x181616'
-#     foreground: '0xc5c9c5'
-#   cursor:
-#    text: '0x181616'
-#    cursor: '0xc8c093'
-#   vi_mode_cursor:
-#    text: '0x181616'
-#    cursor: '0xc8c093'
-#   normal:
-#     black:   '0x0d0c0c'
-#     red:     '0xc4746e'
-#     green:   '0x8a9a7b'
-#     yellow:  '0xc4b28a'
-#     blue:    '0x8ba4b0'
-#     magenta: '0xa292a3'
-#     cyan:    '0x8ea4a2'
-#     white:   '0xc8c093'
-#   bright:
-#     black:   '0xa6a69c'
-#     red:     '0xe46876'
-#     green:   '0x87a987'
-#     yellow:  '0xe6c384'
-#     blue:    '0x7fb4ca'
-#     magenta: '0x938aa9'
-#     cyan:    '0x7aa89f'
-#     white:   '0xc5c9c5'
-#   selection:
-#     background: '0x2d4f67'
-#     foreground: '0xc8c093'
-#   indexed_colors:
-#     - { index: 16, color: '0xb6927b' }
-#     - { index: 17, color: '0xb98d7b' }
-
-alt_send_esc: true
-     
 cursor:
   style:
     shape: Block
@@ -97,129 +65,38 @@ mouse:
 key_bindings:
   - { key: F11, action: ToggleFullscreen }
 
-  - { key: T,    mods: Shift|Control, command: { program: "tmux", args: ["new-window", "-c", "#{pane_current_path}"] } }
-  - { key: W,    mods: Shift|Control, command: { program: "tmux", args: ["kill-pane"] } }
-  - { key: Q,    mods: Shift|Control, command: { program: "tmux", args: ["detach-client"] } }
-  - { key: Key1, mods: Alt,           command: { program: "tmux", args: ["select-window", "-t", ":=1"] } }
-  - { key: Key2, mods: Alt,           command: { program: "tmux", args: ["select-window", "-t", ":=2"] } }
-  - { key: Key3, mods: Alt,           command: { program: "tmux", args: ["select-window", "-t", ":=3"] } }
-  - { key: Key4, mods: Alt,           command: { program: "tmux", args: ["select-window", "-t", ":=4"] } }
-  - { key: Key5, mods: Alt,           command: { program: "tmux", args: ["select-window", "-t", ":=5"] } }
-  - { key: Key6, mods: Alt,           command: { program: "tmux", args: ["select-window", "-t", ":=6"] } }
-  - { key: Key7, mods: Alt,           command: { program: "tmux", args: ["select-window", "-t", ":=7"] } }
-  - { key: Key8, mods: Alt,           command: { program: "tmux", args: ["select-window", "-t", ":=8"] } }
-  - { key: Key9, mods: Alt,           command: { program: "tmux", args: ["select-window", "-t", ":=9"] } }
-  - { key: Key0, mods: Alt,           command: { program: "tmux", args: ["select-window", "-t", ":=10"] } }
+  # # Linux
+  # - { key: T,    mods: Shift|Control, command: { program: "tmux", args: ["new-window", "-c", "#{pane_current_path}"] } }
+  # - { key: W,    mods: Shift|Control, command: { program: "tmux", args: ["kill-pane"] } }
+  # - { key: Q,    mods: Shift|Control, command: { program: "tmux", args: ["detach-client"] } }
+  # - { key: Key1, mods: Alt,           command: { program: "tmux", args: ["select-window", "-t", ":=1"] } }
+  # - { key: Key2, mods: Alt,           command: { program: "tmux", args: ["select-window", "-t", ":=2"] } }
+  # - { key: Key3, mods: Alt,           command: { program: "tmux", args: ["select-window", "-t", ":=3"] } }
+  # - { key: Key4, mods: Alt,           command: { program: "tmux", args: ["select-window", "-t", ":=4"] } }
+  # - { key: Key5, mods: Alt,           command: { program: "tmux", args: ["select-window", "-t", ":=5"] } }
+  # - { key: Key6, mods: Alt,           command: { program: "tmux", args: ["select-window", "-t", ":=6"] } }
+  # - { key: Key7, mods: Alt,           command: { program: "tmux", args: ["select-window", "-t", ":=7"] } }
+  # - { key: Key8, mods: Alt,           command: { program: "tmux", args: ["select-window", "-t", ":=8"] } }
+  # - { key: Key9, mods: Alt,           command: { program: "tmux", args: ["select-window", "-t", ":=9"] } }
+  # - { key: Key0, mods: Alt,           command: { program: "tmux", args: ["select-window", "-t", ":=10"] } }
 
-  - { key: N, mods: Shift|Control, command: { program: "alacritty", args: ["--command", "tmux", "new-session"] } }
+  # - { key: N, mods: Shift|Control, command: { program: "alacritty", args: ["--command", "tmux", "new-session"] } }
 
-  #- { key: Paste,                                       action: Paste          }
-  #- { key: Copy,                                        action: Copy           }
-  #- { key: L,         mods: Control,                    action: ClearLogNotice }
-  #- { key: L,         mods: Control, mode: ~Vi|~Search, chars: "\x0c"          }
-  #- { key: PageUp,    mods: Shift,   mode: ~Alt,        action: ScrollPageUp   }
-  #- { key: PageDown,  mods: Shift,   mode: ~Alt,        action: ScrollPageDown }
-  #- { key: Home,      mods: Shift,   mode: ~Alt,        action: ScrollToTop    }
-  #- { key: End,       mods: Shift,   mode: ~Alt,        action: ScrollToBottom }
-
-  # Vi Mode
-  #- { key: Space,  mods: Shift|Control, mode: ~Search,    action: ToggleViMode            }
-  #- { key: Space,  mods: Shift|Control, mode: Vi|~Search, action: ScrollToBottom          }
-  #- { key: Escape,                      mode: Vi|~Search, action: ClearSelection          }
-  #- { key: I,                           mode: Vi|~Search, action: ToggleViMode            }
-  #- { key: I,                           mode: Vi|~Search, action: ScrollToBottom          }
-  #- { key: C,      mods: Control,       mode: Vi|~Search, action: ToggleViMode            }
-  #- { key: Y,      mods: Control,       mode: Vi|~Search, action: ScrollLineUp            }
-  #- { key: E,      mods: Control,       mode: Vi|~Search, action: ScrollLineDown          }
-  #- { key: G,                           mode: Vi|~Search, action: ScrollToTop             }
-  #- { key: G,      mods: Shift,         mode: Vi|~Search, action: ScrollToBottom          }
-  #- { key: B,      mods: Control,       mode: Vi|~Search, action: ScrollPageUp            }
-  #- { key: F,      mods: Control,       mode: Vi|~Search, action: ScrollPageDown          }
-  #- { key: U,      mods: Control,       mode: Vi|~Search, action: ScrollHalfPageUp        }
-  #- { key: D,      mods: Control,       mode: Vi|~Search, action: ScrollHalfPageDown      }
-  #- { key: Y,                           mode: Vi|~Search, action: Copy                    }
-  #- { key: Y,                           mode: Vi|~Search, action: ClearSelection          }
-  #- { key: Copy,                        mode: Vi|~Search, action: ClearSelection          }
-  #- { key: V,                           mode: Vi|~Search, action: ToggleNormalSelection   }
-  #- { key: V,      mods: Shift,         mode: Vi|~Search, action: ToggleLineSelection     }
-  #- { key: V,      mods: Control,       mode: Vi|~Search, action: ToggleBlockSelection    }
-  #- { key: V,      mods: Alt,           mode: Vi|~Search, action: ToggleSemanticSelection }
-  #- { key: Return,                      mode: Vi|~Search, action: Open                    }
-  #- { key: Z,                           mode: Vi|~Search, action: CenterAroundViCursor    }
-  #- { key: K,                           mode: Vi|~Search, action: Up                      }
-  #- { key: J,                           mode: Vi|~Search, action: Down                    }
-  #- { key: H,                           mode: Vi|~Search, action: Left                    }
-  #- { key: L,                           mode: Vi|~Search, action: Right                   }
-  #- { key: Up,                          mode: Vi|~Search, action: Up                      }
-  #- { key: Down,                        mode: Vi|~Search, action: Down                    }
-  #- { key: Left,                        mode: Vi|~Search, action: Left                    }
-  #- { key: Right,                       mode: Vi|~Search, action: Right                   }
-  #- { key: Key0,                        mode: Vi|~Search, action: First                   }
-  #- { key: Key4,   mods: Shift,         mode: Vi|~Search, action: Last                    }
-  #- { key: Key6,   mods: Shift,         mode: Vi|~Search, action: FirstOccupied           }
-  #- { key: H,      mods: Shift,         mode: Vi|~Search, action: High                    }
-  #- { key: M,      mods: Shift,         mode: Vi|~Search, action: Middle                  }
-  #- { key: L,      mods: Shift,         mode: Vi|~Search, action: Low                     }
-  #- { key: B,                           mode: Vi|~Search, action: SemanticLeft            }
-  #- { key: W,                           mode: Vi|~Search, action: SemanticRight           }
-  #- { key: E,                           mode: Vi|~Search, action: SemanticRightEnd        }
-  #- { key: B,      mods: Shift,         mode: Vi|~Search, action: WordLeft                }
-  #- { key: W,      mods: Shift,         mode: Vi|~Search, action: WordRight               }
-  #- { key: E,      mods: Shift,         mode: Vi|~Search, action: WordRightEnd            }
-  #- { key: Key5,   mods: Shift,         mode: Vi|~Search, action: Bracket                 }
-  #- { key: Slash,                       mode: Vi|~Search, action: SearchForward           }
-  #- { key: Slash,  mods: Shift,         mode: Vi|~Search, action: SearchBackward          }
-  #- { key: N,                           mode: Vi|~Search, action: SearchNext              }
-  #- { key: N,      mods: Shift,         mode: Vi|~Search, action: SearchPrevious          }
-
-  # Search Mode
-  #- { key: Return,                mode: Search|Vi,  action: SearchConfirm         }
-  #- { key: Escape,                mode: Search,     action: SearchCancel          }
-  #- { key: C,      mods: Control, mode: Search,     action: SearchCancel          }
-  #- { key: U,      mods: Control, mode: Search,     action: SearchClear           }
-  #- { key: W,      mods: Control, mode: Search,     action: SearchDeleteWord      }
-  #- { key: P,      mods: Control, mode: Search,     action: SearchHistoryPrevious }
-  #- { key: N,      mods: Control, mode: Search,     action: SearchHistoryNext     }
-  #- { key: Up,                    mode: Search,     action: SearchHistoryPrevious }
-  #- { key: Down,                  mode: Search,     action: SearchHistoryNext     }
-  #- { key: Return,                mode: Search|~Vi, action: SearchFocusNext       }
-  #- { key: Return, mods: Shift,   mode: Search|~Vi, action: SearchFocusPrevious   }
-
-  # (Windows, Linux, and BSD only)
-  #- { key: V,              mods: Control|Shift, mode: ~Vi,        action: Paste            }
-  #- { key: C,              mods: Control|Shift,                   action: Copy             }
-  #- { key: F,              mods: Control|Shift, mode: ~Search,    action: SearchForward    }
-  #- { key: B,              mods: Control|Shift, mode: ~Search,    action: SearchBackward   }
-  #- { key: C,              mods: Control|Shift, mode: Vi|~Search, action: ClearSelection   }
-  #- { key: Insert,         mods: Shift,                           action: PasteSelection   }
-  #- { key: Key0,           mods: Control,                         action: ResetFontSize    }
-  #- { key: Equals,         mods: Control,                         action: IncreaseFontSize }
-  #- { key: Plus,           mods: Control,                         action: IncreaseFontSize }
-  #- { key: NumpadAdd,      mods: Control,                         action: IncreaseFontSize }
-  #- { key: Minus,          mods: Control,                         action: DecreaseFontSize }
-  #- { key: NumpadSubtract, mods: Control,                         action: DecreaseFontSize }
-
-  # (Windows only)
-  #- { key: Return,   mods: Alt,           action: ToggleFullscreen }
-
-  # (macOS only)
-  #- { key: K,              mods: Command, mode: ~Vi|~Search, chars: "\x0c"                 }
-  #- { key: K,              mods: Command, mode: ~Vi|~Search, action: ClearHistory          }
-  #- { key: Key0,           mods: Command,                    action: ResetFontSize         }
-  #- { key: Equals,         mods: Command,                    action: IncreaseFontSize      }
-  #- { key: Plus,           mods: Command,                    action: IncreaseFontSize      }
-  #- { key: NumpadAdd,      mods: Command,                    action: IncreaseFontSize      }
-  #- { key: Minus,          mods: Command,                    action: DecreaseFontSize      }
-  #- { key: NumpadSubtract, mods: Command,                    action: DecreaseFontSize      }
-  #- { key: V,              mods: Command,                    action: Paste                 }
-  #- { key: C,              mods: Command,                    action: Copy                  }
-  #- { key: C,              mods: Command, mode: Vi|~Search,  action: ClearSelection        }
-  #- { key: H,              mods: Command,                    action: Hide                  }
-  #- { key: H,              mods: Command|Alt,                action: HideOtherApplications }
-  #- { key: M,              mods: Command,                    action: Minimize              }
-  #- { key: Q,              mods: Command,                    action: Quit                  }
-  #- { key: W,              mods: Command,                    action: Quit                  }
-  #- { key: N,              mods: Command,                    action: SpawnNewInstance      }
-  #- { key: F,              mods: Command|Control,            action: ToggleFullscreen      }
-  #- { key: F,              mods: Command, mode: ~Search,     action: SearchForward         }
-  #- { key: B,              mods: Command, mode: ~Search,     action: SearchBackward        }
+  # macOS
+  - { key: T,      mods: Command,       command: { program: "/opt/homebrew/bin/tmux", args: ["new-window", "-c", "#{pane_current_path}"] } }
+  - { key: W,      mods: Command,       command: { program: "/opt/homebrew/bin/tmux", args: ["kill-pane"] } }
+  - { key: Q,      mods: Command,       command: { program: "/opt/homebrew/bin/tmux", args: ["detach-client"] } }
+  - { key: N,      mods: Shift|Command, command: { program: "/opt/homebrew/bin/alacritty", args: ["--command", "/opt/homebrew/bin/tmux", "new-session"] } }
+  - { key: Key1,   mods: Command,       command: { program: "/opt/homebrew/bin/tmux", args: ["select-window", "-t", ":=1"] } }
+  - { key: Key2,   mods: Command,       command: { program: "/opt/homebrew/bin/tmux", args: ["select-window", "-t", ":=2"] } }
+  - { key: Key3,   mods: Command,       command: { program: "/opt/homebrew/bin/tmux", args: ["select-window", "-t", ":=3"] } }
+  - { key: Key4,   mods: Command,       command: { program: "/opt/homebrew/bin/tmux", args: ["select-window", "-t", ":=4"] } }
+  - { key: Key5,   mods: Command,       command: { program: "/opt/homebrew/bin/tmux", args: ["select-window", "-t", ":=5"] } }
+  - { key: Key6,   mods: Command,       command: { program: "/opt/homebrew/bin/tmux", args: ["select-window", "-t", ":=6"] } }
+  - { key: Key7,   mods: Command,       command: { program: "/opt/homebrew/bin/tmux", args: ["select-window", "-t", ":=7"] } }
+  - { key: Key8,   mods: Command,       command: { program: "/opt/homebrew/bin/tmux", args: ["select-window", "-t", ":=8"] } }
+  - { key: Key9,   mods: Command,       command: { program: "/opt/homebrew/bin/tmux", args: ["select-window", "-t", ":=9"] } }
+  - { key: Key0,   mods: Command,       command: { program: "/opt/homebrew/bin/tmux", args: ["select-window", "-t", ":=10"] } }
+  - { key: D,      mods: Command,       command: { program: "/opt/homebrew/bin/tmux", args: ["split-window", "-h"] } }
+  - { key: D,      mods: Shift|Command, command: { program: "/opt/homebrew/bin/tmux", args: ["split-window"] } }
+  - { key: Return, mods: Shift|Command, command: { program: "/opt/homebrew/bin/tmux", args: ["resize-pane", "-Z"] } }

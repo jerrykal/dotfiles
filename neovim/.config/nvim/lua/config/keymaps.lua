@@ -27,10 +27,6 @@ map("i", ",", ",<c-g>u")
 map("i", ".", ".<c-g>u")
 map("i", ";", ";<c-g>u")
 
--- Save file
-map("i", "<c-s>", "<cmd>:w<cr>")
-map("n", "<c-s>", "<cmd>:w<cr><esc>")
-
 -- Better indenting
 map("v", "<", "<gv")
 map("v", ">", ">gv")

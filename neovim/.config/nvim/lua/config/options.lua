@@ -35,7 +35,7 @@ opt.wrap = false
 opt.expandtab = true
 opt.shiftround = true
 opt.shiftwidth = 4
-opt.smartindent = true
+-- opt.smartindent = true
 opt.tabstop = 4
 
 -- Search options

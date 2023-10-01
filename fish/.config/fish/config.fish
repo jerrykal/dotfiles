@@ -4,6 +4,10 @@ set -gx EDITOR (which nvim)
 set -gx VISUAL $EDITOR
 set -gx SUDO_EDITOR $EDITOR
 
+set -x LC_ALL en_US.UTF-8
+set -x LANG en_US.UTF-8
+set -x LANGUAGE en_US.UTF-8
+
 # Cursor shapes
 set fish_cursor_default block blink
 set fish_cursor_insert line blink
@@ -19,7 +23,7 @@ end
 
 # Initialize pyenv
 set -gx PYENV_ROOT $HOME/.pyenv
-if test -d "$PYENV_ROOT/bin"
+if test -e $PYENV_ROOT
     fish_add_path -g $PYENV_ROOT/bin
 
     pyenv init - | source

@@ -2,7 +2,7 @@
 require("config.options")
 
 -- Plugins
-require("config.plugins")
+require("config.lazy")
 
 -- Key mappings
 require("config.keymaps")

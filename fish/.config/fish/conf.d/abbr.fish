@@ -54,7 +54,7 @@ abbr -a py python
 abbr -a pipl pip list
 abbr -a pipi pip install
 abbr -a pipir pip install -r requirements.txt
-abbr -a pipx pip uninstall
+# abbr -a pipx pip uninstall
 abbr -a pipsh pip show
 abbr -a pipsr pip search
 abbr -a pipfr pip freeze

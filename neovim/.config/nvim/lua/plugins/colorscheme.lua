@@ -35,6 +35,8 @@ return {
             debugPC = { bg = theme.diff.text },
 
             TelescopeTitle = { fg = theme.ui.special, bold = true },
+            TelescopeSelection = { link = "Visual" },
+            TelescopeSelectionCaret = { link = "Visual" },
             TelescopePromptNormal = { bg = theme.ui.bg_p1 },
             TelescopePromptBorder = { fg = theme.ui.bg_p1, bg = theme.ui.bg_p1 },
             TelescopeResultsNormal = { fg = theme.ui.fg_dim, bg = theme.ui.bg_m1 },

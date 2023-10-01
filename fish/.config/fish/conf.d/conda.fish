@@ -1,5 +1,5 @@
 # Looking for conda executable
-set -l conda_paths $HOME/.miniconda3 $HOME/miniconda3 $HOME/.anaconda3 $HOME/anaconda3
+set -l conda_paths /opt/homebrew/Caskroom/miniconda/base/ $HOME/.miniconda3 $HOME/miniconda3 $HOME/.anaconda3 $HOME/anaconda3
 for path in $conda_paths
     if test -e "$path/bin/conda"
         set -g __conda_path $path
