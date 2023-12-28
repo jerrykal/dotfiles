@@ -156,12 +156,31 @@ return {
         },
       }
     end,
+    keys = {
+      { "<leader>1", "<cmd>BufferLineGoToBuffer 1<cr>", { desc = "Goto Buffer 1" } },
+      { "<leader>2", "<cmd>BufferLineGoToBuffer 2<cr>", { desc = "Goto Buffer 2" } },
+      { "<leader>3", "<cmd>BufferLineGoToBuffer 3<cr>", { desc = "Goto Buffer 3" } },
+      { "<leader>4", "<cmd>BufferLineGoToBuffer 4<cr>", { desc = "Goto Buffer 4" } },
+      { "<leader>5", "<cmd>BufferLineGoToBuffer 5<cr>", { desc = "Goto Buffer 5" } },
+      { "<leader>6", "<cmd>BufferLineGoToBuffer 6<cr>", { desc = "Goto Buffer 6" } },
+      { "<leader>7", "<cmd>BufferLineGoToBuffer 7<cr>", { desc = "Goto Buffer 7" } },
+      { "<leader>8", "<cmd>BufferLineGoToBuffer 8<cr>", { desc = "Goto Buffer 8" } },
+      { "<leader>9", "<cmd>BufferLineGoToBuffer 9<cr>", { desc = "Goto Buffer 9" } },
+      { "<leader>0", "<cmd>BufferLineGoToBuffer 10<cr>", { desc = "Goto Buffer 10" } },
+      { "\\", "<cmd>BufferLinePick<cr>", { desc = "Pick Buffer" } },
+      { "|", "<cmd>BufferLinePickClose<cr>", { desc = "Close Buffer" } },
+      { "<s-l>", "<cmd>BufferLineCycleNext<cr>", { desc = "Next Buffer" } },
+      { "<s-h>", "<cmd>BufferLineCyclePrev<cr>", { desc = "Previous Buffer" } },
+      { "<a-.>", "<cmd>BufferLineMoveNext<cr>", { desc = "Move Buffer Right" } },
+      { "<a-,>", "<cmd>BufferLineMovePrev<cr>", { desc = "Move Buffer Left" } },
+    },
   },
 
   -- Indent guides
   {
     "lukas-reineke/indent-blankline.nvim",
     event = "BufReadPre",
+    version = "2.*",
     opts = {
       char = "▏",
       context_char = "▏",
@@ -223,6 +242,18 @@ return {
     end,
   },
 
+  -- Zen mode
+  {
+    "folke/zen-mode.nvim",
+    cmd = "ZenMode",
+    opts = {
+      plugins = {
+        gitsigns = true,
+      },
+    },
+    keys = { { "<leader>z", "<cmd>ZenMode<cr>", desc = "Zen Mode" } },
+  },
+
   -- Automatically resize window
   {
     "anuvyklack/windows.nvim",
@@ -244,8 +275,21 @@ return {
       vim.o.equalalways = false
       require("windows").setup(opts)
     end,
+    keys = {
+      { "<c-w>z", "<cmd>WindowsMaximize<cr>", { desc = "Maximize Current Window" } },
+      {
+        "<c-w>_",
+        "<cmd>WindowsMaximizeVertically<cr>",
+        { desc = "Maximize Current Window Vertically" },
+      },
+      {
+        "<c-w>|",
+        "<cmd>WindowsMaximizeHorizontally<cr>",
+        { desc = "Maximize Current Window Horizontally" },
+      },
+      { "<c-w>=", "<cmd>WindowsEqualize<cr>", { desc = "Equalize Windows" } },
+    },
   },
-
 
   -- Automatically switch between relative and absolute line numbers
   {

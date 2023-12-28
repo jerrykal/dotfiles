@@ -1,3 +1,5 @@
+set -x PYTHONNOUSERSITE 1
+
 # Looking for conda executable
 set -l conda_paths /opt/homebrew/Caskroom/miniconda/base/ $HOME/.miniconda3 $HOME/miniconda3 $HOME/.anaconda3 $HOME/anaconda3
 for path in $conda_paths
@@ -67,7 +69,7 @@ function __auto_activate_conda_env --on-variable PWD --on-event init_done
     end
 
     # Do nothing if current active environment is the same as the one specified in the envfile
-    if test "$condaenv" = "$CONDA_DEFAULT_ENV"
+    if test "$condaenv" = "$CONDA_DEFAULT_ENV"; and not set -q VIM
         return
     end
 

@@ -186,13 +186,13 @@ return {
   -- Commenting
   {
     "numToStr/Comment.nvim",
-    keys = {
-      { "gc", mode = { "n", "v" } },
-      { "gb", mode = { "n", "v" } },
-    },
     opts = {
       ignore = "^$",
     },
+    keys = {
+      { "gc", mode = { "n", "v" } },
+      { "gb", mode = { "n", "v" } },
+    }
   },
 
   -- -- Nicer python indentation
@@ -207,6 +207,7 @@ return {
     event = "BufReadPost",
     opts = {
       useDefaultKeymaps = true,
+      disabledKeymaps = { "gc" },
     },
   },
 }

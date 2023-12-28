@@ -1,6 +1,6 @@
 window:
   startup_mode: "Maximized"
-  decorations: "none"
+  decorations: "buttonless"
   option_as_alt: "Both"
   dynamic_padding: true
 
@@ -97,6 +97,6 @@ key_bindings:
   - { key: Key8,   mods: Command,       command: { program: "/opt/homebrew/bin/tmux", args: ["select-window", "-t", ":=8"] } }
   - { key: Key9,   mods: Command,       command: { program: "/opt/homebrew/bin/tmux", args: ["select-window", "-t", ":=9"] } }
   - { key: Key0,   mods: Command,       command: { program: "/opt/homebrew/bin/tmux", args: ["select-window", "-t", ":=10"] } }
-  - { key: D,      mods: Command,       command: { program: "/opt/homebrew/bin/tmux", args: ["split-window", "-h"] } }
-  - { key: D,      mods: Shift|Command, command: { program: "/opt/homebrew/bin/tmux", args: ["split-window"] } }
+  - { key: D,      mods: Command,       command: { program: "/opt/homebrew/bin/tmux", args: ["split-window", "-h", "-c", "#{pane_current_path}"] } }
+  - { key: D,      mods: Shift|Command, command: { program: "/opt/homebrew/bin/tmux", args: ["split-window", "-c", "#{pane_current_path}"] } }
   - { key: Return, mods: Shift|Command, command: { program: "/opt/homebrew/bin/tmux", args: ["resize-pane", "-Z"] } }

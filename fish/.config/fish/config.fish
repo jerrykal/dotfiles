@@ -21,15 +21,6 @@ if test -n "$SSH_CLIENT"  || test -n "$SSH_TTY"
     set -g fish_term24bit 1
 end
 
-# Initialize pyenv
-set -gx PYENV_ROOT $HOME/.pyenv
-if test -e $PYENV_ROOT
-    fish_add_path -g $PYENV_ROOT/bin
-
-    pyenv init - | source
-    pyenv virtualenv-init - | sed "s/--on-event fish_prompt/--on-variable PWD --on-event init_done/g" | source
-end
-
 # Initialize zoxide
 if type -q zoxide
    zoxide init fish | source

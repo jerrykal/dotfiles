@@ -8,8 +8,6 @@ local opt = vim.opt
 opt.completeopt = { "menu", "menuone", "noselect" }
 opt.guicursor:append("a:Cursor/lCursor")
 opt.cursorline = true
-opt.list = true
-opt.listchars = { extends = "›", precedes = "‹" }
 opt.mouse = "a"
 opt.mousemoveevent = true
 opt.number = true

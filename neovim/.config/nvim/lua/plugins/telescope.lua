@@ -1,6 +1,7 @@
 return {
   {
     "nvim-telescope/telescope.nvim",
+    cmd = "Telescope",
     dependencies = {
       {
         "nvim-telescope/telescope-fzf-native.nvim",
@@ -10,7 +11,6 @@ return {
         end,
       },
     },
-    cmd = "Telescope",
     opts = {
       defaults = {
         winblend = 10,
@@ -63,6 +63,15 @@ return {
           hidden = true,
         },
       },
+    },
+    keys = {
+      { "<c-p>", "<cmd>Telescope find_files<cr>", { desc = "Find Files" } },
+      { "<leader>/", "<cmd>Telescope live_grep<cr>", { desc = "Find in Files (Grep)" } },
+      { "<leader>:", "<cmd>Telescope command_history<cr>", { desc = "Show Command History" } },
+      { "<leader>fb", "<cmd>Telescope buffers<cr>", { desc = "Buffers" } },
+      { "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Files" } },
+      { "<leader>fh", "<cmd>Telescope help_tags<cr>", { desc = "Help Pages" } },
+      { "<leader>fr", "<cmd>Telescope oldfiles<cr>", { desc = "Old Files" } },
     },
   },
 }

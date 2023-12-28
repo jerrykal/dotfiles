@@ -15,10 +15,16 @@ return {
           "SmiteshP/nvim-navic",
         },
       },
+      { "folke/neoconf.nvim", cmd = "Neoconf", config = false, dependencies = { "nvim-lspconfig" } },
     },
     opts = {
       servers = {
-        clangd = {},
+        clangd = {
+          cmd = {
+            "clangd",
+          },
+          filetypes = { "c", "cpp", "objc", "objcpp" },
+        },
         pyright = {
           settings = {
             python = {
@@ -129,6 +135,33 @@ return {
         vim.api.nvim_win_set_option(win, "winhighlight", "Normal:")
       end,
     },
+    keys = {
+      { "n", "gpd", "<cmd>lua require('goto-preview').goto_preview_definition()<cr>", { desc = "Preview Definition" } },
+      {
+        "n",
+        "gpt",
+        "<cmd>lua require('goto-preview').goto_preview_type_definition()<cr>",
+        { desc = "Preview Type Definition" },
+      },
+      {
+        "n",
+        "gpi",
+        "<cmd>lua require('goto-preview').goto_preview_implementation()<cr>",
+        { desc = "Preview Implementation" },
+      },
+      {
+        "n",
+        "gpr",
+        "<cmd>lua require('goto-preview').goto_preview_references()<cr>",
+        { desc = "Preview References" },
+      },
+      {
+        "n",
+        "gP",
+        "<cmd>lua require('goto-preview').close_all_win()<cr>",
+        { desc = "Close All Preview Windows" },
+      },
+    },
   },
 
   -- Symbol outlines
@@ -168,6 +201,9 @@ return {
         TypeParameter = " ",
         Variable = " ",
       },
+    },
+    keys = {
+      { "n", "<leader>a", "<cmd>AerialToggle<cr>", { desc = "Toggle Aerial" } },
     },
   },
 }

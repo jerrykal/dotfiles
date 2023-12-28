@@ -81,12 +81,14 @@ return {
         },
       },
     },
+    keys = {
+      { "<leader>e", "<cmd>Neotree toggle<cr>", desc = "Toggle Neotree" },
+    },
   },
 
   -- Open terminal in splitscreen
   {
     "akinsho/toggleterm.nvim",
-    keys = "<c-\\>",
     opts = {
       open_mapping = [[<c-\>]],
       direction = "float",
@@ -100,6 +102,7 @@ return {
       shade_terminals = false,
       auto_scroll = false,
     },
+    keys = "<c-\\>",
   },
 
   -- TODO: comments
@@ -136,13 +139,45 @@ return {
     config = function()
       require("mini.bufremove").setup()
     end,
+    keys = {
+      { "<leader>x", "<cmd>lua require('mini.bufremove').delete(0, false)<cr>", desc = "Close Buffer" },
+      { "<leader>X", "<cmd>lua require('mini.bufremove').delete(0, true)<cr>", desc = "Close Buffer (force)" },
+    },
   },
 
   -- Better diagnostics list and others
   {
     "folke/trouble.nvim",
-    cmd = "TroubleToggle",
+    cmd = { "TroubleToggle", "Trouble" },
     config = true,
+    keys = {
+      { "<leader>tt", "<cmd>TroubleToggle<cr>", desc = "Toggle Trouble" },
+      {
+        "<leader>tw",
+        "<cmd>TroubleToggle workspace_diagnostics<cr>",
+        desc = "Workspace Diagnostic (Trouble)",
+      },
+      {
+        "<leader>td",
+        "<cmd>TroubleToggle document_diagnostics<cr>",
+        desc = "Document Diagnostic (Trouble)",
+      },
+      {
+        "<leader>tl",
+        "<cmd>TroubleToggle loclist<cr>",
+        desc = "Location List (Trouble)",
+      },
+      {
+        "<leader>tq",
+        "<cmd>TroubleToggle quickfix<cr>",
+        desc = "Quickfix List (Trouble)",
+      },
+      {
+        "gR",
+        "<cmd>TroubleToggle lsp_references<cr>",
+        desc = "Lsp References (Trouble)",
+      },
+    },
   },
 
   -- Better matchit/paren
