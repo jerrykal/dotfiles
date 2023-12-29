@@ -4,6 +4,9 @@ return {
     "nvim-neo-tree/neo-tree.nvim",
     branch = "v3.x",
     cmd = "Neotree",
+    keys = {
+      { "<leader>e", "<cmd>Neotree toggle<cr>", desc = "Toggle Neotree" },
+    },
     opts = {
       close_if_last_window = true,
       enable_modified_markers = false,
@@ -81,14 +84,12 @@ return {
         },
       },
     },
-    keys = {
-      { "<leader>e", "<cmd>Neotree toggle<cr>", desc = "Toggle Neotree" },
-    },
   },
 
   -- Open terminal in splitscreen
   {
     "akinsho/toggleterm.nvim",
+    keys = "<c-\\>",
     opts = {
       open_mapping = [[<c-\>]],
       direction = "float",
@@ -102,7 +103,6 @@ return {
       shade_terminals = false,
       auto_scroll = false,
     },
-    keys = "<c-\\>",
   },
 
   -- TODO: comments
@@ -114,13 +114,33 @@ return {
     },
   },
 
-  -- Jump to any location with ease
+  -- Enhanced search and navigation
   {
-    "ggandor/leap.nvim",
-    event = "BufReadPost",
-    config = function()
-      require("leap").add_default_mappings()
-    end,
+    "folke/flash.nvim",
+    event = "VeryLazy",
+    -- stylua: ignore
+    keys = {
+      { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+      { "S", mode = { "n", "o", "x" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+      { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
+      { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+      { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
+    },
+    opts = {
+      highlight = {
+        backdrop = false,
+      },
+      modes = {
+        search = {
+          enabled = false,
+        },
+        char = {
+          highlight = {
+            backdrop = false,
+          },
+        },
+      },
+    },
   },
 
   -- Automatically highlighting other uses of the word under the cursor
@@ -136,48 +156,28 @@ return {
   -- Delete buffer
   {
     "echasnovski/mini.bufremove",
-    config = function()
-      require("mini.bufremove").setup()
-    end,
     keys = {
       { "<leader>x", "<cmd>lua require('mini.bufremove').delete(0, false)<cr>", desc = "Close Buffer" },
       { "<leader>X", "<cmd>lua require('mini.bufremove').delete(0, true)<cr>", desc = "Close Buffer (force)" },
     },
+    config = function()
+      require("mini.bufremove").setup()
+    end,
   },
 
   -- Better diagnostics list and others
   {
     "folke/trouble.nvim",
     cmd = { "TroubleToggle", "Trouble" },
-    config = true,
     keys = {
       { "<leader>tt", "<cmd>TroubleToggle<cr>", desc = "Toggle Trouble" },
-      {
-        "<leader>tw",
-        "<cmd>TroubleToggle workspace_diagnostics<cr>",
-        desc = "Workspace Diagnostic (Trouble)",
-      },
-      {
-        "<leader>td",
-        "<cmd>TroubleToggle document_diagnostics<cr>",
-        desc = "Document Diagnostic (Trouble)",
-      },
-      {
-        "<leader>tl",
-        "<cmd>TroubleToggle loclist<cr>",
-        desc = "Location List (Trouble)",
-      },
-      {
-        "<leader>tq",
-        "<cmd>TroubleToggle quickfix<cr>",
-        desc = "Quickfix List (Trouble)",
-      },
-      {
-        "gR",
-        "<cmd>TroubleToggle lsp_references<cr>",
-        desc = "Lsp References (Trouble)",
-      },
+      { "<leader>tw", "<cmd>TroubleToggle workspace_diagnostics<cr>", desc = "Workspace Diagnostic (Trouble)" },
+      { "<leader>td", "<cmd>TroubleToggle document_diagnostics<cr>", desc = "Document Diagnostic (Trouble)" },
+      { "<leader>tl", "<cmd>TroubleToggle loclist<cr>", desc = "Location List (Trouble)" },
+      { "<leader>tq", "<cmd>TroubleToggle quickfix<cr>", desc = "Quickfix List (Trouble)" },
+      { "gR", "<cmd>TroubleToggle lsp_references<cr>", desc = "Lsp References (Trouble)" },
     },
+    config = true,
   },
 
   -- Better matchit/paren
@@ -209,19 +209,13 @@ return {
       local wk = require("which-key")
       wk.setup(opts)
       wk.register({
+        mode = { "n", "v" },
         ["<leader>c"] = { name = "+code" },
-        ["<leader>d"] = { name = "+debugger" },
-        ["<leader>f"] = { name = "+file/find" },
+        ["<leader>f"] = { name = "+find" },
         ["<leader>h"] = { name = "+git_hunk" },
-        ["<leader>m"] = { name = "+markdown" },
         ["<leader>r"] = { name = "+rename" },
-        ["<leader>s"] = { name = "+search" },
         ["<leader>t"] = { name = "+trouble" },
-        ["<leader>w"] = { name = "+workspace" },
-        ["cs"] = { name = "Change Surrounding" },
-        ["ds"] = { name = "Delete Surrounding" },
-        ["gp"] = { name = "+preview" },
-        ["ys"] = { name = "Yank Surrounding" },
+        ["<leader>u"] = { name = "+ui" },
       })
     end,
   },

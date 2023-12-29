@@ -38,14 +38,15 @@ return {
           settings = {
             Lua = {
               diagnostics = { globals = { "vim" } },
-              format = {
-                enable = false,
-              },
             },
           },
         },
         bashls = {},
       },
+      format = {
+        formatting_options = nil,
+        timeout_ms = nil,
+      }
     },
     config = function(_, opts)
       require("mason-lspconfig").setup({
@@ -87,7 +88,7 @@ return {
 
   -- Formatters
   {
-    "jose-elias-alvarez/null-ls.nvim",
+    "nvimtools/none-ls.nvim",
     event = "BufReadPre",
     dependencies = "mason.nvim",
     opts = function()
@@ -130,37 +131,18 @@ return {
   -- Previewing native LSP's goto definition, type definition, implementation, and references calls in floating windows
   {
     "rmagatti/goto-preview",
+    -- stylua: ignore
+    keys = {
+      { "n", "gpd", "<cmd>lua require('goto-preview').goto_preview_definition()<cr>", desc = "Preview Definition" },
+      { "n", "gpt", "<cmd>lua require('goto-preview').goto_preview_type_definition()<cr>", desc = "Preview Type Definition" },
+      { "n", "gpi", "<cmd>lua require('goto-preview').goto_preview_implementation()<cr>", desc = "Preview Implementation" },
+      { "n", "gpr", "<cmd>lua require('goto-preview').goto_preview_references()<cr>", desc = "Preview References" },
+      { "n", "gP", "<cmd>lua require('goto-preview').close_all_win()<cr>", desc = "Close All Preview Windows" },
+    },
     opts = {
       post_open_hook = function(_, win)
         vim.api.nvim_win_set_option(win, "winhighlight", "Normal:")
       end,
-    },
-    keys = {
-      { "n", "gpd", "<cmd>lua require('goto-preview').goto_preview_definition()<cr>", { desc = "Preview Definition" } },
-      {
-        "n",
-        "gpt",
-        "<cmd>lua require('goto-preview').goto_preview_type_definition()<cr>",
-        { desc = "Preview Type Definition" },
-      },
-      {
-        "n",
-        "gpi",
-        "<cmd>lua require('goto-preview').goto_preview_implementation()<cr>",
-        { desc = "Preview Implementation" },
-      },
-      {
-        "n",
-        "gpr",
-        "<cmd>lua require('goto-preview').goto_preview_references()<cr>",
-        { desc = "Preview References" },
-      },
-      {
-        "n",
-        "gP",
-        "<cmd>lua require('goto-preview').close_all_win()<cr>",
-        { desc = "Close All Preview Windows" },
-      },
     },
   },
 
@@ -170,6 +152,9 @@ return {
     cmd = "AerialToggle",
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
+    },
+    keys = {
+      { "n", "<leader>a", "<cmd>AerialToggle<cr>", desc = "Toggle Aerial" },
     },
     opts = {
       backends = { "lsp", "treesitter", "markdown", "man" },
@@ -201,9 +186,6 @@ return {
         TypeParameter = " ",
         Variable = " ",
       },
-    },
-    keys = {
-      { "n", "<leader>a", "<cmd>AerialToggle<cr>", { desc = "Toggle Aerial" } },
     },
   },
 }

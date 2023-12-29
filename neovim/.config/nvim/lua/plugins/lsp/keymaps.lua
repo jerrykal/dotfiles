@@ -24,14 +24,7 @@ function M.setup(_, buffer)
   vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename" }, bufopts)
   vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Code Action" }, bufopts)
 
-  vim.keymap.set("n", "<leader>F", function()
-    vim.lsp.buf.format({ async = true })
-  end, { desc = "Format Document" }, bufopts)
-  vim.keymap.set("v", "<leader>F", function()
-    vim.lsp.buf.format({ async = true })
-  end, { desc = "Format Range" }, bufopts)
-
-  vim.keymap.set("n", "<leader>n", require("nvim-navbuddy").open, bufopts)
+  vim.keymap.set("n", "<leader>n", require("nvim-navbuddy").open, { desc = "Open Navbuddy" }, bufopts)
 end
 
 function M.diagnostic_goto(next, severity)

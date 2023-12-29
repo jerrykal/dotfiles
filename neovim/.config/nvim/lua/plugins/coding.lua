@@ -135,14 +135,20 @@ return {
       })
 
       cmp.setup.cmdline({ "/", "?" }, {
-        mapping = cmp.mapping.preset.cmdline(),
+        mapping = cmp.mapping.preset.cmdline({
+          ["<C-p>"] = { c = cmp.config.disable },
+          ["<C-n>"] = { c = cmp.config.disable },
+        }),
         sources = {
           { name = "buffer" },
         },
       })
 
       cmp.setup.cmdline(":", {
-        mapping = cmp.mapping.preset.cmdline(),
+        mapping = cmp.mapping.preset.cmdline({
+          ["<C-p>"] = { c = cmp.config.disable },
+          ["<C-n>"] = { c = cmp.config.disable },
+        }),
         sources = cmp.config.sources({
           { name = "path" },
         }, {
@@ -160,7 +166,7 @@ return {
     "kylechui/nvim-surround",
     event = "BufReadPost",
     opts = {
-      -- Change surround keymaps so it does not conflict with leap.nvim's keymap
+      -- Change surround keymaps so it does not conflict with flash.nvim's keymap
       keymaps = {
         insert = "<C-g>z",
         insert_line = "<C-g>Z",
@@ -186,13 +192,13 @@ return {
   -- Commenting
   {
     "numToStr/Comment.nvim",
+    keys = {
+      { "gc", mode = { "n", "v" }, desc = "Linewise Comment" },
+      { "gb", mode = { "n", "v" }, desc = "Blockwise Comment" },
+    },
     opts = {
       ignore = "^$",
     },
-    keys = {
-      { "gc", mode = { "n", "v" } },
-      { "gb", mode = { "n", "v" } },
-    }
   },
 
   -- -- Nicer python indentation

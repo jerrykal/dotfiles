@@ -1,0 +1,26 @@
+import = [
+    "~/.config/alacritty/kanagawa.toml",
+    "~/.config/alacritty/keybindings.toml"
+]
+
+[shell]
+program = "/bin/zsh"
+args = ["-l", "-c", "tmux attach || tmux"]
+
+[font]
+normal = { family = "JetBrainsMono Nerd Font" }
+size = 13
+
+[window]
+decorations = "None"
+dynamic_padding = true
+option_as_alt = "Both"
+startup_mode = "Maximized"
+
+[cursor]
+style = { shape = "Block", blinking = "Always" }
+thickness = 0.2
+unfocused_hollow = true
+
+[mouse]
+hide_when_typing = true

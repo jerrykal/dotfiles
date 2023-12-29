@@ -2,26 +2,18 @@ return {
   -- Library used by other plugins
   { "nvim-lua/plenary.nvim", lazy = false },
 
-  -- -- Session management
-  -- {
-  --   "rmagatti/auto-session",
-  --   event = "VimEnter",
-  --   opts = {
-  --     log_level = "error",
-  --     pre_save_cmds = {
-  --       "tabdo Neotree close",
-  --       "tabdo AerialCloseAll",
-  --     },
-  --   },
-  --   config = function(_, opts)
-  --     -- Close lazy and re-open it after restoring session
-  --     if vim.o.filetype == "lazy" then
-  --       vim.cmd.close()
-  --       opts.post_restore_cmds = { require("lazy").show }
-  --     end
-  --     require("auto-session").setup(opts)
-  --   end,
-  -- },
+  -- Session management
+  {
+    "folke/persistence.nvim",
+    event = "BufReadPre",
+    -- stylua: ignore
+    keys = {
+      { "<leader>qs", function() require("persistence").load() end, desc = "Restore Session" },
+      { "<leader>ql", function() require("persistence").load({ last = true }) end, desc = "Restore Last Session" },
+      { "<leader>qd", function() require("persistence").stop() end, desc = "Don't Save Current Session" },
+    },
+    opts = { options = vim.opt.sessionoptions:get() },
+  },
 
   -- Tmux integration
   {
