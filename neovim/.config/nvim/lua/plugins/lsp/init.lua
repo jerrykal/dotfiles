@@ -133,11 +133,11 @@ return {
     "rmagatti/goto-preview",
     -- stylua: ignore
     keys = {
-      { "n", "gpd", "<cmd>lua require('goto-preview').goto_preview_definition()<cr>", desc = "Preview Definition" },
-      { "n", "gpt", "<cmd>lua require('goto-preview').goto_preview_type_definition()<cr>", desc = "Preview Type Definition" },
-      { "n", "gpi", "<cmd>lua require('goto-preview').goto_preview_implementation()<cr>", desc = "Preview Implementation" },
-      { "n", "gpr", "<cmd>lua require('goto-preview').goto_preview_references()<cr>", desc = "Preview References" },
-      { "n", "gP", "<cmd>lua require('goto-preview').close_all_win()<cr>", desc = "Close All Preview Windows" },
+      { "gpd", mode = "n", "<cmd>lua require('goto-preview').goto_preview_definition()<cr>", desc = "Preview Definition" },
+      { "gpt", mode = "n", "<cmd>lua require('goto-preview').goto_preview_type_definition()<cr>", desc = "Preview Type Definition" },
+      { "gpi", mode = "n", "<cmd>lua require('goto-preview').goto_preview_implementation()<cr>", desc = "Preview Implementation" },
+      { "gpr", mode = "n", "<cmd>lua require('goto-preview').goto_preview_references()<cr>", desc = "Preview References" },
+      { "gP", mode = "n","<cmd>lua require('goto-preview').close_all_win()<cr>", desc = "Close All Preview Windows" },
     },
     opts = {
       post_open_hook = function(_, win)
@@ -154,7 +154,7 @@ return {
       "nvim-treesitter/nvim-treesitter",
     },
     keys = {
-      { "n", "<leader>a", "<cmd>AerialToggle<cr>", desc = "Toggle Aerial" },
+      { "<leader>a", mode = "n", "<cmd>AerialToggle<cr>", desc = "Toggle Aerial" },
     },
     opts = {
       backends = { "lsp", "treesitter", "markdown", "man" },
