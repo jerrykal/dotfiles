@@ -9,7 +9,7 @@ args = ["-l", "-c", "tmux attach || tmux"]
 
 [font]
 normal = { family = "JetBrainsMono Nerd Font" }
-size = 13
+size = 13.25
 
 [window]
 decorations = "None"
