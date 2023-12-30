@@ -22,15 +22,6 @@ return {
   {
     "rcarriga/nvim-notify",
     lazy = false,
-    keys = {
-      {
-        "<leader>un",
-        function()
-          require("notify").dismiss({ silent = true, pending = true })
-        end,
-        desc = "Dismiss all Notifications",
-      },
-    },
     opts = {
       stages = "static",
       timeout = 3000,

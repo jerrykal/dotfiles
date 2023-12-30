@@ -46,14 +46,14 @@ return {
       format = {
         formatting_options = nil,
         timeout_ms = nil,
-      }
+      },
     },
     config = function(_, opts)
       require("mason-lspconfig").setup({
         automatic_installation = true,
       })
 
-      -- Setup lsp servers
+      -- Setup LSP servers
       local on_attach = function(client, buffer)
         require("nvim-navbuddy").attach(client, buffer)
         require("plugins.lsp.keymaps").setup(client, buffer)

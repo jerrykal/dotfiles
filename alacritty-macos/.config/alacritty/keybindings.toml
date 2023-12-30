@@ -1,23 +1,29 @@
 [keyboard]
 bindings = [
-  { key = "Return", mods = "Command", action = "ToggleMaximized"},
+  { key = "N",      mods = "Shift|Command", action = "CreateNewWindow" },
+  { key = "W",      mods = "Shift|Command", action = "Quit" },
+  { key = "Return", mods = "Command",       action = "ToggleMaximized"},
 
-  { key = "T",      mods = "Command",       command = { program = "/opt/homebrew/bin/tmux",      args = ["new-window", "-c", "#{pane_current_path}"] } },
-  { key = "W",      mods = "Command",       command = { program = "/opt/homebrew/bin/tmux",      args = ["kill-pane"] } },
-  { key = "Q",      mods = "Command",       command = { program = "/opt/homebrew/bin/tmux",      args = ["detach-client"] } },
-  { key = "Key1",   mods = "Command",       command = { program = "/opt/homebrew/bin/tmux",      args = ["select-window", "-t", ":=1"] } },
-  { key = "Key2",   mods = "Command",       command = { program = "/opt/homebrew/bin/tmux",      args = ["select-window", "-t", ":=2"] } },
-  { key = "Key3",   mods = "Command",       command = { program = "/opt/homebrew/bin/tmux",      args = ["select-window", "-t", ":=3"] } },
-  { key = "Key4",   mods = "Command",       command = { program = "/opt/homebrew/bin/tmux",      args = ["select-window", "-t", ":=4"] } },
-  { key = "Key5",   mods = "Command",       command = { program = "/opt/homebrew/bin/tmux",      args = ["select-window", "-t", ":=5"] } },
-  { key = "Key6",   mods = "Command",       command = { program = "/opt/homebrew/bin/tmux",      args = ["select-window", "-t", ":=6"] } },
-  { key = "Key7",   mods = "Command",       command = { program = "/opt/homebrew/bin/tmux",      args = ["select-window", "-t", ":=7"] } },
-  { key = "Key8",   mods = "Command",       command = { program = "/opt/homebrew/bin/tmux",      args = ["select-window", "-t", ":=8"] } },
-  { key = "Key9",   mods = "Command",       command = { program = "/opt/homebrew/bin/tmux",      args = ["select-window", "-t", ":=9"] } },
-  { key = "Key0",   mods = "Command",       command = { program = "/opt/homebrew/bin/tmux",      args = ["select-window", "-t", ":=10"] } },
-  { key = "D",      mods = "Command",       command = { program = "/opt/homebrew/bin/tmux",      args = ["split-window", "-h", "-c", "#{pane_current_path}"] } },
-  { key = "D",      mods = "Shift|Command", command = { program = "/opt/homebrew/bin/tmux",      args = ["split-window", "-c", "#{pane_current_path}"] } },
-  { key = "Return", mods = "Shift|Command", command = { program = "/opt/homebrew/bin/tmux",      args = ["resize-pane", "-Z"] } },
-  { key = "N",      mods = "Shift|Command", command = { program = "/opt/homebrew/bin/alacritty", args = ["--command", "/opt/homebrew/bin/tmux", "new-session"] } },
+  # Tmux keybindings, mostly derived from iTerm2
+  { key = "T",        mods = "Command",       command = { program = "/opt/homebrew/bin/tmux", args = ["new-window", "-c", "#{pane_current_path}"] } },
+  { key = "W",        mods = "Command",       command = { program = "/opt/homebrew/bin/tmux", args = ["kill-pane"] } },
+  { key = "Q",        mods = "Command",       command = { program = "/opt/homebrew/bin/tmux", args = ["detach-client"] } },
+  { key = "Key1",     mods = "Command",       command = { program = "/opt/homebrew/bin/tmux", args = ["select-window", "-t", ":=1"] } },
+  { key = "Key2",     mods = "Command",       command = { program = "/opt/homebrew/bin/tmux", args = ["select-window", "-t", ":=2"] } },
+  { key = "Key3",     mods = "Command",       command = { program = "/opt/homebrew/bin/tmux", args = ["select-window", "-t", ":=3"] } },
+  { key = "Key4",     mods = "Command",       command = { program = "/opt/homebrew/bin/tmux", args = ["select-window", "-t", ":=4"] } },
+  { key = "Key5",     mods = "Command",       command = { program = "/opt/homebrew/bin/tmux", args = ["select-window", "-t", ":=5"] } },
+  { key = "Key6",     mods = "Command",       command = { program = "/opt/homebrew/bin/tmux", args = ["select-window", "-t", ":=6"] } },
+  { key = "Key7",     mods = "Command",       command = { program = "/opt/homebrew/bin/tmux", args = ["select-window", "-t", ":=7"] } },
+  { key = "Key8",     mods = "Command",       command = { program = "/opt/homebrew/bin/tmux", args = ["select-window", "-t", ":=8"] } },
+  { key = "Key9",     mods = "Command",       command = { program = "/opt/homebrew/bin/tmux", args = ["select-window", "-t", ":=9"] } },
+  { key = "Key0",     mods = "Command",       command = { program = "/opt/homebrew/bin/tmux", args = ["select-window", "-t", ":=10"] } },
+  { key = "LBracket", mods = "Shift|Command", command = { program = "/opt/homebrew/bin/tmux", args = ["select-window", "-t:-"] } },
+  { key = "RBracket", mods = "Shift|Command", command = { program = "/opt/homebrew/bin/tmux", args = ["select-window", "-t:+"] } },
+  { key = "D",        mods = "Command",       command = { program = "/opt/homebrew/bin/tmux", args = ["split-window", "-h", "-c", "#{pane_current_path}"] } },
+  { key = "D",        mods = "Shift|Command", command = { program = "/opt/homebrew/bin/tmux", args = ["split-window", "-c", "#{pane_current_path}"] } },
+  { key = "Return",   mods = "Shift|Command", command = { program = "/opt/homebrew/bin/tmux", args = ["resize-pane", "-Z"] } },
+
+  # Create New session
+  { key = "N", mods = "Command", command = { program = "/bin/zsh", args = ["-l", "-c", "TMUX= tmux new-session -d \\; switch-client -n"] } },
 ]
-

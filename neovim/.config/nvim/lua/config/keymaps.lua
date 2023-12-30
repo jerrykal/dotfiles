@@ -4,13 +4,13 @@ local map = vim.keymap.set
 map("", "j", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', { expr = true })
 map("", "k", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', { expr = true })
 
--- Use esc to turn off search highlighting and dismiss notification messages
+-- Use ESC to turn off search highlighting and dismiss notification messages
 map("n", "<esc>", function()
   require("notify").dismiss()
   vim.cmd.noh()
 end)
 
--- Press esc twice to enter normal mode in terminal
+-- Press ESC twice to enter normal mode in terminal
 map("t", "<esc><esc>", "<C-\\><C-n>")
 
 -- System clipboard copy/paste
@@ -43,6 +43,12 @@ map("o", "N", "'nN'[v:searchforward]", { expr = true })
 map("c", "<c-a>", "<home>")
 map("c", "<c-f>", "<right>")
 map("c", "<c-b>", "<left>")
+
+-- Tabs
+map("n", "<leader><tab>n", "<cmd>tabnew<cr>", { desc = "New Tab" })
+map("n", "<leader><tab>x", "<cmd>tabclose<cr>", { desc = "Close Tab" })
+map("n", "<leader><tab>l", "<cmd>tabnext<cr>", { desc = "Next Tab" })
+map("n", "<leader><tab>h", "<cmd>tabprevious<cr>", { desc = "Previous Tab" })
 
 -- lazy
 map("n", "<leader>l", "<cmd>:Lazy<cr>", { desc = "Lazy" })

@@ -127,6 +127,19 @@ return {
       { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
     },
     opts = {
+      search = {
+        exclude = {
+          "cmp_menu",
+          "flash_prompt",
+          "neo-tree",
+          "noice",
+          "notify",
+          function(win)
+            -- exclude non-focusable windows
+            return not vim.api.nvim_win_get_config(win).focusable
+          end,
+        },
+      },
       highlight = {
         backdrop = false,
       },
@@ -178,6 +191,14 @@ return {
       { "gR", "<cmd>TroubleToggle lsp_references<cr>", desc = "Lsp References (Trouble)" },
     },
     config = true,
+  },
+
+  -- Git diff
+  {
+    "sindrets/diffview.nvim",
+    cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewToggleFiles", "DiffviewFocusFiles" },
+    opts = {},
+    keys = { { "<leader>gd", "<cmd>DiffviewOpen<cr>", desc = "DiffView" } },
   },
 
   -- Better matchit/paren
