@@ -5,7 +5,7 @@ import = [
 
 [shell]
 program = "/bin/zsh"
-args = ["-l", "-c", "tmux attach 2> /dev/null || tmux"]
+args = ["-l", "-c", "tmux new-session -A -D -s main"]
 
 [font]
 normal = { family = "JetBrainsMono Nerd Font" }

@@ -34,6 +34,17 @@ opt.virtualedit = "block" -- Allow cursor to move anywhere in visual block mode
 opt.winblend = 10 -- Window transparency
 opt.wrap = false -- Disable line wrapping
 
+-- Thicker border lines
+opt.fillchars:append({
+  horiz = "━",
+  horizup = "┻",
+  horizdown = "┳",
+  vert = "┃",
+  vertleft = "┨",
+  vertright = "┣",
+  verthoriz = "╋",
+})
+
 -- Indentation options
 opt.expandtab = true
 opt.shiftround = true
@@ -54,11 +65,6 @@ end
 -- Statusline
 opt.laststatus = 3 -- Always show statusline
 opt.statusline = "%!v:lua.require('config.statusline').setup()"
-
--- TODO: Fold
-if fn.has("nvim-0.9.0") == 1 then
-  -- vim.opt.statuscolumn = [[%!v:lua.require'lazyvim.util'.ui.statuscolumn()]]
-end
 
 -- Python provider
 vim.g.python3_host_prog = "$PYENV_ROOT/versions/pynvim/bin/python3"

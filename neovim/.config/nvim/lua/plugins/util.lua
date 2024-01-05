@@ -20,7 +20,7 @@ return {
     "aserowy/tmux.nvim",
     event = "VimEnter",
     opts = {
-      copy_sync = { enable = false },
+      copy_sync = { sync_unnamed = false },
     },
   },
 

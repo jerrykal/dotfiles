@@ -41,14 +41,27 @@ map("o", "N", "'nN'[v:searchforward]", { expr = true })
 
 -- Command mode mapping
 map("c", "<c-a>", "<home>")
-map("c", "<c-f>", "<right>")
+map("c", "<c-k>", "<up>")
+map("c", "<c-j>", "<down>")
 map("c", "<c-b>", "<left>")
+map("c", "<c-f>", "<right>")
 
 -- Tabs
 map("n", "<leader><tab>n", "<cmd>tabnew<cr>", { desc = "New Tab" })
 map("n", "<leader><tab>x", "<cmd>tabclose<cr>", { desc = "Close Tab" })
 map("n", "<leader><tab>l", "<cmd>tabnext<cr>", { desc = "Next Tab" })
 map("n", "<leader><tab>h", "<cmd>tabprevious<cr>", { desc = "Previous Tab" })
+
+-- Open in VSCode
+map("n", "<leader>ox", function()
+  local file = vim.fn.expand("%")
+  local r, c = unpack(vim.api.nvim_win_get_cursor(0))
+  if file == "" then
+    vim.cmd("silent !code .")
+  else
+    vim.cmd("silent !code . && code -g " .. vim.fn.expand("%") .. ":" .. r .. ":" .. c)
+  end
+end, { desc = "[O]pen E[x]ternal editor" })
 
 -- lazy
 map("n", "<leader>l", "<cmd>:Lazy<cr>", { desc = "Lazy" })

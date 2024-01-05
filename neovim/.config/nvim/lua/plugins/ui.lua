@@ -287,7 +287,7 @@ return {
   {
     "cpea2506/relative-toggle.nvim",
     event = "BufReadPre",
-    config = true,
+    opts = {},
   },
 
   -- Floating winbar
@@ -298,7 +298,7 @@ return {
       local colors = require("kanagawa.colors").setup()
       require("incline").setup({
         hide = {
-          only_win = true
+          only_win = true,
         },
         highlight = {
           groups = {

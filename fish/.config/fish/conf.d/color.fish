@@ -1,4 +1,4 @@
-# if [ "$TERM_PROGRAM" != "vscode" ]
+if [ "$TERM_PROGRAM" != "vscode" ]
     # Kanagawa Fish shell theme
     set -l foreground DCD7BA normal
     set -l selection 2D4F67 brcyan
@@ -32,8 +32,5 @@
     set -g fish_pager_color_prefix $cyan
     set -g fish_pager_color_completion $foreground
     set -g fish_pager_color_description $comment
-
-    # Change some colors for pure-fish prompt
-    set -g pure_color_primary brblue
-    set -g pure_color_success D27E99
-# end
+else
+end

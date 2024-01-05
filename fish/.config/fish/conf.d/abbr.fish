@@ -16,6 +16,9 @@ abbr vim nvim
 abbr -a t tmux
 abbr -a ta tmux attach
 
+# vscode
+abbr -a co code
+
 # git
 abbr -a g git
 abbr -a gi git init
