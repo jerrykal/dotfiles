@@ -196,50 +196,7 @@ return {
     dependencies = {
       "SmiteshP/nvim-navic",
     },
-    opts = function()
-      local c = require("kanagawa.lib.color")
-      local colors = require("kanagawa.colors").setup()
-      local palette = colors.palette
-      local theme = colors.theme
-      local fg_normal = tostring(c(theme.ui.whitespace):brighten(0.3))
-      return {
-        theme = {
-          normal = { fg = fg_normal },
-          ellipsis = { fg = fg_normal },
-          separator = { fg = fg_normal },
-          modified = { fg = fg_normal },
-          dirname = { fg = fg_normal },
-          basename = { fg = fg_normal },
-          context = { fg = fg_normal },
-          context_array = { fg = palette.waveAqua2 },
-          context_boolean = { fg = palette.surimiOrange },
-          context_class = { fg = palette.surimiOrange },
-          context_constant = { fg = palette.oniViolet },
-          context_constructor = { fg = palette.surimiOrange },
-          context_enum = { fg = palette.boatYellow2 },
-          context_enummember = { fg = palette.carpYellow },
-          context_event = { fg = palette.surimiOrange },
-          context_field = { fg = palette.waveAqua1 },
-          context_file = { fg = palette.springViolet2 },
-          context_function = { fg = palette.crystalBlue },
-          context_interface = { fg = palette.carpYellow },
-          context_key = { fg = palette.oniViolet },
-          context_method = { fg = palette.crystalBlue },
-          context_module = { fg = palette.boatYellow2 },
-          context_namespace = { fg = palette.springViolet2 },
-          context_null = { fg = palette.carpYellow },
-          context_number = { fg = palette.sakuraPink },
-          context_object = { fg = palette.surimiOrange },
-          context_operator = { fg = palette.springViolet2 },
-          context_package = { fg = palette.springViolet1 },
-          context_property = { fg = palette.waveAqua2 },
-          context_string = { fg = palette.springGreen },
-          context_struct = { fg = palette.surimiOrange },
-          context_typeparameter = { fg = palette.springBlue },
-          context_variable = { fg = palette.oniViolet },
-        },
-      }
-    end,
+    opts = {},
   },
 
   -- Zen mode

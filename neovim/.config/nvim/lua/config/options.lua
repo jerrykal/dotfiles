@@ -22,7 +22,6 @@ opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize", "help", "glob
 opt.shortmess:append("I") -- Disable intro message
 opt.sidescrolloff = 8
 opt.signcolumn = "yes:1"
-opt.spell = true
 opt.splitbelow = true -- Open new windows to the bottom
 opt.splitkeep = "screen"
 opt.splitright = true -- Open new windows to the right

@@ -55,4 +55,14 @@ end)
 map("n", "[d", function() vscode.call("editor.action.marker.prev") end)
 map("n", "]d", function() vscode.call("editor.action.marker.next") end)
 
+-- Window management
+map("n", "<C-w>z", function() vscode.call("workbench.action.toggleMaximizeEditorGroup") end)
+
+-- LSP
+map("n", "<leader>rn", function() vscode.call("editor.action.rename") end)
+
+-- Code Spell Checker
+map({"n", "x"}, "zg", function () vscode.call("cSpell.addWordToUserDictionary") end)
+map({"n", "x"}, "zw", function () vscode.call("cSpell.removeWordFromUserDictionary") end)
+
 -- stylua: ignore end

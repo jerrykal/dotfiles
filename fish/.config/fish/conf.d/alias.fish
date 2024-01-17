@@ -3,9 +3,6 @@ if type -q exa
    alias tree="ls --tree"
 end
 
-if type -q xclip
-   alias pbcopy="xclip -selection clipboard"
-   alias pbpaste="xclip -selection clipboard -o"
+if type -q bat
+   alias cat="bat"
 end
-
-alias ssh="TERM=xterm-256color $(which ssh)"
