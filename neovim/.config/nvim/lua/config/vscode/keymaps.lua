@@ -27,33 +27,41 @@ map({ "n", "x" }, "N", "'nN'[v:searchforward]", { expr = true })
 -- VSCode API
 local vscode = require("vscode-neovim")
 
--- Let vscode handle undo/redo
-map({ "n", "x" }, "u", function()
-  vscode.call("runCommands", {
-    args = {
-      commands = {
-        "undo",
-        "cancelSelection",
-      },
-    },
-  })
-end)
-map({ "n", "x" }, "<C-r>", function()
-  vscode.call("runCommands", {
-    args = {
-      commands = {
-        "redo",
-        "cancelSelection",
-      },
-    },
-  })
-end)
+-- -- Let vscode handle undo/redo
+-- map({ "n", "x" }, "u", function()
+--   vscode.call("runCommands", {
+--     args = {
+--       commands = {
+--         "undo",
+--         "cancelSelection",
+--       },
+--     },
+--   })
+-- end)
+-- map({ "n", "x" }, "<C-r>", function()
+--   vscode.call("runCommands", {
+--     args = {
+--       commands = {
+--         "redo",
+--         "cancelSelection",
+--       },
+--     },
+--   })
+-- end)
 
 -- stylua: ignore start
 
 -- Diagnostics
 map("n", "[d", function() vscode.call("editor.action.marker.prev") end)
 map("n", "]d", function() vscode.call("editor.action.marker.next") end)
+
+-- Git
+map("n", "]h", function() vscode.call("workbench.action.editor.nextChange") end)
+map("n", "[h", function() vscode.call("workbench.action.editor.previousChange") end)
+map({"x"}, "<leader>hs", function() vscode.call("git.stageSelectedRanges") end)
+map({"x"}, "<leader>hu", function() vscode.call("git.unstageSelectedRanges") end)
+map({"x"}, "<leader>hr", function() vscode.call("git.revertSelectedRanges") end)
+map("n", "<leader>hp", function() vscode.call("editor.action.dirtydiff.next") end)
 
 -- Window management
 map("n", "<C-w>z", function() vscode.call("workbench.action.toggleMaximizeEditorGroup") end)

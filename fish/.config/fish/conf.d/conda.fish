@@ -38,6 +38,10 @@ end
 
 # Activate conda environment if .condaenv is found
 function __auto_activate_conda_env --on-variable PWD --on-event init_done
+  # Do nothing in vscode terminal
+  if test "$TERM_PROGRAM" = "vscode"
+      return
+  end
 
   # Do nothing if current conda env has been activated by the user manually
   if set -q __conda_activated_by_user
@@ -69,7 +73,7 @@ function __auto_activate_conda_env --on-variable PWD --on-event init_done
   end
 
   # Do nothing if current active environment is the same as the one specified in the envfile
-  if test "$condaenv" = "$CONDA_DEFAULT_ENV"; and not set -q VIM
+  if test "*$(which python)*" = $condaenv;; and not set -q VIM
       return
   end
 

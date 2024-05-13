@@ -3,6 +3,5 @@ if type -q exa
    alias tree="ls --tree"
 end
 
-if type -q bat
-   alias cat="bat"
-end
+type -q bat; and alias cat="bat"
+type -q batcat; and alias cat="batcat"

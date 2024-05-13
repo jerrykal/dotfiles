@@ -246,29 +246,4 @@ return {
     event = "BufReadPre",
     opts = {},
   },
-
-  -- Floating winbar
-  {
-    "b0o/incline.nvim",
-    event = "BufReadPre",
-    config = function()
-      local colors = require("kanagawa.colors").setup()
-      require("incline").setup({
-        hide = {
-          only_win = true,
-        },
-        highlight = {
-          groups = {
-            InclineNormal = { guibg = colors.theme.ui.bg_p2, guifg = colors.theme.ui.fg },
-            InclineNormalNC = { guibg = colors.theme.ui.bg_m3, guifg = colors.theme.syn.comment },
-          },
-        },
-        render = function(props)
-          local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ":t")
-          local icon, color = require("nvim-web-devicons").get_icon_color(filename)
-          return { { icon, guifg = color }, { " " }, { filename } }
-        end,
-      })
-    end,
-  },
 }

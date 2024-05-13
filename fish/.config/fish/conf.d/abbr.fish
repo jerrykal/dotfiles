@@ -39,6 +39,14 @@ abbr -a gC git checkout
 abbr -a gr git reset
 abbr -a gco git checkout
 
+# homebrew
+abbr -a bi brew install
+abbr -a bu brew uninstall
+abbr -a buz brew uninstall --zap
+abbr -a bl brew list
+abbr -a bup brew update
+abbr -a bupg brew upgrade
+
 # Lazygit
 abbr -a lg lazygit
 
@@ -61,7 +69,6 @@ abbr -a py python
 abbr -a pipl pip list
 abbr -a pipi pip install
 abbr -a pipir pip install -r requirements.txt
-# abbr -a pipx pip uninstall
 abbr -a pipsh pip show
 abbr -a pipsr pip search
 abbr -a pipfr pip freeze
