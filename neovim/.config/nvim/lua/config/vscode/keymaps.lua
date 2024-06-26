@@ -5,7 +5,7 @@ map("", "j", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', { expr = true })
 map("", "k", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', { expr = true })
 
 -- Use ESC to turn off search highlighting
-map("n", "<esc>", ":noh<cr>")
+map("n", "<esc>", "<cmd>noh<cr>")
 
 -- System clipboard copy/paste
 map("n", "<leader>y", '"+y')
