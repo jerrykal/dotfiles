@@ -1,5 +1,5 @@
-if type -q exa
-   alias ls="exa --color=always --group-directories-first"
+if type -q eza
+   alias ls="eza --color=always --group-directories-first"
    alias tree="ls --tree"
 end
 
