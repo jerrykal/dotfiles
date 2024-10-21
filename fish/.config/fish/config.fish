@@ -23,9 +23,6 @@ test -n "$SSH_CLIENT"; or test -n "$SSH_TTY"; and set -g fish_term24bit 1
 # Initialize zoxide
 type -q zoxide; and zoxide init fish | source
 
-# Initialize thefuck
-type -q thefuck; and thefuck --alias | source
-
 # Initialize pyenv
 set -gx PYENV_ROOT $HOME/.pyenv
 if test -e $PYENV_ROOT

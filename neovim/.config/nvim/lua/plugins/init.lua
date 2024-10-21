@@ -54,6 +54,7 @@ return {
       require("nvim-treesitter.configs").setup(opts)
     end,
   },
+
   {
     "chrisgrieser/nvim-various-textobjs",
     event = "BufReadPost",
@@ -88,7 +89,6 @@ return {
   -- Better yank/paste
   {
     "gbprod/yanky.nvim",
-    event = "VeryLazy",
     dependencies = {
       "kkharji/sqlite.lua",
     },
