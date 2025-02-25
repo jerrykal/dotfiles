@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Installs the stow package to ~/.local/bin.
 # This is useful for installing stow on systems without root access.
 

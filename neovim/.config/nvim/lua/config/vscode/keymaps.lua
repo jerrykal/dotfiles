@@ -1,8 +1,20 @@
 local map = vim.keymap.set
 
 -- Allow moving the cursor through wrapped lines with j, k
-map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
-map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
+-- map({ "n", "x" }, "j", function()
+--   if vim.v.count == 0 then
+--     return "<Cmd>call VSCodeNotify('cursorMove', { 'to': 'down', 'by': 'wrappedLine', 'value': v:count1 })<CR>"
+--   else
+--     return "j"
+--   end
+-- end, { expr = true, silent = true })
+-- map({ "n", "x" }, "k", function()
+--   if vim.v.count == 0 then
+--     return "<Cmd>call VSCodeNotify('cursorMove', { 'to': 'up', 'by': 'wrappedLine', 'value': v:count1 })<CR>"
+--   else
+--     return "k"
+--   end
+-- end, { expr = true, silent = true })
 
 -- Use ESC to turn off search highlighting
 map({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>")
