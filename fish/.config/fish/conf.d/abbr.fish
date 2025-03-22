@@ -74,16 +74,3 @@ abbr -a pipsr pip search
 abbr -a pipfr pip freeze
 abbr -a jl jupyter-lab
 abbr -a --set-cursor tsb tensorboard --logdir=%
-
-# mutagen
-abbr -a msc mutagen sync create
-abbr -a msl mutagen sync list
-abbr -a msll mutagen sync list --long
-abbr -a msm mutagen sync monitor
-abbr -a msf mutagen sync flush
-abbr -a msp mutagen sync pause
-abbr -a mspa mutagen sync pause --all
-abbr -a msr mutagen sync resume
-abbr -a msra mutagen sync resume --all
-abbr -a msrs mutagen sync reset
-abbr -a mst mutagen sync terminate
