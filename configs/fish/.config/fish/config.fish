@@ -1,6 +1,9 @@
 set -gx fish_greeting
 
-set -gx EDITOR (which nvim)
+type -q nvim; and set -gx EDITOR (which nvim)
+type -q bat; and set -gx MANPAGER "sh -c 'sed -u -e \"s/\\x1B\[[0-9;]*m//g; s/.\\x08//g\" | bat -p -lman'"
+type -q batcat; and set -gx MANPAGER "sh -c 'sed -u -e \"s/\\x1B\[[0-9;]*m//g; s/.\\x08//g\" | batcat -p -lman'"
+
 set -gx VISUAL $EDITOR
 set -gx SUDO_EDITOR $EDITOR
 
