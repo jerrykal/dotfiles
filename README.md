@@ -10,7 +10,7 @@ The `scripts/install_stow.sh` script installs Stow in `$HOME/.local/bin`, so be 
 
 ## Setup
 
-Configuration files are organized into subdirectories, with the exception of the `scripts/` directory. To install a specific config, use the command `stow <config-name>`.
+Configuration files are organized into subdirectories under the `configs/` directory. Most configurations can be installed by running `stow <config-name>`.
 
 For instance, to install Neovim configurations, execute the following command:
 
@@ -28,7 +28,7 @@ stow --no-folding fish
 
 ### iTerm2
 
-To configure iTerm2, navigate to `Settings->General->Settings`, check the option `Load preferences from a custom folder or URL`, and choose the `iterm2` subdirectory as the location for the custom folder.
+To configure iTerm2, navigate to `Settings->General->Settings`, check the option `Load preferences from a custom folder or URL`, and choose the `<path-to-dotfiles>/configs/iterm2` as the location for the custom folder.
 
 ### Lazygit
 

@@ -1,2 +1,3 @@
 --verbose
+--dir=$PWD/configs
 --target=$HOME
