@@ -1,7 +1,0 @@
-root = true
-
-# Format config for shfmt
-[{*.sh,*.zsh,.zshrc,.zshenv}]
-indent_style = space
-indent_size = 2
-switch_case_indent = true
