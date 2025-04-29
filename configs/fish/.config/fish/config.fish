@@ -43,8 +43,5 @@ if type -q __vsc_fish_prompt
     end
 end
 
-# iTerm2 shell integration
-test -e $HOME/.iterm2_shell_integration.fish; and source $HOME/.iterm2_shell_integration.fish
-
 # Init done
 emit init_done
