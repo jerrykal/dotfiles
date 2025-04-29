@@ -2594,6 +2594,8 @@
 	<integer>5</integer>
 	<key>TerminalVMargin</key>
 	<integer>2</integer>
+	<key>UIElementRequiresHotkeys</key>
+	<true/>
 	<key>VisualIndicatorForEsc</key>
 	<false/>
 	<key>WindowNumber</key>
