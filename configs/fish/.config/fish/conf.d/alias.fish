@@ -6,4 +6,6 @@ end
 type -q bat; and alias cat="bat"
 type -q batcat; and alias cat="batcat"
 
-alias update_lazy="nvim --headless '+Lazy! update' +qa"
+type -q fuck; and alias fk="fuck"
+
+type -q nvim; and alias update_lazy="nvim --headless '+Lazy! update' +qa"

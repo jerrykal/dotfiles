@@ -9,15 +9,19 @@ abbr -a rmrf rm -rf
 abbr -a rs rsync -avh
 
 # vim
-abbr vi nvim
-abbr vim nvim
+if type -q nvim
+    abbr vi nvim
+    abbr vim nvim
+else
+    abbr vi vim
+end
 
 # tmux
 abbr -a t tmux
 abbr -a ta tmux attach
 
 # vscode
-abbr -a co code
+type -q code; and abbr -a co code
 
 # git
 abbr -a g git
@@ -40,29 +44,33 @@ abbr -a gr git reset
 abbr -a gco git checkout
 
 # homebrew
-abbr -a bi brew install
-abbr -a bu brew uninstall
-abbr -a buz brew uninstall --zap
-abbr -a bl brew list
-abbr -a bup brew update
-abbr -a bupg brew upgrade
+if type -q brew
+    abbr -a bi brew install
+    abbr -a bu brew uninstall
+    abbr -a buz brew uninstall --zap
+    abbr -a bl brew list
+    abbr -a bup brew update
+    abbr -a bupg brew upgrade
+end
 
 # Lazygit
-abbr -a lg lazygit
+type -q lazygit; and abbr -a lg lazygit
 
 # conda
-abbr -a ca conda activate
-abbr -a cda conda deactivate
-abbr -a ci conda install
-abbr -a ccr conda create
-abbr -a ce conda env
-abbr -a cee conda env export
-abbr -a cec conda env create
-abbr -a cer conda env remove
-abbr -a cel conda env list
-abbr -a cl conda list
-abbr -a cr conda remove
-abbr -a clc condalocal
+if type -q conda
+    abbr -a ca conda activate
+    abbr -a cda conda deactivate
+    abbr -a ci conda install
+    abbr -a ccr conda create
+    abbr -a ce conda env
+    abbr -a cee conda env export
+    abbr -a cec conda env create
+    abbr -a cer conda env remove
+    abbr -a cel conda env list
+    abbr -a cl conda list
+    abbr -a cr conda remove
+    abbr -a clc condalocal
+end
 
 # python
 abbr -a py python
@@ -72,5 +80,4 @@ abbr -a pipir pip install -r requirements.txt
 abbr -a pipsh pip show
 abbr -a pipsr pip search
 abbr -a pipfr pip freeze
-abbr -a jl jupyter-lab
 abbr -a --set-cursor tsb tensorboard --logdir=%
