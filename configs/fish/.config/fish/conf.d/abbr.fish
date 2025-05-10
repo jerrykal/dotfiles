@@ -57,20 +57,18 @@ end
 type -q lazygit; and abbr -a lg lazygit
 
 # conda
-if type -q conda
-    abbr -a ca conda activate
-    abbr -a cda conda deactivate
-    abbr -a ci conda install
-    abbr -a ccr conda create
-    abbr -a ce conda env
-    abbr -a cee conda env export
-    abbr -a cec conda env create
-    abbr -a cer conda env remove
-    abbr -a cel conda env list
-    abbr -a cl conda list
-    abbr -a cr conda remove
-    abbr -a clc condalocal
-end
+abbr -a ca conda activate
+abbr -a cda conda deactivate
+abbr -a ci conda install
+abbr -a ccr conda create
+abbr -a ce conda env
+abbr -a cee conda env export
+abbr -a cec conda env create
+abbr -a cer conda env remove
+abbr -a cel conda env list
+abbr -a cl conda list
+abbr -a cr conda remove
+abbr -a clc condalocal
 
 # python
 abbr -a py python

@@ -38,6 +38,14 @@ if test -e $PYENV_ROOT
 
     pyenv init - | source
     pyenv virtualenv-init - | sed "s/--on-event fish_prompt/--on-variable PWD --on-event init_done/g" | source
+
+    # NOTE: this is a workaround to reactivate conda environment if it has been set by vscode-python extension
+    #       since running pyenv init will override python path set by conda.
+    if test -n "$CONDA_DEFAULT_ENV" -a "$TERM_PROGRAM" = "vscode"
+        set -l conda_env $CONDA_DEFAULT_ENV
+        conda deactivate
+        conda activate $conda_env
+    end
 end
 
 # Remove unwanted newline at the prompt for vscode shell integration
