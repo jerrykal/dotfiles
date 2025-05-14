@@ -3,4 +3,8 @@ function fish_hybrid_key_bindings --description "Vi-style bindings that inherit 
         fish_default_key_bindings -M $mode
     end
     fish_vi_key_bindings --no-erase
+
+    # Override default ctrl-n to down-or-search.
+    # see: https://github.com/fish-shell/fish-shell/issues/11082
+    bind -M insert ctrl-n down-or-search
 end
