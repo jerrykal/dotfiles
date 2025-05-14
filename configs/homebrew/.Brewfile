@@ -24,7 +24,6 @@ brew "shellcheck"
 brew "shfmt"
 brew "stow"
 brew "syncthing", restart_service: :changed
-brew "terminal-notifier"
 brew "tex-fmt"
 brew "thefuck"
 brew "tldr"
