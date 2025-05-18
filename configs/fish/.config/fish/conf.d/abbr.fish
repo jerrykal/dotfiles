@@ -21,7 +21,10 @@ abbr -a t tmux
 abbr -a ta tmux attach
 
 # vscode
-type -q code; and abbr -a co code
+if type -q code
+    abbr -a co code
+    abbr -a co. code .
+end
 
 # git
 abbr -a g git
