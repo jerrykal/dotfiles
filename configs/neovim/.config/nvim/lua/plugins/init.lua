@@ -139,6 +139,14 @@ return {
     },
   },
 
+  -- Mastring vim motion
+  {
+    "m4xshen/hardtime.nvim",
+    lazy = false,
+    dependencies = { "MunifTanjim/nui.nvim" },
+    opts = {},
+  },
+
   {
     "echasnovski/mini.surround",
     opts = {

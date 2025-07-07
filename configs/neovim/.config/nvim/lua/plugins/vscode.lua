@@ -4,6 +4,7 @@ end
 
 local enabled = {
   "flash.nvim",
+  "hardtime.nvim",
   "lazy.nvim",
   "mini.comment",
   "mini.surround",
