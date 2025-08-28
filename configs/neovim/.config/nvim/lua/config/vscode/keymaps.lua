@@ -1,23 +1,7 @@
 local map = vim.keymap.set
 
--- Allow moving the cursor through wrapped lines with j, k
--- map({ "n", "x" }, "j", function()
---   if vim.v.count == 0 then
---     return "<Cmd>call VSCodeNotify('cursorMove', { 'to': 'down', 'by': 'wrappedLine', 'value': v:count1 })<CR>"
---   else
---     return "j"
---   end
--- end, { expr = true, silent = true })
--- map({ "n", "x" }, "k", function()
---   if vim.v.count == 0 then
---     return "<Cmd>call VSCodeNotify('cursorMove', { 'to': 'up', 'by': 'wrappedLine', 'value': v:count1 })<CR>"
---   else
---     return "k"
---   end
--- end, { expr = true, silent = true })
-
--- Use ESC to turn off search highlighting
-map({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>")
+-- Use ESC to turn off search highlighting & redraw the screen
+map({ "i", "n" }, "<esc>", "<cmd>noh | mode<cr><esc>")
 
 -- https://github.com/mhinz/vim-galore#saner-behavior-of-n-and-n
 map("n", "n", "'Nn'[v:searchforward].'zv'", { expr = true })
@@ -37,8 +21,8 @@ local vscode = require("vscode-neovim")
 -- stylua: ignore start
 
 -- Let vscode handle undo/redo
--- map({ "n", "x" }, "u", function() vscode.call("undo") end)
--- map({ "n", "x" }, "<C-r>", function() vscode.call("redo") end)
+map({ "n", "x" }, "u", function() vscode.call("undo") end)
+map({ "n", "x" }, "<C-r>", function() vscode.call("redo") end)
 
 -- Diagnostics
 map("n", "[d", function() vscode.call("editor.action.marker.prev") end)
