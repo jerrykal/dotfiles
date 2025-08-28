@@ -3,6 +3,7 @@ if not vim.g.vscode then
 end
 
 local enabled = {
+  "dial.nvim",
   "flash.nvim",
   "lazy.nvim",
   "mini.comment",
