@@ -21,8 +21,8 @@ local vscode = require("vscode-neovim")
 -- stylua: ignore start
 
 -- Let vscode handle undo/redo
-map({ "n", "x" }, "u", function() vscode.call("undo") end)
-map({ "n", "x" }, "<C-r>", function() vscode.call("redo") end)
+map({"n", "x"}, "u", function() vscode.call("undo") end)
+map({"n", "x"}, "<C-r>", function() vscode.call("redo") end)
 
 -- Diagnostics
 map("n", "[d", function() vscode.call("editor.action.marker.prev") end)
