@@ -15,7 +15,7 @@ return {
     name = "catppuccin",
     priority = 1000,
     opts = {
-      flavour = "macchiato",
+      flavour = "frappe",
       transparent_background = true,
     },
     config = function(_, opts)
