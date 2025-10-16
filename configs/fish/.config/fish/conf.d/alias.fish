@@ -9,3 +9,8 @@ type -q batcat; and alias cat="batcat"; and alias bat="batcat"
 type -q fuck; and alias fk="fuck"
 
 type -q nvim; and alias update_lazy="nvim --headless '+Lazy! update' +qa"
+
+# if type -q uv
+#    alias python="uv run python"
+#    alias pip="uv pip"
+# end

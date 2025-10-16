@@ -42,4 +42,12 @@ map("n", "<C-w>z", function() vscode.call("workbench.action.toggleMaximizeEditor
 -- LSP
 map("n", "<leader>rn", function() vscode.call("editor.action.rename") end)
 
+-- Debugger
+map("n", "<leader>db", function() vscode.call("editor.debug.action.toggleBreakpoint") end)
+map("n", "<leader>dB", function() vscode.call("editor.debug.action.conditionalBreakpoint") end)
+map("n", "<leader>di", function() vscode.call("editor.debug.action.toggleInlineBreakpoint") end)
+map("n", "<leader>ds", function() vscode.call("workbench.action.debug.start") end)
+map("n", "<leader>dc", function() vscode.call("workbench.action.debug.continue") end)
+-- TODO
+
 -- stylua: ignore end

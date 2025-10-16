@@ -59,20 +59,6 @@ end
 # Lazygit
 type -q lazygit; and abbr -a lg lazygit
 
-# conda
-abbr -a ca conda activate
-abbr -a cda conda deactivate
-abbr -a ci conda install
-abbr -a ccr conda create
-abbr -a ce conda env
-abbr -a cee conda env export
-abbr -a cec conda env create
-abbr -a cer conda env remove
-abbr -a cel conda env list
-abbr -a cl conda list
-abbr -a cr conda remove
-abbr -a clc condalocal
-
 # python
 abbr -a py python
 abbr -a pipl pip list
@@ -82,3 +68,30 @@ abbr -a pipsh pip show
 abbr -a pipsr pip search
 abbr -a pipfr pip freeze
 abbr -a --set-cursor tsb tensorboard --logdir=%
+
+# docker
+if type -q docker
+    abbr -a d docker
+    abbr -a dps docker ps
+    abbr -a dpsa docker ps -a
+    abbr -a dil docker images
+    abbr -a de docker exec it
+    abbr -a dstop docker stop
+    abbr -a drm docker rm
+    abbr -a drmi docker rmi
+    abbr -a dlogs docker logs -f
+    abbr -a dcleanc docker rm $(docker ps -a -q)
+    abbr -a dcleani docker rmi $(docker images -q)
+    abbr -a dprune docker system prune
+end
+
+# uv
+if type -q uv
+    abbr -a uvi uv init
+    abbr -a uva uv add
+    abbr -a uvs uv sync
+    abbr -a uvl uv lock
+    abbr -a uvr uv run
+    abbr -a av source .venv/bin/activate.fish
+    abbr -a da deactivate
+end

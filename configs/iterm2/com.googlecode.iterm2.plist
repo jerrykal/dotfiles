@@ -2,6 +2,28 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>AIFeatureFunctionCalling</key>
+	<true/>
+	<key>AIFeatureHostedCodeInterpeter</key>
+	<true/>
+	<key>AIFeatureHostedFileSearch</key>
+	<true/>
+	<key>AIFeatureHostedWebSearch</key>
+	<true/>
+	<key>AIFeatureStreamingResponses</key>
+	<true/>
+	<key>AITermAPI</key>
+	<integer>2</integer>
+	<key>AIVectorStore</key>
+	<integer>1</integer>
+	<key>AiMaxTokens</key>
+	<integer>1000000</integer>
+	<key>AiModel</key>
+	<string>gpt-4.1</string>
+	<key>AiResponseMaxTokens</key>
+	<integer>32768</integer>
+	<key>AitermURL</key>
+	<string>https://api.openai.com/v1/responses</string>
 	<key>AllowClipboardAccess</key>
 	<true/>
 	<key>AlwaysOpenWindowAtStartup</key>
@@ -1645,9 +1667,13 @@
 	</dict>
 	<key>Default Bookmark Guid</key>
 	<string>67A35576-8AE5-47D6-B9BC-FAF6A6956478</string>
+	<key>Default Browser Profile Guid</key>
+	<string>11A1DB86-DD43-4B68-B99F-899021C1BE59</string>
 	<key>DimInactiveSplitPanes</key>
 	<true/>
 	<key>HapticFeedbackForEsc</key>
+	<false/>
+	<key>HideActivityIndicator</key>
 	<false/>
 	<key>HideFromDockAndAppSwitcher</key>
 	<true/>
@@ -2308,6 +2334,8 @@
 				<key>Red Component</key>
 				<real>0.82352941176470584</real>
 			</dict>
+			<key>Application Keypad Allowed</key>
+			<true/>
 			<key>BM Growl</key>
 			<true/>
 			<key>Background Color</key>
@@ -2651,10 +2679,12 @@
 			<true/>
 			<key>HotKey Window Reopens On Activation</key>
 			<true/>
+			<key>Icon</key>
+			<integer>1</integer>
 			<key>Idle Code</key>
 			<integer>0</integer>
 			<key>Initial Use Transparency</key>
-			<false/>
+			<true/>
 			<key>Jobs to Ignore</key>
 			<array>
 				<string>rlogin</string>
@@ -3166,7 +3196,7 @@
 			<key>Thin Strokes</key>
 			<integer>0</integer>
 			<key>Transparency</key>
-			<real>0.14999999999999999</real>
+			<real>0.14782366071428571</real>
 			<key>Unlimited Scrollback</key>
 			<true/>
 			<key>Use Bold Font</key>
@@ -3232,6 +3262,8 @@
 	<true/>
 	<key>ShowFullScreenTabBar</key>
 	<true/>
+	<key>ShowNewOutputIndicator</key>
+	<true/>
 	<key>ShowPaneTitles</key>
 	<false/>
 	<key>SoundForEsc</key>
@@ -3248,16 +3280,22 @@
 	<integer>5</integer>
 	<key>TabViewType</key>
 	<integer>1</integer>
+	<key>TabsHaveCloseButton</key>
+	<true/>
 	<key>TerminalMargin</key>
 	<integer>5</integer>
 	<key>TerminalVMargin</key>
 	<integer>2</integer>
 	<key>UIElementRequiresHotkeys</key>
 	<true/>
+	<key>UseBorder</key>
+	<false/>
 	<key>VisualIndicatorForEsc</key>
 	<false/>
 	<key>WindowNumber</key>
 	<false/>
+	<key>com.apple.WebPrivacy.ResourceMonitorURLsVersion</key>
+	<string>qrsAAAGXnXBrwGxMO6s=</string>
 	<key>findMode_iTerm</key>
 	<integer>0</integer>
 	<key>kCPKSelectionViewPreferredModeKey</key>

@@ -18,8 +18,6 @@ set -g fish_cursor_insert line blink
 set -g fish_cursor_replace_one underscore blink
 set -g fish_cursor_visual block
 
-set -g fish_key_bindings fish_hybrid_key_bindings
-
 # Correct colors on ssh (see: https://github.com/fish-shell/fish-shell/issues/7701)
 test -n "$SSH_CLIENT"; or test -n "$SSH_TTY"; and set -g fish_term24bit 1
 
@@ -29,23 +27,6 @@ type -q zoxide; and zoxide init fish | source
 # Initialize thefuck
 if type -q thefuck
     thefuck --alias | source
-end
-
-# Initialize pyenv
-set -gx PYENV_ROOT $HOME/.pyenv
-if test -e $PYENV_ROOT
-    fish_add_path -g $PYENV_ROOT/bin
-
-    pyenv init - | source
-    pyenv virtualenv-init - | sed "s/--on-event fish_prompt/--on-variable PWD --on-event init_done/g" | source
-
-    # NOTE: this is a workaround to reactivate conda environment if it has been set by vscode-python extension
-    #       since running pyenv init will override python path set by conda.
-    if test -n "$CONDA_DEFAULT_ENV" -a "$TERM_PROGRAM" = "vscode"
-        set -l conda_env $CONDA_DEFAULT_ENV
-        conda deactivate
-        conda activate $conda_env
-    end
 end
 
 # Remove unwanted newline at the prompt for vscode shell integration
