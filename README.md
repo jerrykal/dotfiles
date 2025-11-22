@@ -4,9 +4,9 @@ My personal dotfiles.
 
 ## Requirements
 
-Ensure that GNU Stow is installed. Either build from source using the `scripts/install_stow.sh` script or install it via Homebrew with `brew install stow` on macOS.
+Ensure that GNU Stow is installed. Either build from source using the `scripts/install-stow.sh` script or install it via Homebrew with `brew install stow` on macOS.
 
-The `scripts/install_stow.sh` script installs Stow in `$HOME/.local/bin`, so be sure to include this directory in your `$PATH`.
+The `scripts/install-stow.sh` script installs Stow in `$HOME/.local/bin`, so be sure to include this directory in your `$PATH`.
 
 ## Setup
 

@@ -14,6 +14,12 @@ select = [
   "RUF", # Ruff-specific rules
 ]
 ignore = [
+  "F401",   # unused-import
+  "E402",   # module-import-not-at-top-of-file
+  "E501",   # line-too-long
+  "F841",   # unused-variable
+  "RUF059", # unused-unpacked-variable
+
   # Ruff format conflicting rules
   "W191",   # tab-indentation
   "E111",   # indentation-with-invalid-multiple

@@ -45,6 +45,8 @@ abbr -a grm git rm
 abbr -a gC git checkout
 abbr -a gr git reset
 abbr -a gco git checkout
+abbr -a gb git branch
+abbr -a gbd git branch -d
 
 # homebrew
 if type -q brew
