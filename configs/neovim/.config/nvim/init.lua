@@ -1,6 +1,6 @@
-local config_root = "config"
+local config_root = "configs"
 if vim.g.vscode then
-  config_root = "config.vscode"
+  config_root = "configs.vscode"
 end
 
 -- General configurations
@@ -18,4 +18,4 @@ vim.api.nvim_create_autocmd("User", {
   end,
 })
 
-require("config.lazy")
+require("configs.lazy")
