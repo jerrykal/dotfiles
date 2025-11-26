@@ -16,7 +16,7 @@ return {
         ["<C-p>"] = false,
         ["<C-n>"] = false,
         ["<C-j>"] = { "select_next", "fallback_to_mappings" },
-        ["<C-k>"] = { "select_prev", "fallback_to_mappings" },
+        ["<C-k>"] = { "select_prev", "", "fallback_to_mappings" },
         ["<C-u>"] = { "scroll_documentation_up", "scroll_signature_up", "fallback" },
         ["<C-d>"] = { "scroll_documentation_down", "scroll_signature_down", "fallback" },
       },
@@ -24,11 +24,8 @@ return {
         list = {
           selection = {
             preselect = true,
-            auto_insert = false,
+            auto_insert = true,
           },
-        },
-        ghost_text = {
-          enabled = true,
         },
       },
       cmdline = {
@@ -114,13 +111,17 @@ return {
         update_n_lines = "gsn", -- Update `n_lines`
       },
     },
-    keys = "gs",
+    keys = {
+      { "gs", mode = { "n", "x" } },
+    },
   },
 
   {
     "nvim-mini/mini.comment",
     opts = {},
-    keys = "gc",
+    keys = {
+      { "gc", mode = "n", "x" },
+    },
   },
 
   -- Use two autopair plugins, nvim-autopairs for insert mode and mini.pairs for command mode,
@@ -152,6 +153,7 @@ return {
         useDefaults = true,
         disabledDefaults = {
           "r",
+          ",",
         },
       },
     },

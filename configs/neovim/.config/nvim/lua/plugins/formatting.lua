@@ -14,6 +14,8 @@ return {
       formatters_by_ft = {
         lua = { "stylua" },
         python = { "ruff_fix", "ruff_organize_imports", lsp_format = "last" },
+        sh = { "shfmt" },
+        fish = { "fish_lsp" },
       },
       format_on_save = {
         lsp_format = "fallback",
