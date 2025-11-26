@@ -27,7 +27,7 @@ function M.statusline()
   return table.concat({
     " ",
     git_status(),
-    " %f ",
+    " %f %m%r ",
     "%=",
     lsp_diagnostics(),
     " %y [%P %l:%c] ",

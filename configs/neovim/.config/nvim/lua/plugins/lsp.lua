@@ -25,8 +25,12 @@ return {
             },
           },
         },
+
+        -- Python
         basedpyright = {},
         ruff = {},
+
+        -- Lua
         lua_ls = {
           settings = {
             Lua = {
@@ -85,24 +89,5 @@ return {
         ensure_installed = installed_servers,
       })
     end),
-  },
-
-  {
-    "rachartier/tiny-inline-diagnostic.nvim",
-    event = "VeryLazy",
-    priority = 1000,
-    opts = {
-      preset = "powerline",
-      options = {
-        multilines = {
-          enabled = true,
-          always_show = true,
-          severity = {
-            vim.diagnostic.severity.ERROR,
-            vim.diagnostic.severity.WARN,
-          },
-        },
-      },
-    },
   },
 }

@@ -2,7 +2,6 @@ return {
   {
     "stevearc/conform.nvim",
     dependencies = { "mason-org/mason.nvim" },
-    lazy = true,
     event = { "BufWritePre" },
     cmd = "ConformInfo",
     opts = {
@@ -12,9 +11,9 @@ return {
         quiet = false,
         lsp_format = "fallback",
       },
-      formatter_by_ft = {
+      formatters_by_ft = {
         lua = { "stylua" },
-        python = { "ruff" },
+        python = { "ruff_fix", "ruff_organize_imports", lsp_format = "last" },
       },
       format_on_save = {
         lsp_format = "fallback",

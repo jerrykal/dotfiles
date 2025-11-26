@@ -1,4 +1,55 @@
 return {
+  -- Auto-completion
+  {
+    "saghen/blink.cmp",
+    dependencies = { "rafamadriz/friendly-snippets" },
+    version = "1.*",
+    event = { "InsertEnter", "CmdlineEnter" },
+    opts_extend = {
+      "sources.default",
+      "sources.per_filetype",
+      "sources.providers",
+    },
+    opts = {
+      keymap = {
+        preset = "super-tab",
+        ["<C-p>"] = false,
+        ["<C-n>"] = false,
+        ["<C-j>"] = { "select_next", "fallback_to_mappings" },
+        ["<C-k>"] = { "select_prev", "fallback_to_mappings" },
+        ["<C-u>"] = { "scroll_documentation_up", "scroll_signature_up", "fallback" },
+        ["<C-d>"] = { "scroll_documentation_down", "scroll_signature_down", "fallback" },
+      },
+      completion = {
+        list = {
+          selection = {
+            preselect = true,
+            auto_insert = false,
+          },
+        },
+        ghost_text = {
+          enabled = true,
+        },
+      },
+      cmdline = {
+        keymap = {
+          preset = "inherit",
+        },
+        completion = {
+          menu = {
+            auto_show = true,
+          },
+        },
+      },
+      signature = {
+        enabled = true,
+        window = {
+          show_documentation = true,
+        },
+      },
+    },
+  },
+
   -- Better yank/paste
   {
     "gbprod/yanky.nvim",
@@ -63,23 +114,33 @@ return {
         update_n_lines = "gsn", -- Update `n_lines`
       },
     },
+    keys = "gs",
   },
 
   {
     "nvim-mini/mini.comment",
-    event = "VeryLazy",
     opts = {},
+    keys = "gc",
   },
 
+  -- Use two autopair plugins, nvim-autopairs for insert mode and mini.pairs for command mode,
+  -- since nvim-autopairs does not support command mode
   {
     "windwp/nvim-autopairs",
-    event = "InsertEnter",
+    event = { "InsertEnter" },
     opts = {},
+  },
+  {
+    "nvim-mini/mini.pairs",
+    event = { "CmdlineEnter" },
+    opts = {
+      modes = { insert = false, command = true, terminal = false },
+    },
   },
 
   {
     "folke/ts-comments.nvim",
-    event = "VeryLazy",
+    event = "LazyFile",
     opts = {},
   },
 
@@ -89,6 +150,9 @@ return {
     opts = {
       keymaps = {
         useDefaults = true,
+        disabledDefaults = {
+          "r",
+        },
       },
     },
   },
@@ -101,7 +165,6 @@ return {
     opts = {
       library = {
         { path = "${3rd}/luv/library", words = { "vim%.uv" } },
-        { path = "LazyVim", words = { "LazyVim" } },
         { path = "snacks.nvim", words = { "Snacks" } },
         { path = "lazy.nvim", words = { "LazyVim" } },
       },

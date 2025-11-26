@@ -9,20 +9,39 @@ return {
     opts = {
       bigfiles = { enabled = true },
       explorer = { enabled = true },
+      indent = {
+        enable = true,
+        indent = {
+          char = "▏",
+        },
+        scope = {
+          char = "▏",
+        },
+        animate = {
+          enabled = false,
+        },
+      },
       input = { enabled = true },
       notifier = { enabled = true },
       picker = {
         enabled = true,
+        prompt = " ",
+        matcher = {
+          sort_empty = true,
+          frecency = true,
+        },
         sources = {
           -- Show hidden files by default
           files = {
             hidden = true,
+            ignored = true,
           },
           grep = {
             hidden = true,
           },
           explorer = {
             hidden = true,
+            ignored = true,
             layout = {
               layout = {
                 position = "right",
@@ -33,9 +52,32 @@ return {
         win = {
           input = {
             keys = {
-              ["<C-u>"] = { "<C-u>", mode = { "i" }, expr = true, desc = "clear" },
+              ["<C-p>"] = { "history_back", mode = { "i", "n" } },
+              ["<C-n>"] = { "history_forward", mode = { "i", "n" } },
+              ["<a-s>"] = { "flash", mode = { "n", "i" } },
+              ["s"] = { "flash" },
             },
           },
+        },
+        actions = {
+          flash = function(picker)
+            require("flash").jump({
+              pattern = "^",
+              label = { after = { 0, 0 } },
+              search = {
+                mode = "search",
+                exclude = {
+                  function(win)
+                    return vim.bo[vim.api.nvim_win_get_buf(win)].filetype ~= "snacks_picker_list"
+                  end,
+                },
+              },
+              action = function(match)
+                local idx = picker.list:row2idx(match.pos[1])
+                picker.list:_move(idx, true, true)
+              end,
+            })
+          end,
         },
       },
       scope = { enabled = true },
@@ -82,6 +124,7 @@ return {
       { "<leader>sB", function() Snacks.picker.grep_buffers() end, desc = "Grep Open Buffers" },
       { "<leader>sg", function() Snacks.picker.grep() end, desc = "Grep" },
       { "<leader>sw", function() Snacks.picker.grep_word() end, desc = "Visual selection or word", mode = { "n", "x" } },
+
       -- search
       { '<leader>s"', function() Snacks.picker.registers() end, desc = "Registers" },
       { '<leader>s/', function() Snacks.picker.search_history() end, desc = "Search History" },
@@ -117,8 +160,6 @@ return {
       { "<leader>sS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
 
       -- Other
-      { "<leader>z", function() Snacks.zen() end, desc = "Toggle Zen Mode" },
-      { "<leader>Z", function() Snacks.zen.zoom() end, desc = "Toggle Zoom" },
       { "<leader>.", function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },
       { "<leader>S", function() Snacks.scratch.select() end, desc = "Select Scratch Buffer" },
       { "<leader>bd", function() Snacks.bufdelete() end, desc = "Delete Buffer" },

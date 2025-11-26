@@ -2,12 +2,13 @@ return {
   {
     "rose-pine/neovim",
     name = "rose-pine",
+    lazy = false,
     priority = 1000,
     opts = {
       highlight_groups = {
-        IblScope = { fg = "muted" },
-        IblIndent = { fg = "highlight_med" },
-        IblWhitespace = { fg = "highlight_med" },
+        SnacksIndentScope = { fg = "muted" },
+        SnacksIndent = { fg = "highlight_med" },
+        SnacksIndentChunk = { fg = "highlight_med" },
       },
     },
     config = function(_, opts)
