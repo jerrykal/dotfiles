@@ -1,0 +1,24 @@
+# Font
+font-family = "PragmataPro Liga"
+font-size = 15
+font-thicken = true
+
+adjust-cell-height = 40%
+adjust-cursor-thickness = 100%
+adjust-underline-position = 4
+
+# Theme
+theme = Rose Pine
+
+# Window
+maximize = true
+window-padding-balance = true
+window-decoration = none
+
+# Miscellaneous
+shell-integration-features = cursor,sudo,no-title,ssh-env,ssh-terminfo
+clipboard-read = allow
+clipboard-write = allow
+copy-on-select = clipboard
+mouse-hide-while-typing = true
+macos-option-as-alt = true
