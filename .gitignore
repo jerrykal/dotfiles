@@ -1,5 +1,4 @@
 configs/neovim/.config/nvim/plugin/
-configs/neovim/.config/nvim/lazy-lock.json
 configs/neovim/.config/nvim/spell
 configs/zsh/.zsh/plugins
 .stfolder
