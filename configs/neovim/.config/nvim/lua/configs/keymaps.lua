@@ -12,11 +12,11 @@ map("i", "<A-k>", "<esc><cmd>m .-2<cr>==gi", { desc = "Move Up" })
 map("v", "<A-j>", ":<C-u>execute \"'<,'>move '>+\" . v:count1<cr>gv=gv", { desc = "Move Down" })
 map("v", "<A-k>", ":<C-u>execute \"'<,'>move '<-\" . (v:count1 + 1)<cr>gv=gv", { desc = "Move Up" })
 
--- save file
+-- Save file
 map({ "n" }, "<leader>w", "<cmd>w<cr><esc>", { desc = "Save File" })
 map({ "n" }, "<leader>W", "<cmd>noa w<cr><esc>", { desc = "Save File Without Formatting" })
 
--- new file
+-- New file
 map("n", "<leader>fn", "<cmd>enew<cr>", { desc = "New File" })
 
 -- Use ESC to turn off search highlighting

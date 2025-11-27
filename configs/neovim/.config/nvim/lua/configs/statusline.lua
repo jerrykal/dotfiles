@@ -23,13 +23,25 @@ local function lsp_diagnostics()
   return errors .. warns
 end
 
+local function file_encoding()
+  local encoding = vim.bo.fileencoding == "" and vim.o.encoding or vim.bo.fileencoding
+  return "[" .. encoding .. "]"
+end
+
+local function file_format()
+  return "[" .. vim.bo.fileformat .. "]"
+end
+
 function M.statusline()
   return table.concat({
     "",
     git_status(),
-    " %{expand('%:~:.')} %m%r",
-    "%=",
+    " %{expand('%:~:.')} %m%r ",
     lsp_diagnostics(),
+    "%=",
+    file_encoding(),
+    " ",
+    file_format(),
     " %y [%P %l:%c] ",
   })
 end

@@ -106,6 +106,13 @@ return {
       end, { lsp = { method = "textDocument/documentHighlight" }, desc = "Prev Reference", enabled = Snacks.words.is_enabled})
       -- stylua: ignore end
 
+      -- Diagnostics
+      vim.diagnostic.config(opts.diagnostics)
+
+      if opts.servers["*"] then
+        vim.lsp.config("*", opts.servers["*"])
+      end
+
       -- Inlay hints
       if opts.inlay_hints.enabled then
         Snacks.util.lsp.on({ method = "textDocument/inlayHint" }, function(bufnr)
@@ -117,13 +124,6 @@ return {
             vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
           end
         end)
-      end
-
-      -- Diagnostics
-      vim.diagnostic.config(opts.diagnostics)
-
-      if opts.servers["*"] then
-        vim.lsp.config("*", opts.servers["*"])
       end
 
       local function configure(server)
