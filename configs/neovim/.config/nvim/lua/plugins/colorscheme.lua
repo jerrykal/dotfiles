@@ -6,6 +6,7 @@ return {
     priority = 1000,
     opts = {
       highlight_groups = {
+        CursorLine = { bg = "highlight_low" },
         WinBar = { bg = "base" },
         WinBarNC = { bg = "base" },
 

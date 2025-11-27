@@ -5,6 +5,7 @@ vim.g.maplocalleader = "\\"
 local opt = vim.opt
 
 -- General options
+opt.cursorline = true
 opt.completeopt = { "menu", "menuone", "noselect" } -- Completion options
 opt.confirm = true -- Confirm before closing unsaved buffers
 opt.guicursor =
