@@ -103,7 +103,7 @@ return {
         map("n", "<leader>ghD", function() gitsigns.diffthis("~") end, "Diff This ~")
 
         -- Toggle
-        map("n", "<leader>tb", gitsigns.toggle_current_line_blame, "Toggle Current Line Blame")
+        map("n", "<leader>gtb", gitsigns.toggle_current_line_blame, "Toggle Current Line Blame")
 
         -- Text object
         map({ "o", "x" }, "ih", gitsigns.select_hunk, "GitSigns Select Hunk")
