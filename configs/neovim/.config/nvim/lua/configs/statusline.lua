@@ -7,7 +7,7 @@ local function git_status()
     local changed = git_info.added and git_info.changed ~= 0 and " ~" .. git_info.changed or ""
     local removed = git_info.added and git_info.removed ~= 0 and " -" .. git_info.removed or ""
 
-    return "[ " .. git_info.head .. added .. changed .. removed .. "]"
+    return " [ " .. git_info.head .. added .. changed .. removed .. "]"
   end
 
   return ""
@@ -25,9 +25,9 @@ end
 
 function M.statusline()
   return table.concat({
-    " ",
+    "",
     git_status(),
-    " %f %m%r ",
+    " %{expand('%:~:.')} %m%r",
     "%=",
     lsp_diagnostics(),
     " %y [%P %l:%c] ",

@@ -9,3 +9,12 @@ vim.api.nvim_create_autocmd("DiagnosticChanged", {
     vim.cmd("redrawstatus")
   end,
 })
+
+-- Disable auto comment when press enter
+vim.api.nvim_create_autocmd("FileType", {
+  group = augroup("custom_formatoptions"),
+  pattern = "*",
+  callback = function()
+    vim.opt_local.formatoptions:remove({ "t", "c", "r", "o" })
+  end,
+})

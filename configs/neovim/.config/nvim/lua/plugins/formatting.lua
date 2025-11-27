@@ -13,23 +13,28 @@ return {
       },
       formatters_by_ft = {
         lua = { "stylua" },
-        python = { "ruff_fix", "ruff_organize_imports", lsp_format = "last" },
+        python = { "ruff_fix", "ruff_organize_imports", "ruff_format" },
         sh = { "shfmt" },
-        fish = { "fish_lsp" },
       },
       format_on_save = {
         lsp_format = "fallback",
         timeout_ms = 500,
       },
     },
+    -- stylua: ignore
     keys = {
-      {
-        "<leader>cf",
-        function()
-          require("conform").format()
-        end,
-        mode = { "n", "x" },
-        desc = "Format selected range",
+      { "<leader>cf", function() require("conform").format() end, mode = { "n", "x" }, desc = "Format selected range", },
+    },
+  },
+
+  -- Formatters listed here will be automatically installed
+  {
+    "mason-org/mason.nvim",
+    opts = {
+      ensure_installed = {
+        "ruff",
+        "stylua",
+        "shfmt",
       },
     },
   },

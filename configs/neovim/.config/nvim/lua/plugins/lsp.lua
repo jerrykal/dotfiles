@@ -5,30 +5,16 @@ return {
     dependencies = {
       "mason-org/mason.nvim",
       { "mason-org/mason-lspconfig.nvim", config = function() end },
-      { "j-hui/fidget.nvim", opts = {} },
       "folke/snacks.nvim",
+      "SmiteshP/nvim-navic",
+      { "j-hui/fidget.nvim", opts = {} },
     },
     opts = {
-      diagnostics = {
-        underline = true,
-        update_in_insert = false,
-        virtual_text = false, -- use tiny-inline-diagnostic instead
-        severity_sort = true,
-        signs = false,
-      },
-
-      -- LSP servers listed here will be automatically installed
+      -- LSP Server configs
+      -- NOTE: Servers listed here will be automatically installed
       servers = {
-        ["*"] = {
-          capabilities = {
-            workspace = {
-              fileOperations = {
-                didRename = true,
-                willRename = true,
-              },
-            },
-          },
-        },
+        -- Global configs applied to all servers
+        ["*"] = {},
 
         -- Python
         basedpyright = {},
@@ -73,12 +59,22 @@ return {
         -- Fish script
         fish_lsp = {},
       },
+      diagnostics = {
+        underline = true,
+        update_in_insert = false,
+        virtual_text = false, -- use tiny-inline-diagnostic instead
+        severity_sort = true,
+        signs = false,
+      },
+      inlay_hints = {
+        enabled = true,
+        exclude = {}, -- filetypes for which you don't want to enable inlay hints
+      },
     },
     config = vim.schedule_wrap(function(_, opts)
       -- Keymaps
-      local map = Snacks.keymap.set
-
       -- stylua: ignore start
+      local map = Snacks.keymap.set
       map("n", "gd", Snacks.picker.lsp_definitions, { lsp = { method = "textDocument/defnition" }, desc = "Goto Definition" })
       map("n", "gr", Snacks.picker.lsp_references, { lsp = { method = "textDocument/references" }, no_wait = true , desc = "References" })
       map("n", "gI", Snacks.picker.lsp_implementations, { lsp = { method = "textDocument/implementation" },  desc = "Goto Implementation" })
@@ -95,8 +91,6 @@ return {
       map({ "n", "x" }, "<leader>ca", vim.lsp.buf.code_action, { lsp = { method = "textDocument/codeAction" }, desc = "Code Action" })
       map({ "n", "x" }, "<leader>cc", vim.lsp.codelens.run, { lsp = { method = "textDocument/codeLens" }, desc = "Run Codelens" })
       map("n", "<leader>cC", vim.lsp.codelens.refresh, { lsp = { method = "textDocument/codeLens" }, desc = "Refresh & Display Codelens" })
-      map("n", "<leader>rf", Snacks.rename.rename_file, { lsp = { method = "workspace/didRenameFiles" }, desc = "Rename File" })
-      map("n", "<leader>rf", Snacks.rename.rename_file, { lsp = { method = "workspace/willRenameFiles" }, desc = "Rename File" })
       map("n", "<leader>rn", vim.lsp.buf.rename, { lsp = { method = "textDocument/rename" }, desc = "Rename" })
       map("n", "]]", function()
         Snacks.words.jump(vim.v.count1, true)
@@ -111,6 +105,19 @@ return {
         Snacks.words.jump(-vim.v.count1, true)
       end, { lsp = { method = "textDocument/documentHighlight" }, desc = "Prev Reference", enabled = Snacks.words.is_enabled})
       -- stylua: ignore end
+
+      -- Inlay hints
+      if opts.inlay_hints.enabled then
+        Snacks.util.lsp.on({ method = "textDocument/inlayHint" }, function(bufnr)
+          if
+            vim.api.nvim_buf_is_valid(bufnr)
+            and vim.bo[bufnr].buftype == ""
+            and not vim.tbl_contains(opts.inlay_hints.exclude, vim.bo[bufnr].filetype)
+          then
+            vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+          end
+        end)
+      end
 
       -- Diagnostics
       vim.diagnostic.config(opts.diagnostics)
@@ -142,11 +149,10 @@ return {
     "mason-org/mason.nvim",
     cmd = "Mason",
     build = ":MasonUpdate",
-    opts = {
-      ensure_installed = {
-        "shfmt",
-      },
+    opts_extend = {
+      "ensure_installed",
     },
+    opts = {},
     config = function(_, opts)
       require("mason").setup(opts)
 
@@ -157,6 +163,59 @@ return {
           if not p:is_installed() then
             p:install()
           end
+        end
+      end)
+    end,
+  },
+
+  {
+    "SmiteshP/nvim-navic",
+    dependencies = { "folke/snacks.nvim" },
+    lazy = true,
+    opts = {
+      lsp = {
+        auto_attach = true,
+      },
+      highlight = true,
+      separator = "  ",
+      depth_limit_indicator = "…",
+      click = true,
+      icons = {
+        File = " ",
+        Module = " ",
+        Namespace = " ",
+        Package = " ",
+        Class = " ",
+        Method = " ",
+        Property = " ",
+        Field = " ",
+        Constructor = " ",
+        Enum = " ",
+        Interface = " ",
+        Function = " ",
+        Variable = " ",
+        Constant = " ",
+        String = " ",
+        Number = " ",
+        Boolean = " ",
+        Array = " ",
+        Object = " ",
+        Key = " ",
+        Null = " ",
+        EnumMember = " ",
+        Struct = " ",
+        Event = " ",
+        Operator = " ",
+        TypeParameter = " ",
+      },
+    },
+    config = function(_, opts)
+      local navic = require("nvim-navic")
+      navic.setup(opts)
+
+      Snacks.util.lsp.on({ method = "textDocument/documentSymbol" }, function(bufnr)
+        if vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].buftype == "" then
+          vim.wo.winbar = "  %{%v:lua.require'nvim-navic'.get_location()%}  "
         end
       end)
     end,

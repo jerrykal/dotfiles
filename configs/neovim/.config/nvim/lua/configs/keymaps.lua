@@ -31,6 +31,14 @@ map("i", ";", ";<c-g>u")
 map("v", "<", "<gv")
 map("v", ">", ">gv")
 
+-- Commenting
+map("n", "gco", "o<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add Comment Below" })
+map("n", "gcO", "O<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add Comment Above" })
+
+-- Navigate modified(unsaved) buffers
+map("n", "]=", "<cmd>execute +v:count1 . 'bmodified'<cr>", { desc = "Next Modified Buffer" })
+map("n", "[=", "<cmd>execute -v:count1 . 'bmodified'<cr>", { desc = "Prev Modified Buffer" })
+
 -- https://github.com/mhinz/vim-galore#saner-behavior-of-n-and-n
 map("n", "n", "'Nn'[v:searchforward].'zv'", { expr = true })
 map("x", "n", "'Nn'[v:searchforward]", { expr = true })
