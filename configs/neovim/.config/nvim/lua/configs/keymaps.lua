@@ -67,3 +67,11 @@ map("n", "[w", diagnostic_goto(false, "WARN"), { desc = "Prev Warning" })
 
 -- lazy
 map("n", "<leader>l", "<cmd>Lazy<cr>", { desc = "Lazy" })
+
+-- Tmux
+vim.keymap.set(
+  "n",
+  "<leader>to",
+  require("configs.utils").open_in_new_tmux_window,
+  { desc = "Open current file in new Tmux window" }
+)
