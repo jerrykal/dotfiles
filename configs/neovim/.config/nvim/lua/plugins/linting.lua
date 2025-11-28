@@ -1,7 +1,18 @@
 return {
   {
     "mfussenegger/nvim-lint",
-    dependencies = { "mason-org/mason.nvim" },
+    dependencies = {
+      {
+        "mason.nvim",
+        opts = {
+          -- Linters listed here will be automatically installed
+          ensure_installed = {
+            "markdownlint",
+            "vale",
+          },
+        },
+      },
+    },
     event = "LazyFile",
     opts = {
       linters_by_ft = {
@@ -22,16 +33,5 @@ return {
         end,
       })
     end,
-  },
-
-  -- Linters listed here will be automatically installed
-  {
-    "mason-org/mason.nvim",
-    opts = {
-      ensure_installed = {
-        "markdownlint",
-        "vale",
-      },
-    },
   },
 }

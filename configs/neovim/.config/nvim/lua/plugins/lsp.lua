@@ -3,18 +3,25 @@ return {
     "neovim/nvim-lspconfig",
     event = "LazyFile",
     dependencies = {
-      "mason-org/mason.nvim",
-      { "mason-org/mason-lspconfig.nvim", config = function() end },
-      "folke/snacks.nvim",
-      "SmiteshP/nvim-navic",
-      { "j-hui/fidget.nvim", opts = {} },
+      "mason.nvim",
+      "mason-lspconfig.nvim",
+      "snacks.nvim",
+      "nvim-navic",
+      "fidget.nvim",
     },
     opts = {
       -- LSP Server configs
       -- NOTE: Servers listed here will be automatically installed
       servers = {
         -- Global configs applied to all servers
-        ["*"] = {},
+        ["*"] = {
+          workspace = {
+            fileOperations = {
+              didRename = true,
+              willRename = true,
+            },
+          },
+        },
 
         -- Python
         basedpyright = {},
@@ -167,6 +174,8 @@ return {
       end)
     end,
   },
+
+  { "mason-org/mason-lspconfig.nvim", lazy = true },
 
   {
     "SmiteshP/nvim-navic",

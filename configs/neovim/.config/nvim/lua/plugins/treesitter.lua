@@ -92,7 +92,9 @@ return {
     "nvim-treesitter/nvim-treesitter-context",
     branch = "master",
     event = "LazyFile",
-    opts = {},
+    opts = {
+      multiwindow = true,
+    },
   },
 
   -- {

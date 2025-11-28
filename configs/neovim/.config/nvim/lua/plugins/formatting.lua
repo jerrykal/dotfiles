@@ -1,7 +1,19 @@
 return {
   {
     "stevearc/conform.nvim",
-    dependencies = { "mason-org/mason.nvim" },
+    dependencies = {
+      {
+        "mason.nvim",
+        opts = {
+          -- Formatters listed here will be automatically installed
+          ensure_installed = {
+            "ruff",
+            "stylua",
+            "shfmt",
+          },
+        },
+      },
+    },
     event = { "BufWritePre" },
     cmd = "ConformInfo",
     opts = {
@@ -24,18 +36,6 @@ return {
     -- stylua: ignore
     keys = {
       { "<leader>cf", function() require("conform").format() end, mode = { "n", "x" }, desc = "Format selected range", },
-    },
-  },
-
-  -- Formatters listed here will be automatically installed
-  {
-    "mason-org/mason.nvim",
-    opts = {
-      ensure_installed = {
-        "ruff",
-        "stylua",
-        "shfmt",
-      },
     },
   },
 }
