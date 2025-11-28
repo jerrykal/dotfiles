@@ -1,11 +1,10 @@
 # Font
 font-family = "PragmataPro Liga"
-font-size = 15
+font-size = 16
 font-thicken = true
 
-adjust-cell-height = 40%
+adjust-cell-height = 10
 adjust-cursor-thickness = 100%
-adjust-underline-position = 4
 
 # Theme
 theme = Rose Pine
