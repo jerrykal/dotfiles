@@ -2,14 +2,6 @@ return {
   -- Lazygit integration
   {
     "snacks.nvim",
-    opts = {
-      lazygit = {
-        -- Disable background blend, as it will mess up the icons
-        win = {
-          wo = { winblend = 0 },
-        },
-      },
-    },
     -- stylua: ignore
     keys = {
       { "<leader>gg", function() Snacks.lazygit() end, desc = "Lazygit", },
@@ -82,6 +74,21 @@ return {
         map({ "o", "x" }, "ih", gitsigns.select_hunk, "GitSigns Select Hunk")
         -- stylua: ignore end
       end,
+    },
+  },
+
+  {
+    "sindrets/diffview.nvim",
+    cmd = { "DiffviewOpen", "DiffviewFileHistory" },
+    opts = {
+      file_panel = {
+        win_config = { position = "right" },
+      },
+    },
+    keys = {
+      { "<leader>gD", "<cmd>DiffviewOpen<cr>", desc = "Open Diffview" },
+      { "<leader>gHb", "<cmd>DiffviewFileHistory<cr>", desc = "Open File History Diffview(Branch)" },
+      { "<leader>gHf", "<cmd>DiffviewFileHistory %<cr>", desc = "Open File History Diffview(Current File)" },
     },
   },
 }

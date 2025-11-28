@@ -8,6 +8,7 @@ pcall(require, config_root .. ".options")
 
 -- Load after plugins
 vim.api.nvim_create_autocmd("User", {
+  group = vim.api.nvim_create_augroup("keymaps_and_autocmds", { clear = true }),
   pattern = "VeryLazy",
   callback = function()
     -- Key mappings

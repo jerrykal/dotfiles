@@ -5,11 +5,6 @@ return {
     dependencies = { "rafamadriz/friendly-snippets" },
     version = "1.*",
     event = { "InsertEnter", "CmdlineEnter" },
-    opts_extend = {
-      "sources.default",
-      "sources.per_filetype",
-      "sources.providers",
-    },
     opts = {
       keymap = {
         preset = "super-tab",

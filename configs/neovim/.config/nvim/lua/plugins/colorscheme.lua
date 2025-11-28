@@ -3,12 +3,15 @@ return {
     "rose-pine/neovim",
     name = "rose-pine",
     lazy = false,
-    priority = 1000,
+    priority = 10000,
     opts = {
       highlight_groups = {
         CursorLine = { bg = "highlight_low" },
         WinBar = { bg = "base" },
         WinBarNC = { bg = "base" },
+
+        -- sindrets/diffview.nvim
+        DiffviewDiffDelete = { fg = "highlight_med", bg = "base" },
 
         -- folke/snacks.nvim
         SnacksIndentScope = { fg = "muted" },

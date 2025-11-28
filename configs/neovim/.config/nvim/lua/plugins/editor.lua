@@ -33,30 +33,8 @@ return {
             keys = {
               ["<C-p>"] = { "history_back", mode = { "i", "n" } },
               ["<C-n>"] = { "history_forward", mode = { "i", "n" } },
-              ["<a-s>"] = { "flash", mode = { "n", "i" } },
-              ["s"] = { "flash" },
             },
           },
-        },
-        actions = {
-          flash = function(picker)
-            require("flash").jump({
-              pattern = "^",
-              label = { after = { 0, 0 } },
-              search = {
-                mode = "search",
-                exclude = {
-                  function(win)
-                    return vim.bo[vim.api.nvim_win_get_buf(win)].filetype ~= "snacks_picker_list"
-                  end,
-                },
-              },
-              action = function(match)
-                local idx = picker.list:row2idx(match.pos[1])
-                picker.list:_move(idx, true, true)
-              end,
-            })
-          end,
         },
       },
     },
@@ -121,7 +99,6 @@ return {
       { "<leader>sq", function() Snacks.picker.qflist() end, desc = "Quickfix List" },
       { "<leader>sR", function() Snacks.picker.resume() end, desc = "Resume" },
       { "<leader>su", function() Snacks.picker.undo() end, desc = "Undo History" },
-      { "<leader>uC", function() Snacks.picker.colorschemes() end, desc = "Colorschemes" },
 
       -- Others
       { "<leader>bd", function() Snacks.bufdelete() end, desc = "Delete Buffer" },
@@ -137,11 +114,7 @@ return {
         backdrop = false,
       },
       modes = {
-        char = {
-          highlight = {
-            backdrop = false,
-          },
-        },
+        char = { enabled = false },
       },
     },
     -- stylua: ignore
@@ -161,6 +134,41 @@ return {
             }
           }) 
         end, desc = "Treesitter Incremental Selection" },
+    },
+  },
+  {
+    "snacks.nvim",
+    opts = {
+      picker = {
+        win = {
+          input = {
+            keys = {
+              ["<a-s>"] = { "flash", mode = { "n", "i" } },
+              ["s"] = { "flash" },
+            },
+          },
+        },
+        actions = {
+          flash = function(picker)
+            require("flash").jump({
+              pattern = "^",
+              label = { after = { 0, 0 } },
+              search = {
+                mode = "search",
+                exclude = {
+                  function(win)
+                    return vim.bo[vim.api.nvim_win_get_buf(win)].filetype ~= "snacks_picker_list"
+                  end,
+                },
+              },
+              action = function(match)
+                local idx = picker.list:row2idx(match.pos[1])
+                picker.list:_move(idx, true, true)
+              end,
+            })
+          end,
+        },
+      },
     },
   },
 
@@ -278,6 +286,39 @@ return {
     end,
   },
 
+  -- Better folding
+  {
+    "kevinhwang91/nvim-ufo",
+    event = "LazyFile",
+    dependencies = { "kevinhwang91/promise-async" },
+    opts = {
+      preview = {
+        mappings = {
+          scrollB = "<C-U>",
+          scrollF = "<C-F>",
+          scrollU = "<C-u>",
+          scrollD = "<C-d>",
+          jumpTop = "H",
+          jumpBot = "L",
+        },
+      },
+    },
+    -- stylua: ignore
+    keys = {
+      {"zR", function () require("ufo").openAllFolds() end, desc = "Open All Folds"},
+      {"zM", function () require("ufo").closeAllFolds() end, desc = "Close All Folds"},
+      {"zK", function () require("ufo").peekFoldedLinesUnderCursor() end, desc = "Peek Folded Lines"},
+      {"[o", function ()
+        require("ufo").goPreviousClosedFold()
+        require("ufo").peekFoldedLinesUnderCursor()
+      end, desc = "Prev Fold"},
+      {"]o", function ()
+        require("ufo").goNextClosedFold()
+        require("ufo").peekFoldedLinesUnderCursor()
+      end, desc = "Next Fold"},
+    },
+  },
+
   {
     "stevearc/oil.nvim",
     dependencies = { "mini.icons" },
@@ -323,6 +364,7 @@ return {
     event = "LazyFile",
     dependencies = { "MunifTanjim/nui.nvim" },
     opts = {
+      disable_mouse = false,
       disabled_filetypes = {
         "harpoon",
       },
