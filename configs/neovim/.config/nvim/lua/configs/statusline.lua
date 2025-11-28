@@ -17,7 +17,7 @@ local function lsp_diagnostics()
   local error_count = vim.tbl_count(vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR }))
   local warn_count = vim.tbl_count(vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN }))
 
-  local errors = error_count ~= 0 and " " .. error_count or ""
+  local errors = error_count ~= 0 and "  " .. error_count or ""
   local warns = warn_count ~= 0 and "  " .. warn_count or ""
 
   return errors .. warns
@@ -36,7 +36,7 @@ function M.statusline()
   return table.concat({
     "",
     git_status(),
-    " %{expand('%:~:.')} %m%r ",
+    " %{expand('%:~:.')}%m%r",
     lsp_diagnostics(),
     "%=",
     file_encoding(),
