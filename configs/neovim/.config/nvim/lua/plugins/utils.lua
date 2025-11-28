@@ -12,6 +12,4 @@ return {
       { "<leader>qd", function() require("persistence").stop() end, desc = "Don't Save Current Session" },
     },
   },
-
-  { "nvim-lua/plenary.nvim", lazy = true },
 }

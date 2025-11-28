@@ -43,9 +43,9 @@ return {
         select = {
           enable = true,
           lookahead = true,
-          ["af"] = "@function.outer",
           keymaps = {
             ["if"] = "@function.inner",
+            ["af"] = "@function.outer",
             ["ic"] = "@class.inner",
             ["ac"] = "@class.outer",
             ["i,"] = "@parameter.inner",
