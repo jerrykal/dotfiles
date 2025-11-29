@@ -54,7 +54,6 @@ return {
       options = {
         multilines = {
           enabled = true,
-          always_show = true,
           severity = {
             vim.diagnostic.severity.ERROR,
             vim.diagnostic.severity.WARN,

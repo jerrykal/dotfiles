@@ -1,9 +1,10 @@
+local autocmd = vim.api.nvim_create_autocmd
 local function augroup(name)
   return vim.api.nvim_create_augroup(name, { clear = true })
 end
 
 -- Refresh statusline on event
-vim.api.nvim_create_autocmd("DiagnosticChanged", {
+autocmd("DiagnosticChanged", {
   group = augroup("refresh_statusline"),
   callback = function()
     vim.cmd("redrawstatus")
@@ -11,10 +12,33 @@ vim.api.nvim_create_autocmd("DiagnosticChanged", {
 })
 
 -- Disable auto comment when press enter
-vim.api.nvim_create_autocmd("FileType", {
+autocmd("FileType", {
   group = augroup("custom_formatoptions"),
   pattern = "*",
   callback = function()
     vim.opt_local.formatoptions:remove({ "t", "c", "r", "o" })
+  end,
+})
+
+-- Automatically toggle relativenumber
+local toggle_relativenumber_augroup = augroup("toggle_relativenumber")
+autocmd({ "BufEnter", "FocusGained", "WinEnter", "CmdlineLeave" }, {
+  group = toggle_relativenumber_augroup,
+  pattern = "*",
+  callback = function()
+    if vim.o.number then
+      vim.o.relativenumber = true
+      vim.cmd("redraw")
+    end
+  end,
+})
+autocmd({ "BufLeave", "FocusLost", "WinLeave", "CmdlineEnter" }, {
+  group = toggle_relativenumber_augroup,
+  pattern = "*",
+  callback = function()
+    if vim.o.number then
+      vim.o.relativenumber = false
+      vim.cmd("redraw")
+    end
   end,
 })

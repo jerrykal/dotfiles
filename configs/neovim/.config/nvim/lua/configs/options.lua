@@ -8,7 +8,6 @@ local opt = vim.opt
 opt.colorcolumn = "120"
 opt.completeopt = { "menu", "menuone", "noselect" } -- Completion options
 opt.confirm = true -- Confirm before closing unsaved buffers
-opt.cursorline = true
 opt.fillchars = {
   foldopen = "",
   foldclose = "",
@@ -45,7 +44,7 @@ opt.undolevels = 10000
 opt.updatetime = 200 -- Save swap file and trigger CursorHold
 opt.updatetime = 250
 opt.virtualedit = "block" -- Allow cursor to move anywhere in visual block mode
-opt.wrap = true -- Line wrapping
+opt.wrap = false -- Line wrapping off
 
 -- Search options
 opt.ignorecase = true

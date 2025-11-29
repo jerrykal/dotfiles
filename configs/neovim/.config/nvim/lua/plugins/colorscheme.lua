@@ -7,11 +7,13 @@ return {
     opts = {
       highlight_groups = {
         CursorLine = { bg = "highlight_low" },
+        DiffDelete = { fg = "highlight_med", bg = "base" },
         WinBar = { bg = "base" },
         WinBarNC = { bg = "base" },
 
-        -- sindrets/diffview.nvim
-        DiffviewDiffDelete = { fg = "highlight_med", bg = "base" },
+        -- nvim-treesitter/nvim-treesitter-context
+        TreesitterContext = { bg = "base" },
+        TreesitterContextLineNumber = { bg = "base" },
 
         -- folke/snacks.nvim
         SnacksIndentScope = { fg = "muted" },

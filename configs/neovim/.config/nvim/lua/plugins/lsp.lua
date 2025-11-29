@@ -82,10 +82,6 @@ return {
       -- Diagnostics
       vim.diagnostic.config(opts.diagnostics)
 
-      if opts.servers["*"] then
-        vim.lsp.config("*", opts.servers["*"])
-      end
-
       -- Inlay hints
       if opts.inlay_hints.enabled then
         Snacks.util.lsp.on({ method = "textDocument/inlayHint" }, function(bufnr)
@@ -99,8 +95,12 @@ return {
         end)
       end
 
+      -- Configure LSP servers
+      if opts.servers["*"] then
+        -- Setup global configuration first
+        vim.lsp.config("*", opts.servers["*"])
+      end
       local function configure(server)
-        -- Global configurations for all servers
         if server == "*" then
           return false
         end
@@ -216,8 +216,7 @@ return {
       },
     },
     config = function(_, opts)
-      local navic = require("nvim-navic")
-      navic.setup(opts)
+      require("nvim-navic").setup(opts)
 
       Snacks.util.lsp.on({ method = "textDocument/documentSymbol" }, function(bufnr)
         if vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].buftype == "" then
