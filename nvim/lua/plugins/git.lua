@@ -44,6 +44,7 @@ return {
             vim.cmd.normal({ "]h", bang = true })
           else
             gitsigns.nav_hunk("next")
+            gitsigns.preview_hunk_inline()
           end
         end, "Next Hunk")
         map("n", "[h", function()
@@ -51,6 +52,7 @@ return {
             vim.cmd.normal({ "[h", bang = true })
           else
             gitsigns.nav_hunk("prev")
+            gitsigns.preview_hunk_inline()
           end
         end, "Prev Hunk")
         map("n", "<leader>ghs", gitsigns.stage_hunk, "Stage Hunk")

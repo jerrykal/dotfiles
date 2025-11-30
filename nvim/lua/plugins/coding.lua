@@ -181,7 +181,7 @@ return {
     opts = {
       keymaps = {
         useDefaults = true,
-        disabledDefaults = { "i,", "a," },
+        disabledDefaults = { "i,", "a,", "r", "R" },
       },
     },
   },

@@ -4,14 +4,6 @@ local map = vim.keymap.set
 map("", "j", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', { expr = true })
 map("", "k", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', { expr = true })
 
--- Move Lines
-map("n", "<A-j>", "<cmd>execute 'move .+' . v:count1<cr>==", { desc = "Move Down" })
-map("n", "<A-k>", "<cmd>execute 'move .-' . (v:count1 + 1)<cr>==", { desc = "Move Up" })
-map("i", "<A-j>", "<esc><cmd>m .+1<cr>==gi", { desc = "Move Down" })
-map("i", "<A-k>", "<esc><cmd>m .-2<cr>==gi", { desc = "Move Up" })
-map("v", "<A-j>", ":<C-u>execute \"'<,'>move '>+\" . v:count1<cr>gv=gv", { desc = "Move Down" })
-map("v", "<A-k>", ":<C-u>execute \"'<,'>move '<-\" . (v:count1 + 1)<cr>gv=gv", { desc = "Move Up" })
-
 -- Save file
 map({ "n" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save File" })
 map({ "n" }, "<C-S-s>", "<cmd>noa w<cr><esc>", { desc = "Save File Without Formatting" })
@@ -30,6 +22,9 @@ map("i", ";", ";<c-g>u")
 -- Better indenting
 map("v", "<", "<gv")
 map("v", ">", ">gv")
+
+-- Select all
+map("n", "<C-a>", "gg<S-v>G")
 
 -- Commenting
 map("n", "gco", "o<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add Comment Below" })

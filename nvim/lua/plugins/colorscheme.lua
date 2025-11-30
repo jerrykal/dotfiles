@@ -23,6 +23,10 @@ return {
         -- SmiteshP/nvim-navic
         NavicText = { fg = "muted" },
         NavicSeparator = { fg = "muted" },
+
+        -- lewis6991/gitsigns
+        GitSignsDeletePreview = { bg = "love", blend = 20 },
+        GitSignsDeleteVirtLn = { link = "GitSignsDeletePreview" },
       },
     },
     config = function(_, opts)

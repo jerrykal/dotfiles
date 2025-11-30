@@ -5,6 +5,7 @@ return {
       explorer = { enabled = true },
       picker = {
         enabled = true,
+        layout = { preset = "dropdown" },
         matcher = {
           sort_empty = true,
           frecency = true,
@@ -130,7 +131,7 @@ return {
               ["<c-space>"] = "next",
               ["<BS>"] = "prev"
             }
-          }) 
+          })
         end, desc = "Treesitter Incremental Selection" },
     },
   },
@@ -356,17 +357,10 @@ return {
     },
   },
 
-  -- Build better habits with vim motion
   {
-    "m4xshen/hardtime.nvim",
-    event = "LazyFile",
-    dependencies = { "MunifTanjim/nui.nvim" },
-    opts = {
-      disable_mouse = false,
-      disabled_filetypes = {
-        "harpoon",
-      },
-    },
+    "abecodes/tabout.nvim",
+    event = "InsertEnter",
+    opts = {},
   },
 
   { "tpope/vim-repeat", event = "VeryLazy" },

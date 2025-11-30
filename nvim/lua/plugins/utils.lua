@@ -7,6 +7,7 @@ return {
     },
     -- stylua: ignore
     keys = {
+      { "<leader>z",  function() Snacks.zen.zoom() end, desc = "Toggle Zoom" },
       { "<leader>.", function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },
       { "<leader>S", function() Snacks.scratch.select() end, desc = "Select Scratch Buffer" },
     },
