@@ -4,6 +4,6 @@ My personal dotfiles.
 
 ## Installation
 
-```shell
-stow .
+```bash
+./install.sh
 ```
