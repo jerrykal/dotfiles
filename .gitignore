@@ -1,5 +1,7 @@
+.stfolder
+.stversions
 configs/neovim/.config/nvim/plugin/
 configs/neovim/.config/nvim/spell
 configs/zsh/.zsh/plugins
-.stfolder
-.stversions
+fish/fish_variables
+tmux/plugins
