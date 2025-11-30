@@ -1,19 +1,6 @@
 return {
   {
     "stevearc/conform.nvim",
-    dependencies = {
-      {
-        "mason.nvim",
-        opts = {
-          -- Formatters listed here will be automatically installed
-          ensure_installed = {
-            "ruff",
-            "stylua",
-            "shfmt",
-          },
-        },
-      },
-    },
     event = { "BufWritePre" },
     cmd = "ConformInfo",
     opts = {
@@ -23,11 +10,7 @@ return {
         quiet = false,
         lsp_format = "fallback",
       },
-      formatters_by_ft = {
-        lua = { "stylua" },
-        python = { "ruff_fix", "ruff_organize_imports", "ruff_format" },
-        sh = { "shfmt" },
-      },
+      formatters_by_ft = {},
       format_on_save = {
         lsp_format = "fallback",
         timeout_ms = 500,

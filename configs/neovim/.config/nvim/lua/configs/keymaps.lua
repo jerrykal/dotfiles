@@ -13,8 +13,8 @@ map("v", "<A-j>", ":<C-u>execute \"'<,'>move '>+\" . v:count1<cr>gv=gv", { desc 
 map("v", "<A-k>", ":<C-u>execute \"'<,'>move '<-\" . (v:count1 + 1)<cr>gv=gv", { desc = "Move Up" })
 
 -- Save file
-map({ "n" }, "<leader>w", "<cmd>w<cr><esc>", { desc = "Save File" })
-map({ "n" }, "<leader>W", "<cmd>noa w<cr><esc>", { desc = "Save File Without Formatting" })
+map({ "n" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save File" })
+map({ "n" }, "<C-S-s>", "<cmd>noa w<cr><esc>", { desc = "Save File Without Formatting" })
 
 -- New file
 map("n", "<leader>fn", "<cmd>enew<cr>", { desc = "New File" })

@@ -44,7 +44,6 @@ return {
     opts = {},
   },
 
-  -- Diagnostic virtual text on steroid
   {
     "rachartier/tiny-inline-diagnostic.nvim",
     event = "LazyFile",
@@ -61,5 +60,57 @@ return {
         },
       },
     },
+  },
+
+  {
+    "SmiteshP/nvim-navic",
+    dependencies = { "folke/snacks.nvim" },
+    lazy = true,
+    opts = {
+      lsp = {
+        auto_attach = true,
+      },
+      highlight = true,
+      separator = "  ",
+      depth_limit_indicator = "…",
+      click = true,
+      icons = {
+        File = " ",
+        Module = " ",
+        Namespace = " ",
+        Package = " ",
+        Class = " ",
+        Method = " ",
+        Property = " ",
+        Field = " ",
+        Constructor = " ",
+        Enum = " ",
+        Interface = " ",
+        Function = " ",
+        Variable = " ",
+        Constant = " ",
+        String = " ",
+        Number = " ",
+        Boolean = " ",
+        Array = " ",
+        Object = " ",
+        Key = " ",
+        Null = " ",
+        EnumMember = " ",
+        Struct = " ",
+        Event = " ",
+        Operator = " ",
+        TypeParameter = " ",
+      },
+    },
+    config = function(_, opts)
+      require("nvim-navic").setup(opts)
+
+      Snacks.util.lsp.on({ method = "textDocument/documentSymbol" }, function(bufnr)
+        if vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].buftype == "" then
+          vim.wo.winbar = "  %{%v:lua.require'nvim-navic'.get_location()%}  "
+        end
+      end)
+    end,
   },
 }

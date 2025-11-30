@@ -4,14 +4,13 @@ return {
     event = "LazyFile",
     dependencies = {
       "mason.nvim",
-      "mason-lspconfig.nvim",
+      { "mason-org/mason-lspconfig.nvim", config = function() end },
       "snacks.nvim",
       "nvim-navic",
       "fidget.nvim",
     },
     opts = {
       -- LSP Server configs
-      -- NOTE: Servers listed here will be automatically installed
       servers = {
         -- Global configs applied to all servers
         ["*"] = {
@@ -22,49 +21,6 @@ return {
             },
           },
         },
-
-        -- Python
-        basedpyright = {},
-        ruff = {},
-
-        -- Lua
-        lua_ls = {
-          settings = {
-            Lua = {
-              --- Disable lua_ls formatter, use stylua instead
-              format = {
-                enable = false,
-              },
-              workspace = {
-                checkThirdParty = false,
-              },
-              codeLens = {
-                enable = true,
-              },
-              completion = {
-                callSnippet = "Replace",
-              },
-              doc = {
-                privateName = { "^_" },
-              },
-              hint = {
-                enable = true,
-                setType = false,
-                paramType = true,
-                paramName = "Disable",
-                semicolon = "Disable",
-                arrayIndex = "Disable",
-              },
-            },
-          },
-        },
-        stylua = {},
-
-        -- Shell script
-        bashls = {},
-
-        -- Fish script
-        fish_lsp = {},
       },
       diagnostics = {
         underline = true,
@@ -156,7 +112,9 @@ return {
     "mason-org/mason.nvim",
     cmd = "Mason",
     build = ":MasonUpdate",
-    opts = {},
+    opts = {
+      ensure_installed = {},
+    },
     config = function(_, opts)
       require("mason").setup(opts)
 
@@ -167,60 +125,6 @@ return {
           if not p:is_installed() then
             p:install()
           end
-        end
-      end)
-    end,
-  },
-
-  { "mason-org/mason-lspconfig.nvim", lazy = true },
-
-  {
-    "SmiteshP/nvim-navic",
-    dependencies = { "folke/snacks.nvim" },
-    lazy = true,
-    opts = {
-      lsp = {
-        auto_attach = true,
-      },
-      highlight = true,
-      separator = "  ",
-      depth_limit_indicator = "…",
-      click = true,
-      icons = {
-        File = " ",
-        Module = " ",
-        Namespace = " ",
-        Package = " ",
-        Class = " ",
-        Method = " ",
-        Property = " ",
-        Field = " ",
-        Constructor = " ",
-        Enum = " ",
-        Interface = " ",
-        Function = " ",
-        Variable = " ",
-        Constant = " ",
-        String = " ",
-        Number = " ",
-        Boolean = " ",
-        Array = " ",
-        Object = " ",
-        Key = " ",
-        Null = " ",
-        EnumMember = " ",
-        Struct = " ",
-        Event = " ",
-        Operator = " ",
-        TypeParameter = " ",
-      },
-    },
-    config = function(_, opts)
-      require("nvim-navic").setup(opts)
-
-      Snacks.util.lsp.on({ method = "textDocument/documentSymbol" }, function(bufnr)
-        if vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].buftype == "" then
-          vim.wo.winbar = "  %{%v:lua.require'nvim-navic'.get_location()%}  "
         end
       end)
     end,

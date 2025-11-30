@@ -11,15 +11,6 @@ autocmd("DiagnosticChanged", {
   end,
 })
 
--- Disable auto comment when press enter
-autocmd("FileType", {
-  group = augroup("custom_formatoptions"),
-  pattern = "*",
-  callback = function()
-    vim.opt_local.formatoptions:remove({ "t", "c", "r", "o" })
-  end,
-})
-
 -- Automatically toggle relativenumber
 local toggle_relativenumber_augroup = augroup("toggle_relativenumber")
 autocmd({ "BufEnter", "FocusGained", "WinEnter", "CmdlineLeave" }, {
