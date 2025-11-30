@@ -1,79 +1,32 @@
 gui:
   border: single
+
+  # Theme
   theme:
-    # Catppuccin Frappe
     activeBorderColor:
-      - '#838ba7'
+      - "#31748f"
       - bold
     inactiveBorderColor:
-      - '#626880'
-    optionsTextColor:
-      - '#8caaee'
-    selectedLineBgColor:
-      - '#414559'
-    cherryPickedCommitBgColor:
-      - '#51576d'
-    cherryPickedCommitFgColor:
-      - '#8caaee'
-    unstagedChangesColor:
-      - '#e78284'
-    defaultFgColor:
-      - '#c6d0f5'
+      - "#6e6a86"
     searchingActiveBorderColor:
-      - '#e5c890'
-  authorColors:
-    '*': '#babbf1'
-
-  #   # Catppuccin Macchiato
-  #   activeBorderColor:
-  #     - "#939ab7"
-  #     - bold
-  #   inactiveBorderColor:
-  #     - "#5b6078"
-  #   optionsTextColor:
-  #     - "#8aadf4"
-  #   selectedLineBgColor:
-  #     - "#363a4f"
-  #   cherryPickedCommitBgColor:
-  #     - "#494d64"
-  #   cherryPickedCommitFgColor:
-  #     - "#b7bdf8"
-  #   unstagedChangesColor:
-  #     - "#ed8796"
-  #   defaultFgColor:
-  #     - "#cad3f5"
-  #   searchingActiveBorderColor:
-  #     - "#eed49f"
-  # authorColors:
-  #   "*": "#b7bdf8"
-
-  #   # Catppuccin Mocha
-  #   activeBorderColor:
-  #     - '#9399b2'
-  #     - bold
-  #   inactiveBorderColor:
-  #     - '#585b70'
-  #   optionsTextColor:
-  #     - '#89b4fa'
-  #   selectedLineBgColor:
-  #     - '#313244'
-  #   cherryPickedCommitBgColor:
-  #     - '#45475a'
-  #   cherryPickedCommitFgColor:
-  #     - '#89b4fa'
-  #   unstagedChangesColor:
-  #     - '#f38ba8'
-  #   defaultFgColor:
-  #     - '#cdd6f4'
-  #   searchingActiveBorderColor:
-  #     - '#f9e2af'
-  # authorColors:
-  #   '*': '#b4befe'
-
-git:
-  paging:
-    colorArg: always
-    pager: delta --dark --paging=never
-  
-  log:
-    showGraph: always
+      - "#ebbcba"
+      - bold
+    optionsTextColor:
+      - "#9ccfd8"
+    selectedLineBgColor:
+      - "#26233a"
+    inactiveViewSelectedLineBgColor:
+      - "#26233a"
+      - bold
+    cherryPickedCommitFgColor:
+      - "#1f1d2e"
+    cherryPickedCommitBgColor:
+      - "#ebbcba"
+    markedBaseCommitFgColor:
+      - "#9ccfd8"
+    markedBaseCommitBgColor:
+      - "#f6c177"
+    unstagedChangesColor:
+      - "#eb6f92"
+    defaultFgColor:
+      - "#e0def4"
