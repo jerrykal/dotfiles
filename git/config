@@ -1,12 +1,42 @@
+# vim: ft=gitconfig noexpandtab
 [include]
 	path = ~/.gitconfig.local
+
 [init]
 	defaultBranch = main
+
 [core]
 	excludesfile = ~/.gitignore
+	pager = delta
+	autocrlf = input
 
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
+
+[interactive]
+	diffFilter = delta --color-only
+
+[delta]
+	navigate = true
+	line-numbers = true
+	syntax-theme = rose-pine
+	features = rose-pine
+
+[delta "rose-pine"]
+  minus-style                   = syntax "#392435"
+  minus-non-emph-style          = syntax "#392435"
+  minus-emph-style              = syntax "#542F43"
+  minus-empty-line-marker-style = syntax "#392435"
+  line-numbers-minus-style      = "#eb6f92"
+  plus-style                    = syntax "#2D323F"
+  plus-non-emph-style           = syntax "#2D323F"
+  plus-emph-style               = syntax "#3E4956"
+  plus-empty-line-marker-style  = syntax "#2D323F"
+  line-numbers-plus-style       = "#9ccfd8"
+  line-numbers-zero-style       = "#6e6a86"
+
+[merge]
+	conflictStyle = zdiff3
