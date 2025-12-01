@@ -1,7 +1,13 @@
 .stfolder
 .stversions
-configs/neovim/.config/nvim/plugin/
-configs/neovim/.config/nvim/spell
-configs/zsh/.zsh/plugins
+
+# Fish
 fish/fish_variables
-tmux/plugins
+fish/fisher/
+
+# Neovim
+nvim/plugin/
+nvim/spell/
+
+# Tmux
+tmux/plugins/
