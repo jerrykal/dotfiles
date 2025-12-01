@@ -5,7 +5,14 @@ return {
     lazy = false,
     priority = 10000,
     opts = {
+      extend_background_behind_borders = false,
+      groups = {
+        border = "highlight_high",
+        panel = "base",
+      },
       highlight_groups = {
+        StatusLine = { bg = "surface" },
+        StatusLineNC = { bg = "surface" },
         WinBar = { bg = "base" },
         WinBarNC = { bg = "base" },
         DiffDelete = { fg = "highlight_med", bg = "base" },
@@ -18,6 +25,8 @@ return {
         SnacksIndentScope = { fg = "muted" },
         SnacksIndent = { fg = "highlight_med" },
         SnacksIndentChunk = { fg = "highlight_med" },
+        SnacksDiffDelete = { bg = "love", blend = 20 },
+        SnacksDiffDeleteLineNr = { link = "SnacksDiffDelete" },
 
         -- SmiteshP/nvim-navic
         NavicText = { fg = "muted" },

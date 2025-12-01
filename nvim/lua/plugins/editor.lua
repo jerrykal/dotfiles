@@ -5,6 +5,9 @@ return {
       explorer = { enabled = true },
       picker = {
         enabled = true,
+        layout = {
+          layout = { backdrop = false },
+        },
         matcher = {
           sort_empty = true,
           frecency = true,
@@ -248,36 +251,20 @@ return {
         save_on_toggle = true,
       },
     },
-    keys = function()
-      local keys = {
-        {
-          "<leader>a",
-          function()
-            require("harpoon"):list():add()
-          end,
-          desc = "Harpoon file",
-        },
-        {
-          "<leader>h",
-          function()
-            local harpoon = require("harpoon")
-            harpoon.ui:toggle_quick_menu(harpoon:list())
-          end,
-          desc = "Harpoon Quick Menu",
-        },
-      }
-
-      for i = 1, 9 do
-        table.insert(keys, {
-          "<leader>" .. i,
-          function()
-            require("harpoon"):list():select(i)
-          end,
-          desc = "Harpoon to File " .. i,
-        })
-      end
-      return keys
-    end,
+    -- stylua: ignore
+    keys = {
+      { "<leader>A", function() require("harpoon"):list():prepend() end, desc = "Harpoon File (Prepend)" },
+      { "<leader>a", function() require("harpoon"):list():add() end, desc = "Harpoon File" },
+      { "<leader>h",
+        function()
+          local harpoon = require("harpoon")
+          harpoon.ui:toggle_quick_menu(harpoon:list())
+        end, desc = "Harpoon Quick Menu", },
+      { "<leader>1", function() require("harpoon"):list():select(1) end, desc = "Harpoon to File 1" },
+      { "<leader>2", function() require("harpoon"):list():select(2) end, desc = "Harpoon to File 2" },
+      { "<leader>3", function() require("harpoon"):list():select(3) end, desc = "Harpoon to File 3" },
+      { "<leader>4", function() require("harpoon"):list():select(4) end, desc = "Harpoon to File 4" },
+    },
   },
 
   -- Better folding

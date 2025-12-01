@@ -25,6 +25,8 @@ return {
       { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
       { "]]", function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
       { "[[", function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
+      { "<a-n>", function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
+      { "<a-p>", function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
     },
   },
 
@@ -105,14 +107,7 @@ return {
     },
     config = function(_, opts)
       require("nvim-navic").setup(opts)
-
-      Snacks.util.lsp.on({ method = "textDocument/documentSymbol" }, function(buf)
-        if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].buftype == "" then
-          for _, win in ipairs(vim.fn.win_findbuf(buf)) do
-            vim.wo[win][0].winbar = "  %{%v:lua.require'nvim-navic'.get_location()%}  "
-          end
-        end
-      end)
+      vim.o.winbar = "  %{%v:lua.require'nvim-navic'.get_location()%}  "
     end,
   },
 }
