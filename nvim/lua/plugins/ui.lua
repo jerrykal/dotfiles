@@ -106,9 +106,11 @@ return {
     config = function(_, opts)
       require("nvim-navic").setup(opts)
 
-      Snacks.util.lsp.on({ method = "textDocument/documentSymbol" }, function(bufnr)
-        if vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].buftype == "" then
-          vim.wo.winbar = "  %{%v:lua.require'nvim-navic'.get_location()%}  "
+      Snacks.util.lsp.on({ method = "textDocument/documentSymbol" }, function(buf)
+        if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].buftype == "" then
+          for _, win in ipairs(vim.fn.win_findbuf(buf)) do
+            vim.wo[win][0].winbar = "  %{%v:lua.require'nvim-navic'.get_location()%}  "
+          end
         end
       end)
     end,

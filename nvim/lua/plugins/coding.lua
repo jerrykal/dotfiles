@@ -186,6 +186,14 @@ return {
     },
   },
 
+  {
+    "Wansmer/treesj",
+    keys = {
+      { "J", "<cmd>TSJToggle<cr>", desc = "Join Toggle" },
+    },
+    opts = { use_default_keymaps = false },
+  },
+
   -- Neovim lua_ls setup
   {
     "folke/lazydev.nvim",

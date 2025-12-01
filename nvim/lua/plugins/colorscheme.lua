@@ -6,10 +6,9 @@ return {
     priority = 10000,
     opts = {
       highlight_groups = {
-        CursorLine = { bg = "highlight_low" },
-        DiffDelete = { fg = "highlight_med", bg = "base" },
         WinBar = { bg = "base" },
         WinBarNC = { bg = "base" },
+        DiffDelete = { fg = "highlight_med", bg = "base" },
 
         -- nvim-treesitter/nvim-treesitter-context
         TreesitterContext = { bg = "base" },
