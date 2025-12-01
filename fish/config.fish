@@ -1,26 +1,12 @@
+# Disable greeting
 set -gx fish_greeting
 
-if type -q nvim
-    set -gx EDITOR (which nvim)
-    set -gx MANPAGER "nvim +Man!"
-end
-
-set -gx VISUAL $EDITOR
-set -gx SUDO_EDITOR $EDITOR
-
-set -x LC_ALL en_US.UTF-8
-set -x LANG en_US.UTF-8
-set -x LANGUAGE en_US.UTF-8
-
 # Cursor shapes
-set -g fish_vi_force_cursor
-set -g fish_cursor_default block blink
-set -g fish_cursor_insert line blink
-set -g fish_cursor_replace_one underscore blink
-set -g fish_cursor_visual block
-
-# Correct colors on ssh (see: https://github.com/fish-shell/fish-shell/issues/7701)
-test -n "$SSH_CLIENT"; or test -n "$SSH_TTY"; and set -g fish_term24bit 1
+set -gx fish_vi_force_cursor
+set -gx fish_cursor_default block blink
+set -gx fish_cursor_insert line blink
+set -gx fish_cursor_replace_one underscore blink
+set -gx fish_cursor_visual block
 
 # Initialize zoxide
 type -q zoxide; and zoxide init fish | source

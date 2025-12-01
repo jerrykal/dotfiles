@@ -1,4 +1,6 @@
 set -g fzf_fd_opts --hidden
+
+# rose-pine theme
 set -gx FZF_DEFAULT_OPTS "\
     --color=fg:#908caa,bg:#191724,hl:#ebbcba\
     --color=fg+:#e0def4,bg+:#26233a,hl+:#ebbcba\
