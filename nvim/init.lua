@@ -1,12 +1,9 @@
-local config_root = "configs"
+local config_root = "config"
 if vim.g.vscode then
-  config_root = "configs.vscode"
+  config_root = "config.vscode"
 end
 
--- General configurations
 pcall(require, config_root .. ".options")
-
--- Load after plugins
 vim.api.nvim_create_autocmd("User", {
   group = vim.api.nvim_create_augroup("keymaps_and_autocmds", { clear = true }),
   pattern = "VeryLazy",
@@ -18,5 +15,4 @@ vim.api.nvim_create_autocmd("User", {
     pcall(require, config_root .. ".autocmds")
   end,
 })
-
-require("configs.lazy")
+require("config.lazy")
