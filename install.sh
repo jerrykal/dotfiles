@@ -1,5 +1,15 @@
 #!/usr/bin/env bash
 
+#
+# This script installs/updates tool dependencies (using Homebrew and Brewfile)
+# and then sets up dotfiles by creating symbolic links using 'stow'.
+#
+# Usage: ./install.sh [--skip-deps]
+#
+# Option:
+#   --skip-deps : Skip the dependency installation and update step.
+#
+
 for arg in "$@"; do
   case "$arg" in
   --skip-deps)
