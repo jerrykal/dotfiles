@@ -73,6 +73,6 @@ map("n", "<leader><tab>[", "<cmd>tabprevious<cr>", { desc = "Previous Tab" })
 vim.keymap.set(
   "n",
   "<leader>to",
-  require("configs.utils").open_in_new_tmux_window,
+  require("config.utils").open_in_new_tmux_window,
   { desc = "Open current file in new Tmux window" }
 )
