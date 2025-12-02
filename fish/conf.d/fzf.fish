@@ -1,4 +1,3 @@
-# Initialize fzf
 fzf --fish | source
 
 set -gx FZF_DEFAULT_OPTS "\
