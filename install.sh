@@ -1,35 +1,88 @@
 #!/usr/bin/env bash
 
-echo "Checking for Homebrew installation..."
-if ! command -v brew &>/dev/null; then
-  echo "Homebrew not found. Installing..."
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+for arg in "$@"; do
+  case "$arg" in
+  --skip-deps)
+    SKIP_DEPS=1
+    ;;
+  *) ;;
+  esac
+done
 
-  if [ $? -eq 0 ]; then
-    echo "Homebrew installation successful."
+log() {
+  local log_level=$1
+  shift
+  local message="$*"
+  local reset="\033[0m"
+  local red="\033[31m"
+  local yellow="\033[33m"
+  local green="\033[32m"
+  local timestamp=$(date +"%Y-%m-%d %H:%M:%S")
+
+  case "$log_level" in
+  ERROR)
+    color=$red
+    ;;
+  WARN)
+    color=$yellow
+    ;;
+  INFO)
+    color=$green
+    ;;
+  *)
+    color=$reset
+    ;;
+  esac
+  echo -e "${color}${timestamp} [${log_level}]${reset} ${message}"
+}
+
+if [ ! -n "$SKIP_DEPS" ]; then
+  log INFO "Checking for Homebrew installation..."
+  if ! command -v brew &>/dev/null; then
+    echo "Homebrew not found. Installing..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+    if [ $? -eq 0 ]; then
+      log INFO "Homebrew installation successful."
+    else
+      log ERROR "Homebrew installation failed."
+      exit 1
+    fi
   else
-    echo "ERROR: Homebrew installation failed."
+    log INFO "Homebrew is already installed."
+  fi
+
+  brew_path_candidate=(/opt/homebrew/bin/brew /usr/local/bin/brew /home/linuxbrew/.linuxbrew/bin/brew)
+  for p in "${brew_path_candidate[@]}"; do
+    if [ -x "$p" ]; then
+      log INFO "Activating Homebrew (via 'eval \"\$($p shellenv)\"')"
+      eval "$("$p" shellenv)"
+      break
+    fi
+  done
+
+  if command -v brew &>/dev/null; then
+    log INFO "Homebrew activation successfull."
+  else
+    log ERROR "Homebrew activation failed."
     exit 1
   fi
-else
-  echo "Homebrew is already installed."
-fi
-test -d /home/linuxbrew/.linuxbrew && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
-echo "Installing/Updating Homebrew packages defined in Brewfile (via 'brew bundle install')..."
-brew bundle install
+  log INFO "Installing/Updating Homebrew packages defined in Brewfile (via 'brew bundle install')..."
+  brew bundle install
 
-if [ $? -eq 0 ]; then
-  echo "Homebrew packages installed/updated successfully."
-else
-  echo "WARNING: Homebrew package installation encountered issues."
+  if [ $? -eq 0 ]; then
+    log INFO "Homebrew packages installed/updated successfully."
+  else
+    log WARNING "Homebrew package installation encountered issues."
+  fi
 fi
 
-echo "Setting up dotfiles using 'stow'..."
+log INFO "Setting up dotfiles using 'stow'..."
 stow .
 
 if [ $? -eq 0 ]; then
-  echo "Dotfiles set up successfully using 'stow'."
+  log INFO "Dotfiles set up successfully using 'stow'."
 else
-  echo "WARNING: 'stow' execution encountered issues. Check your dotfiles setup."
+  log WARNING "'stow' execution encountered issues. Check your dotfiles setup."
 fi
