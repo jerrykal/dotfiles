@@ -8,24 +8,13 @@ return {
         layout = {
           layout = { backdrop = false },
         },
-        matcher = {
-          sort_empty = true,
-          frecency = true,
-        },
         sources = {
-          smart = {
-            ignored = true,
-            layout = { preset = "dropdown" },
-          },
+          smart = { ignored = true },
           files = { ignored = true },
           grep = { ignored = true },
           explorer = {
             ignored = true,
-            layout = {
-              layout = {
-                position = "right",
-              },
-            },
+            layout = { preset = "right" },
           },
         },
         win = {
@@ -34,6 +23,52 @@ return {
               ["<C-p>"] = { "history_back", mode = { "i", "n" } },
               ["<C-n>"] = { "history_forward", mode = { "i", "n" } },
             },
+          },
+        },
+        icons = {
+          ui = {
+            selected = "▏",
+            unselected = " ",
+          },
+          kinds = {
+            Array = " ",
+            Boolean = " ",
+            Class = " ",
+            Collapsed = " ",
+            Color = " ",
+            Constant = " ",
+            Constructor = " ",
+            Control = " ",
+            Copilot = " ",
+            Enum = " ",
+            EnumMember = " ",
+            Event = " ",
+            Field = " ",
+            File = " ",
+            Folder = " ",
+            Function = " ",
+            Interface = " ",
+            Key = " ",
+            Keyword = " ",
+            Method = " ",
+            Module = " ",
+            Namespace = " ",
+            Null = " ",
+            Number = " ",
+            Object = " ",
+            Operator = " ",
+            Package = " ",
+            Property = " ",
+            Reference = " ",
+            Snippet = " ",
+            String = " ",
+            Struct = " ",
+            Text = " ",
+            TypeParameter = " ",
+            Unit = "󰪚 ",
+            Unknown = " ",
+            Value = " ",
+            Variable = " ",
           },
         },
       },
@@ -307,6 +342,13 @@ return {
       view_options = {
         show_hidden = true,
       },
+      keymaps = {
+        ["<C-v>"] = { "actions.select", opts = { vertical = true } },
+        ["<C-s>"] = { "actions.select", opts = { horizontal = true } },
+        ["<C-S-l>"] = "actions.refresh",
+        ["<C-l>"] = false,
+        ["<C-h>"] = false,
+      },
     },
     -- stylua: ignore
     keys = {
@@ -483,22 +525,9 @@ return {
     end,
   },
 
-  {
-    "HiPhish/rainbow-delimiters.nvim",
-    event = "LazyFile",
-  },
-
   -- Allows for ctrl+h/j/k/l navigation between nvim and tmux
   {
     "christoomey/vim-tmux-navigator",
-    cmd = {
-      "TmuxNavigateLeft",
-      "TmuxNavigateDown",
-      "TmuxNavigateUp",
-      "TmuxNavigateRight",
-      "TmuxNavigatePrevious",
-      "TmuxNavigatorProcessList",
-    },
     keys = {
       { "<c-h>", "<cmd><C-U>TmuxNavigateLeft<cr>" },
       { "<c-j>", "<cmd><C-U>TmuxNavigateDown<cr>" },
@@ -506,12 +535,6 @@ return {
       { "<c-l>", "<cmd><C-U>TmuxNavigateRight<cr>" },
       { "<c-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>" },
     },
-  },
-
-  {
-    "abecodes/tabout.nvim",
-    event = "InsertEnter",
-    opts = {},
   },
 
   { "tpope/vim-repeat", event = "VeryLazy" },

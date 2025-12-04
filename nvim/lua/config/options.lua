@@ -37,7 +37,6 @@ opt.splitkeep = "screen"
 opt.splitright = true -- Open new windows to the right
 opt.statusline = [[%!v:lua.require("config.statusline").statusline()]]
 opt.termguicolors = true -- Enable true colors
-opt.textwidth = 120
 opt.timeoutlen = 300
 opt.undofile = true -- Persistent undo
 opt.undolevels = 10000

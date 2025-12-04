@@ -98,6 +98,7 @@ return {
     event = "LazyFile",
     opts = {
       multiwindow = true,
+      mode = "topline",
     },
   },
 

@@ -6,16 +6,25 @@ return {
     priority = 10000,
     opts = {
       extend_background_behind_borders = false,
+      styles = {
+        -- The default uses too much italic :(
+        italic = false,
+      },
       groups = {
         border = "highlight_high",
         panel = "base",
       },
       highlight_groups = {
+        DiffDelete = { fg = "highlight_med", bg = "base" },
         StatusLine = { bg = "surface" },
         StatusLineNC = { bg = "surface" },
         WinBar = { bg = "base" },
         WinBarNC = { bg = "base" },
-        DiffDelete = { fg = "highlight_med", bg = "base" },
+
+        -- This is all the italics I need :)
+        Comment = { italic = true },
+        ["@markup.italic"] = { italic = true },
+        htmlItalic = { italic = true },
 
         -- nvim-treesitter/nvim-treesitter-context
         TreesitterContext = { bg = "base" },
@@ -33,6 +42,9 @@ return {
         NavicSeparator = { fg = "muted" },
 
         -- lewis6991/gitsigns
+        GitSignsAddInline = { bg = "foam", blend = 40 },
+        GitSignsDeleteInline = { bg = "love", blend = 40 },
+        GitSignsChangeInline = { bg = "gold", blend = 40 },
         GitSignsDeletePreview = { bg = "love", blend = 20 },
         GitSignsDeleteVirtLn = { link = "GitSignsDeletePreview" },
       },

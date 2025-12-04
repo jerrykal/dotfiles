@@ -132,7 +132,7 @@ return {
     "nvim-mini/mini.surround",
     opts = {
       mappings = {
-        add = "gs", -- Add surrounding in Normal and Visual modes
+        add = "gsa", -- Add surrounding in Normal and Visual modes
         delete = "gsd", -- Delete surrounding
         find = "gsf", -- Find surrounding (to the right)
         find_left = "gsF", -- Find surrounding (to the left)
@@ -154,19 +154,10 @@ return {
     },
   },
 
-  -- Use two autopair plugins, nvim-autopairs for insert mode and mini.pairs for command mode,
-  -- since nvim-autopairs does not support command mode
   {
     "windwp/nvim-autopairs",
     event = { "InsertEnter" },
     opts = {},
-  },
-  {
-    "nvim-mini/mini.pairs",
-    event = { "CmdlineEnter" },
-    opts = {
-      modes = { insert = false, command = true, terminal = false },
-    },
   },
 
   {

@@ -1,6 +1,6 @@
 local M = {}
 
-function M.open_in_new_tmux_window()
+function M.open_buf_in_new_tmux_window()
   if vim.env.TMUX == nil then
     vim.notify("Not running inside a Tmux session.", vim.log.levels.ERROR)
     return

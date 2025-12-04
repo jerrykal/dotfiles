@@ -42,7 +42,7 @@ function M.statusline()
     file_encoding(),
     "  ",
     file_format(),
-    "  %y  %l:%c ",
+    "  %y  %p%%  %l:%c ",
   })
 end
 
