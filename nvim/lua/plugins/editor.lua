@@ -525,6 +525,12 @@ return {
     end,
   },
 
+  {
+    "abecodes/tabout.nvim",
+    event = "InsertEnter",
+    opts = {},
+  },
+
   -- Allows for ctrl+h/j/k/l navigation between nvim and tmux
   {
     "christoomey/vim-tmux-navigator",
