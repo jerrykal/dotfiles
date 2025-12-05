@@ -262,7 +262,7 @@ return {
   {
     "folke/todo-comments.nvim",
     event = "LazyFile",
-    dependencies = { "plenary.nvim" },
+    dependencies = { "nvim-lua/plenary.nvim" },
     opts = {
       signs = false,
     },
@@ -280,7 +280,7 @@ return {
   {
     "ThePrimeagen/harpoon",
     branch = "harpoon2",
-    dependencies = { "plenary.nvim" },
+    dependencies = { "nvim-lua/plenary.nvim" },
     opts = {
       settings = {
         save_on_toggle = true,

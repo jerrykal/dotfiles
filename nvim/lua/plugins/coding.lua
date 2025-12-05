@@ -81,13 +81,11 @@ return {
   {
     "gbprod/yanky.nvim",
     dependencies = {
-      "kkharji/sqlite.lua",
       "folke/snacks.nvim",
     },
     event = "LazyFile",
     opts = {
       ring = {
-        storage = "sqlite",
         update_register_on_cycle = true,
       },
       highlight = {
