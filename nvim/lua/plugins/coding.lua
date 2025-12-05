@@ -145,14 +145,6 @@ return {
   },
 
   {
-    "nvim-mini/mini.comment",
-    opts = {},
-    keys = {
-      { "gc", mode = "n", "x" },
-    },
-  },
-
-  {
     "windwp/nvim-autopairs",
     event = { "InsertEnter" },
     opts = {},
