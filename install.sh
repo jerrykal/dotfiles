@@ -96,17 +96,3 @@ if [ $? -eq 0 ]; then
 else
   log WARNING "'stow' execution encountered issues. Check your dotfiles setup."
 fi
-
-log INFO "Changing default shell to fish"
-
-fish_path="$(which fish)"
-echo "$fish_path" | sudo tee -a /etc/shells
-sudo chsh -s "$fish_path"
-
-if [ $? -eq 0 ]; then
-  log INFO "Successfully changed the default shell to zsh."
-  log INFO "Please log out and log back in for the changes to take effect."
-else
-  log ERROR "Failed to change the default shell."
-  exit 1
-fi
