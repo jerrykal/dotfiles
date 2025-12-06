@@ -10,3 +10,6 @@ set -gx fish_cursor_visual block
 
 # Initialize zoxide
 type -q zoxide; and zoxide init fish | source
+
+# Hook direnv
+type -q direnv; and direnv hook fish | source
