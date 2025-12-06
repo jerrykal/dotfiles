@@ -53,6 +53,10 @@ return {
     opts = {
       preset = "powerline",
       options = {
+        severity = {
+          vim.diagnostic.severity.ERROR,
+          vim.diagnostic.severity.WARN,
+        },
         multilines = {
           enabled = true,
           severity = {

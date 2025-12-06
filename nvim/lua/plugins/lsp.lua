@@ -75,7 +75,7 @@ return {
     -- stylua: ignore
     keys = {
       { "gd", function() Snacks.picker.lsp_definitions() end, desc = "Goto Definition" },
-      { "grr", function() Snacks.picker.lsp_references() end, desc = "Goto Refernces" },
+      { "grr", function() Snacks.picker.lsp_references() end, desc = "Goto References" },
       { "gri", function() Snacks.picker.lsp_implementations() end, desc = "Goto Implementation" },
       { "grt", function() Snacks.picker.lsp_type_definitions() end, desc = "Goto Type Definition" },
       { "grd", function() Snacks.picker.lsp_declarations() end, desc = "Goto Declaration" },

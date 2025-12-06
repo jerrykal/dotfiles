@@ -3,21 +3,17 @@ return {
     "rose-pine/neovim",
     name = "rose-pine",
     lazy = false,
-    priority = 10000,
+    priority = 1000,
     opts = {
-      extend_background_behind_borders = false,
       styles = {
         -- The default uses too much italic :(
         italic = false,
       },
       groups = {
         border = "highlight_high",
-        panel = "base",
       },
       highlight_groups = {
         DiffDelete = { fg = "highlight_med", bg = "base" },
-        StatusLine = { bg = "surface" },
-        StatusLineNC = { bg = "surface" },
         WinBar = { bg = "base" },
         WinBarNC = { bg = "base" },
 
@@ -29,6 +25,9 @@ return {
         -- nvim-treesitter/nvim-treesitter-context
         TreesitterContext = { bg = "base" },
         TreesitterContextLineNumber = { bg = "base" },
+
+        SnacksPicker = { link = "Normal" },
+        SnacksPickerBorder = { fg = "highlight_high", bg = "base" },
 
         -- folke/snacks.nvim
         SnacksIndentScope = { fg = "muted" },

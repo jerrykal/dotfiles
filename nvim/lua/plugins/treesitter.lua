@@ -10,11 +10,13 @@ return {
         "c",
         "cpp",
         "fish",
+        "json",
         "lua",
         "markdown",
         "markdown_inline",
         "python",
         "query",
+        "regex",
         "vim",
         "vimdoc",
         "yaml",
@@ -39,7 +41,9 @@ return {
           end
 
           -- Highlight
-          vim.treesitter.start(event.buf, lang)
+          if not vim.g.vscode then
+            vim.treesitter.start(event.buf, lang)
+          end
 
           -- Folds
           vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"

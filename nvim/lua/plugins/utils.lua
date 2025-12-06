@@ -2,7 +2,8 @@ return {
   {
     "snacks.nvim",
     opts = {
-      bigfiles = { enabled = true },
+      bigfile = { enabled = true },
+      image = { enabled = true },
       quickfile = { enabled = true },
     },
     -- stylua: ignore
