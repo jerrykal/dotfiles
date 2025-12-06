@@ -87,6 +87,11 @@ if type -q docker
     abbr -a dprune docker system prune
 end
 
+# devpod
+if type -q devpod
+    abbr -a dp devpod
+end
+
 # uv
 if type -q uv
     abbr -a uvi uv init

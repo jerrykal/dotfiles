@@ -99,7 +99,9 @@ fi
 
 log INFO "Changing default shell to fish"
 
-sudo chsh -s "$(which fish)"
+fish_path="$(which fish)"
+echo "$fish_path" | sudo tee -a /etc/shells
+sudo chsh -s "$fish_path"
 
 if [ $? -eq 0 ]; then
   log INFO "Successfully changed the default shell to zsh."
