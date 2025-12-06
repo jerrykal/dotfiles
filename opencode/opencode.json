@@ -1,0 +1,11 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "theme": "rosepine",
+  "permission": {
+    "edit": "ask",
+    "bash": "ask",
+    "webfetch": "ask",
+    "doom_loop": "ask",
+    "external_directory": "ask",
+  }
+}

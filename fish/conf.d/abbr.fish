@@ -97,3 +97,8 @@ if type -q uv
     abbr -a av source .venv/bin/activate.fish
     abbr -a da deactivate
 end
+
+# opencode
+if type -q opencode
+    abbr -a oc opencode
+end
