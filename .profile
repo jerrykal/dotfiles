@@ -9,8 +9,8 @@ if [ -d "/opt/homebrew" ]; then
   export PATH="/opt/homebrew/bin:$PATH"
 elif [ -d "/usr/local/homebrew" ]; then
   export PATH="/usr/local/bin:$PATH"
-elif [ -d "/home/linuxbrew/.linuxbrwe" ]; then
-  export PATH="/home/linuxbrew/.linuxbrwe:$PATH"
+elif [ -d "/home/linuxbrew/.linuxbrew/bin" ]; then
+  export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
 fi
 
 # Other paths
