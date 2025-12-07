@@ -2,7 +2,10 @@ return {
   {
     "mason.nvim",
     opts = {
-      ensure_installed = { "shfmt" },
+      ensure_installed = {
+        "shfmt",
+        "shellcheck",
+      },
     },
   },
 

@@ -28,6 +28,7 @@ return {
 
         SnacksPicker = { link = "Normal" },
         SnacksPickerBorder = { fg = "highlight_high", bg = "base" },
+        SnacksPickerTitle = { link = "Normal" },
 
         -- folke/snacks.nvim
         SnacksIndentScope = { fg = "muted" },
