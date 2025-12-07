@@ -89,7 +89,7 @@ if [ ! -n "$SKIP_DEPS" ]; then
 fi
 
 log INFO "Setting up dotfiles using 'stow'..."
-stow .
+stow -v .
 
 if [ $? -eq 0 ]; then
   log INFO "Dotfiles set up successfully using 'stow'."

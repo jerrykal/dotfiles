@@ -1,7 +1,6 @@
 return {
   {
     "NickvanDyke/opencode.nvim",
-    event = "VeryLazy",
     config = function()
       vim.g.opencode_opts = {
         provider = {

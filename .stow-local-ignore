@@ -1,4 +1,7 @@
-^\..*
-^/README.*
-^/Brewfile
-^/install.sh
+.git
+.stfolder
+.stignore
+.gitignore
+README.md
+Brewfile
+install.sh

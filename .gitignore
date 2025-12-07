@@ -2,12 +2,12 @@
 .stversions
 
 # Fish
-fish/fish_variables
-fish/fisher/
+.config/fish/fish_variables
+.config/fish/fisher/
 
 # Neovim
-nvim/plugin/
-nvim/spell/
+.config/nvim/plugin/
+.config/nvim/spell/
 
 # Tmux
-tmux/plugins/
+.config/tmux/plugins/

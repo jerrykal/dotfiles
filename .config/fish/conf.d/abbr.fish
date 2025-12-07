@@ -18,6 +18,7 @@ end
 
 # tmux
 abbr -a t tmux
+abbr -a tt tmux attach \|\| tmux
 abbr -a ta tmux attach
 
 # vscode
