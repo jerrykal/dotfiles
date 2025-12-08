@@ -13,7 +13,9 @@ return {
     "nvim-lspconfig",
     opts = {
       servers = {
-        bashls = {},
+        bashls = {
+          filetypes = { "sh", "zsh" },
+        },
       },
     },
   },
