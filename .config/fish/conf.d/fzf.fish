@@ -19,7 +19,7 @@ if type -q bat
     if type -q eza
         set -l fzf_eza_cmd "eza -a1 --group-directories-first --color=always {}"
 
-        set -gx FZF_CTRL_T_OPTS "--preview 'if test -d {}; $fzf_eza_cmd; else; $fzf_bat_cmd; end'"
+        set -gx FZF_CTRL_T_OPTS "--preview 'if test -d {}; then $fzf_eza_cmd; else $fzf_bat_cmd; fi'"
         set -gx FZF_ALT_C_OPTS "--preview '$fzf_eza_cmd'"
     else
         set -gx FZF_CTRL_T_OPTS "--preview '$fzf_bat_cmd'"
