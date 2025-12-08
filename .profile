@@ -5,15 +5,15 @@
 [ -z "$XDG_CACHE_HOME" ] && export XDG_CACHE_HOME="$HOME/.cache"
 
 # Homebrew
-if [ -d "/opt/homebrew" ]; then
-  export PATH="/opt/homebrew/bin:$PATH"
-elif [ -d "/usr/local/homebrew" ]; then
-  export PATH="/usr/local/bin:$PATH"
-elif [ -d "/home/linuxbrew/.linuxbrew/bin" ]; then
-  export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+if [ -x "/opt/homebrew/bin/brew" ]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [ -x "/usr/local/homebrew/bin/brew" ]; then
+  eval "$(/usr/local/homebrew/bin/brew shellenv)"
+elif [ -x "/home/linuxbrew/.linuxbrew/bin/brew" ]; then
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 fi
 
-# Other paths
+# Paths
 export PATH="$HOME/.cargo/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 
