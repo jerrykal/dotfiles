@@ -1,7 +1,6 @@
-if not type -q fish
+if not type -q fzf
     return
 end
-
 fzf --fish | source
 
 set -gx FZF_DEFAULT_OPTS "\
