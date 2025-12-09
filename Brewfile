@@ -1,6 +1,7 @@
 brew "bat"
 brew "direnv"
 brew "eza"
+brew "fd"
 brew "fish"
 brew "fzf"
 brew "git-delta"

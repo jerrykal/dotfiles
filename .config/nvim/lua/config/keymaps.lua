@@ -6,7 +6,7 @@ map({ "n", "x" }, "k", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', { expr = 
 
 -- Save file
 map("n", "<C-s>", "<cmd>w<cr><esc>", { desc = "Save File" })
-map("n", "<C-S-s>", "<cmd>noa w<cr><esc>", { desc = "Save File Without Formatting" })
+map("n", "<C-S>", "<cmd>noa w<cr><esc>", { desc = "Save File Without Formatting" })
 
 -- New file
 map("n", "<leader>fn", "<cmd>enew<cr>", { desc = "New File" })

@@ -25,16 +25,14 @@ return {
   },
 
   {
-    "MeanderingProgrammer/render-markdown.nvim",
+    "toppair/peek.nvim",
+    cond = vim.fn.executable("deno") == 1,
+    build = "deno task --quiet build:fast",
     ft = { "markdown" },
-    dependencies = {
-      "nvim-treesitter",
-      "mini.icons",
-    },
-    opts = {
-      completions = { lsp = { enabled = true } },
-      render_modes = true,
-      sign = { enabled = false },
-    },
+    config = function()
+      require("peek").setup()
+      vim.api.nvim_create_user_command("PeekOpen", require("peek").open, {})
+      vim.api.nvim_create_user_command("PeekClose", require("peek").close, {})
+    end,
   },
 }
