@@ -9,12 +9,7 @@ return {
           layout = { backdrop = false },
         },
         sources = {
-          smart = { ignored = true, hidden = true },
-          files = { ignored = true, hidden = true },
-          grep = { ignored = true, hidden = true },
           explorer = {
-            ignored = true,
-            hidden = true,
             layout = { preset = "right" },
           },
         },

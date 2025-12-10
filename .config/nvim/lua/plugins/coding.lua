@@ -228,4 +228,12 @@ return {
       },
     },
   },
+
+  {
+    "nvim-mini/mini.comment",
+    opts = {},
+    keys = {
+      { "gc", mode = "n", "x" },
+    },
+  },
 }

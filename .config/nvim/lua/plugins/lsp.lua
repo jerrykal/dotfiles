@@ -63,6 +63,9 @@ return {
 
         -- Configure lsp servers
         local server_opts = opts.servers[server]
+        if type(server_opts) == "function" then
+          server_opts = server_opts()
+        end
         vim.lsp.config(server, server_opts)
         return true
       end
