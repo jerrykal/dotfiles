@@ -3,7 +3,6 @@ return {
     "snacks.nvim",
     opts = {
       indent = {
-        enable = true,
         indent = {
           char = "▏",
         },
@@ -14,11 +13,11 @@ return {
           enabled = false,
         },
       },
-      input = { enabled = true },
-      notifier = { enabled = true },
-      scope = { enabled = true },
-      statuscolumn = { enabled = true },
-      words = { enabled = true },
+      input = {},
+      notifier = {},
+      scope = {},
+      statuscolumn = {},
+      words = {},
     },
     -- stylua: ignore
     keys = {
@@ -41,12 +40,6 @@ return {
   },
 
   {
-    "j-hui/fidget.nvim",
-    lazy = true,
-    opts = {},
-  },
-
-  {
     "rachartier/tiny-inline-diagnostic.nvim",
     event = "LazyFile",
     priority = 1000,
@@ -56,62 +49,17 @@ return {
         severity = {
           vim.diagnostic.severity.ERROR,
           vim.diagnostic.severity.WARN,
+          vim.diagnostic.severity.INFO,
         },
         multilines = {
           enabled = true,
           severity = {
             vim.diagnostic.severity.ERROR,
             vim.diagnostic.severity.WARN,
+            vim.diagnostic.severity.INFO,
           },
         },
       },
     },
-  },
-
-  {
-    "SmiteshP/nvim-navic",
-    dependencies = { "folke/snacks.nvim" },
-    lazy = true,
-    opts = {
-      lsp = {
-        auto_attach = true,
-      },
-      highlight = true,
-      separator = "  ",
-      depth_limit_indicator = "…",
-      click = true,
-      icons = {
-        File = " ",
-        Module = " ",
-        Namespace = " ",
-        Package = " ",
-        Class = " ",
-        Method = " ",
-        Property = " ",
-        Field = " ",
-        Constructor = " ",
-        Enum = " ",
-        Interface = " ",
-        Function = " ",
-        Variable = " ",
-        Constant = " ",
-        String = " ",
-        Number = " ",
-        Boolean = " ",
-        Array = " ",
-        Object = " ",
-        Key = " ",
-        Null = " ",
-        EnumMember = " ",
-        Struct = " ",
-        Event = " ",
-        Operator = " ",
-        TypeParameter = " ",
-      },
-    },
-    config = function(_, opts)
-      require("nvim-navic").setup(opts)
-      vim.o.winbar = "  %{%v:lua.require'nvim-navic'.get_location()%}  "
-    end,
   },
 }

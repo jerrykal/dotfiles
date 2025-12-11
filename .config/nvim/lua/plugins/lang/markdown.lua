@@ -35,4 +35,20 @@ return {
       vim.api.nvim_create_user_command("PeekClose", require("peek").close, {})
     end,
   },
+
+  {
+    "MeanderingProgrammer/render-markdown.nvim",
+    opts = {
+      sign = { enabled = false },
+    },
+    ft = { "markdown" },
+    config = function(_, opts)
+      require("render-markdown").setup(opts)
+      Snacks.toggle({
+        name = "Render Markdown",
+        get = require("render-markdown").get,
+        set = require("render-markdown").set,
+      }):map("<leader>um")
+    end,
+  },
 }

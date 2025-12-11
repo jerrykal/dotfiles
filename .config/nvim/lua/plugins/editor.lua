@@ -2,9 +2,8 @@ return {
   {
     "snacks.nvim",
     opts = {
-      explorer = { enabled = true },
+      explorer = {},
       picker = {
-        enabled = true,
         layout = {
           layout = { backdrop = false },
         },

@@ -63,9 +63,6 @@ return {
 
         -- Configure lsp servers
         local server_opts = opts.servers[server]
-        if type(server_opts) == "function" then
-          server_opts = server_opts()
-        end
         vim.lsp.config(server, server_opts)
         return true
       end
@@ -97,26 +94,83 @@ return {
     },
   },
 
+  -- Symbol winbar
   {
-    "mason-org/mason.nvim",
-    cmd = "Mason",
-    build = ":MasonUpdate",
-    opts_extend = { "ensure_installed" },
+    "SmiteshP/nvim-navic",
+    dependencies = { "folke/snacks.nvim" },
+    lazy = true,
     opts = {
-      ensure_installed = {},
+      lsp = {
+        auto_attach = true,
+      },
+      highlight = true,
+      separator = "  ",
+      depth_limit_indicator = "…",
+      click = true,
+      icons = {
+        File = " ",
+        Module = " ",
+        Namespace = " ",
+        Package = " ",
+        Class = " ",
+        Method = " ",
+        Property = " ",
+        Field = " ",
+        Constructor = " ",
+        Enum = " ",
+        Interface = " ",
+        Function = " ",
+        Variable = " ",
+        Constant = " ",
+        String = " ",
+        Number = " ",
+        Boolean = " ",
+        Array = " ",
+        Object = " ",
+        Key = " ",
+        Null = " ",
+        EnumMember = " ",
+        Struct = " ",
+        Event = " ",
+        Operator = " ",
+        TypeParameter = " ",
+      },
     },
     config = function(_, opts)
-      require("mason").setup(opts)
+      require("nvim-navic").setup(opts)
 
-      local mr = require("mason-registry")
-      mr.refresh(function()
-        for _, pkg_name in ipairs(opts.ensure_installed) do
-          local p = mr.get_package(pkg_name)
-          if not p:is_installed() then
-            p:install()
+      vim.api.nvim_create_autocmd({ "TermOpen", "BufEnter", "BufWinEnter", "BufWritePost", "FileType", "LspAttach" }, {
+        group = vim.api.nvim_create_augroup("navic_winbar", { clear = true }),
+        pattern = "*",
+        callback = function(args)
+          for _, win in ipairs(vim.fn.win_findbuf(args.buf)) do
+            local buf = vim._resolve_bufnr(args.buf)
+            local stat = vim.uv.fs_stat(vim.api.nvim_buf_get_name(buf))
+            if
+              not vim.api.nvim_buf_is_valid(buf)
+              or not vim.api.nvim_win_is_valid(win)
+              or vim.fn.win_gettype(win) ~= ""
+              or vim.wo[win].winbar ~= ""
+              or vim.bo[buf].ft == "help"
+              or stat and stat.size > 1024 * 1024
+              or vim.tbl_isempty(vim.lsp.get_clients({
+                bufnr = buf,
+                method = "textDocument/documentSymbol",
+              }))
+            then
+              return
+            end
+
+            vim.wo[win][0].winbar = "  %{%v:lua.require'nvim-navic'.get_location()%}"
           end
-        end
-      end)
+        end,
+      })
     end,
+  },
+
+  {
+    "j-hui/fidget.nvim",
+    lazy = true,
+    opts = {},
   },
 }

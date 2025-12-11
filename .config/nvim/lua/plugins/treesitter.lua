@@ -10,7 +10,7 @@ return {
         "c",
         "cpp",
         "fish",
-        "json",
+        "json5",
         "lua",
         "markdown",
         "markdown_inline",
@@ -33,24 +33,29 @@ return {
       vim.api.nvim_create_autocmd("FileType", {
         group = vim.api.nvim_create_augroup("treesitter", { clear = true }),
         callback = function(event)
+          local ts = vim.treesitter
           local ft = event.match
-          local lang = vim.treesitter.language.get_lang(ft)
+          local lang = ts.language.get_lang(ft)
 
           -- Abort if the parser for the given filtetype is not available
-          if lang == nil or not vim.treesitter.language.add(lang) then
+          if lang == nil or not ts.language.add(lang) then
             return
           end
 
           -- Highlight
-          if not vim.g.vscode then
-            vim.treesitter.start(event.buf, lang)
+          if not vim.g.vscode and ts.query.get(lang, "highlights") ~= nil then
+            ts.start(event.buf, lang)
           end
 
           -- Folds
-          vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+          if ts.query.get(lang, "folds") ~= nil then
+            vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+          end
 
           -- Indent
-          vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          if ts.query.get(lang, "indents") ~= nil then
+            vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          end
         end,
       })
     end,

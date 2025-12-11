@@ -26,10 +26,6 @@ return {
         TreesitterContext = { bg = "base" },
         TreesitterContextLineNumber = { bg = "base" },
 
-        SnacksPicker = { link = "Normal" },
-        SnacksPickerBorder = { fg = "highlight_high", bg = "base" },
-        SnacksPickerTitle = { link = "Normal" },
-
         -- folke/snacks.nvim
         SnacksIndentScope = { fg = "muted" },
         SnacksIndent = { fg = "highlight_med" },
