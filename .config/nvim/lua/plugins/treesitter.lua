@@ -101,6 +101,7 @@ return {
     opts = {
       multiwindow = true,
       mode = "cursor",
+      max_lines = 5,
     },
   },
 }

@@ -6,8 +6,8 @@ return {
       "mason.nvim",
       { "mason-org/mason-lspconfig.nvim", config = function() end },
       "snacks.nvim",
-      "nvim-navic",
       "fidget.nvim",
+      "dropbar.nvim",
     },
     opts = {
       -- LSP Server configs
@@ -94,78 +94,40 @@ return {
     },
   },
 
-  -- Symbol winbar
   {
-    "SmiteshP/nvim-navic",
-    dependencies = { "folke/snacks.nvim" },
-    lazy = true,
+    "Bekaboo/dropbar.nvim",
     opts = {
-      lsp = {
-        auto_attach = true,
+      bar = {
+        sources = function(buf)
+          -- Remove path and treesitter source
+          local sources = require("dropbar.sources")
+          if vim.bo[buf].ft == "markdown" then
+            return { sources.markdown }
+          end
+          if vim.bo[buf].buftype == "terminal" then
+            return { sources.terminal }
+          end
+          return { sources.lsp }
+        end,
       },
-      highlight = true,
-      separator = "  ",
-      depth_limit_indicator = "…",
-      click = true,
       icons = {
-        File = " ",
-        Module = " ",
-        Namespace = " ",
-        Package = " ",
-        Class = " ",
-        Method = " ",
-        Property = " ",
-        Field = " ",
-        Constructor = " ",
-        Enum = " ",
-        Interface = " ",
-        Function = " ",
-        Variable = " ",
-        Constant = " ",
-        String = " ",
-        Number = " ",
-        Boolean = " ",
-        Array = " ",
-        Object = " ",
-        Key = " ",
-        Null = " ",
-        EnumMember = " ",
-        Struct = " ",
-        Event = " ",
-        Operator = " ",
-        TypeParameter = " ",
+        ui = {
+          bar = {
+            separator = "  ",
+            extends = "…",
+          },
+        },
+        kinds = {
+          symbols = require("utils.kind_icons").get_icons(true),
+        },
       },
     },
-    config = function(_, opts)
-      require("nvim-navic").setup(opts)
-
-      vim.api.nvim_create_autocmd({ "TermOpen", "BufEnter", "BufWinEnter", "BufWritePost", "FileType", "LspAttach" }, {
-        group = vim.api.nvim_create_augroup("navic_winbar", { clear = true }),
-        pattern = "*",
-        callback = function(args)
-          for _, win in ipairs(vim.fn.win_findbuf(args.buf)) do
-            local buf = vim._resolve_bufnr(args.buf)
-            local stat = vim.uv.fs_stat(vim.api.nvim_buf_get_name(buf))
-            if
-              not vim.api.nvim_buf_is_valid(buf)
-              or not vim.api.nvim_win_is_valid(win)
-              or vim.fn.win_gettype(win) ~= ""
-              or vim.wo[win].winbar ~= ""
-              or vim.bo[buf].ft == "help"
-              or stat and stat.size > 1024 * 1024
-              or vim.tbl_isempty(vim.lsp.get_clients({
-                bufnr = buf,
-                method = "textDocument/documentSymbol",
-              }))
-            then
-              return
-            end
-
-            vim.wo[win][0].winbar = "  %{%v:lua.require'nvim-navic'.get_location()%}"
-          end
-        end,
-      })
-    end,
+    -- stylua: ignore
+    keys = {
+      { "<leader>;", function() require("dropbar.api").pick() end, desc = "Pick symbols in winbar", },
+      { "[;", function() require("dropbar.api").goto_context_start() end, desc = "Go to start of current context", },
+      { "];", function() require("dropbar.api").select_next_context() end, desc = "Select next context", },
+    },
   },
 
   {

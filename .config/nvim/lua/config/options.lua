@@ -5,7 +5,6 @@ vim.g.maplocalleader = "\\"
 local opt = vim.opt
 
 -- General options
-opt.colorcolumn = "120"
 opt.completeopt = { "menu", "menuone", "noselect" } -- Completion options
 opt.confirm = true -- Confirm before closing unsaved buffers
 opt.fillchars = {
