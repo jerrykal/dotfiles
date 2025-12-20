@@ -10,7 +10,7 @@ vim.api.nvim_create_autocmd("FileType", {
 vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
   pattern = "*.json",
   callback = function()
-    vim.bo.filetype = "jsonc"
+    vim.opt_local.filetype = "jsonc"
   end,
 })
 

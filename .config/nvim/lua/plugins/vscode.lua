@@ -12,7 +12,6 @@ local enabled = {
   "nvim-treesitter-textobjects",
   "tabout.nvim",
   "treesj",
-  "vim-repeat",
   "yanky.nvim",
 }
 

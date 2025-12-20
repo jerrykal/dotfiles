@@ -2,6 +2,7 @@ return {
   {
     "nvim-treesitter/nvim-treesitter",
     branch = "main",
+    version = false,
     event = "VeryLazy",
     build = ":TSUpdate",
     opts = {
@@ -49,12 +50,13 @@ return {
 
           -- Folds
           if ts.query.get(lang, "folds") ~= nil then
-            vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+            vim.opt_local.foldmethod = "expr"
+            vim.opt_local.foldexpr = "v:lua.vim.treesitter.foldexpr()"
           end
 
           -- Indent
           if ts.query.get(lang, "indents") ~= nil then
-            vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+            vim.opt_local.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
           end
         end,
       })
@@ -101,7 +103,7 @@ return {
     opts = {
       multiwindow = true,
       mode = "cursor",
-      max_lines = 5,
+      max_lines = 3,
     },
   },
 }

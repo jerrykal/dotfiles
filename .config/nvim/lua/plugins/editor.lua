@@ -25,7 +25,7 @@ return {
             selected = "▏",
             unselected = " ",
           },
-          kinds = require("utils.kind_icons").get_icons(true),
+          kinds = require("util.kind_icons").get(true),
         },
       },
     },
@@ -41,6 +41,7 @@ return {
 
       -- Find
       { "<leader>fb", function() Snacks.picker.buffers() end, desc = "Buffers" },
+      { "<leader>fm", function() Snacks.picker.buffers({ modified = true }) end, desc = "Modified Buffers" },
       { "<leader>fc", function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end, desc = "Find Config File" },
       { "<leader>ff", function() Snacks.picker.files() end, desc = "Find Files" },
       { "<leader>fg", function() Snacks.picker.git_files() end, desc = "Find Git Files" },
@@ -177,8 +178,13 @@ return {
     "folke/trouble.nvim",
     cmd = { "Trouble" },
     opts = {
+      modes = {
+        lsp_document_symbols = {
+          format = "{kind_icon} {symbol.name}",
+        },
+      },
       icons = {
-        kinds = require("utils.kind_icons").get_icons(true),
+        kinds = require("util.kind_icons").get(true),
       },
     },
     keys = {
@@ -485,9 +491,33 @@ return {
     end,
   },
 
+  -- Search/replace in multiple files
+  {
+    "MagicDuck/grug-far.nvim",
+    opts = { headerMaxWidth = 80 },
+    cmd = { "GrugFar", "GrugFarWithin" },
+    keys = {
+      {
+        "<leader>sr",
+        function()
+          local grug = require("grug-far")
+          local ext = vim.bo.buftype == "" and vim.fn.expand("%:e")
+          grug.open({
+            transient = true,
+            prefills = {
+              filesFilter = ext and ext ~= "" and "*." .. ext or nil,
+            },
+          })
+        end,
+        mode = { "n", "x" },
+        desc = "Search and Replace",
+      },
+    },
+  },
+
   {
     "abecodes/tabout.nvim",
-    event = "InsertEnter",
+    event = "InsertCharPre",
     opts = {},
   },
 
@@ -502,6 +532,4 @@ return {
       { "<c-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>" },
     },
   },
-
-  { "tpope/vim-repeat", event = "VeryLazy" },
 }

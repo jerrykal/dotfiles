@@ -1,7 +1,9 @@
 return {
   {
     "nvim-lspconfig",
-    dependencies = { "b0o/schemastore.nvim" },
+    dependencies = {
+      { "b0o/SchemaStore.nvim", version = false },
+    },
     opts = {
       servers = {
         yamlls = {

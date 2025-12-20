@@ -40,7 +40,7 @@ return {
         },
       },
       appearance = {
-        kind_icons = require("utils.kind_icons").get_icons(),
+        kind_icons = require("util.kind_icons").get(),
       },
     },
   },
@@ -48,9 +48,7 @@ return {
   -- Better yank/paste
   {
     "gbprod/yanky.nvim",
-    dependencies = {
-      "folke/snacks.nvim",
-    },
+    dependencies = { "snacks.nvim" },
     event = "LazyFile",
     opts = {
       ring = {
@@ -98,17 +96,23 @@ return {
     "nvim-mini/mini.surround",
     opts = {
       mappings = {
-        add = "gs", -- Add surrounding in Normal and Visual modes
-        delete = "gsd", -- Delete surrounding
-        find = "gsf", -- Find surrounding (to the right)
-        find_left = "gsF", -- Find surrounding (to the left)
-        highlight = "gsh", -- Highlight surrounding
-        replace = "gsr", -- Replace surrounding
-        update_n_lines = "gsn", -- Update `n_lines`
+        add = "gs",
+        delete = "gsd",
+        find = "gsf",
+        find_left = "gsF",
+        highlight = "gsh",
+        replace = "gsr",
+        update_n_lines = "gsn",
       },
     },
     keys = {
-      { "gs", mode = { "n", "x" } },
+      { "gs", desc = "Add Surrounding", mode = { "n", "x" } },
+      { "gsd", desc = "Delete Surrounding" },
+      { "gsf", desc = "Find Right Surrounding" },
+      { "gsF", desc = "Find Left Surrounding" },
+      { "gsh", desc = "Highlight Surrounding" },
+      { "gsr", desc = "Replace Surrounding" },
+      { "gsn", desc = "Update `MiniSurround.config.n_lines`" },
     },
   },
 
@@ -146,6 +150,7 @@ return {
       }
     end,
   },
+
   {
     "windwp/nvim-autopairs",
     event = { "InsertEnter" },
@@ -194,14 +199,6 @@ return {
           },
         },
       },
-    },
-  },
-
-  {
-    "nvim-mini/mini.comment",
-    opts = {},
-    keys = {
-      { "gc", mode = "n", "x" },
     },
   },
 }

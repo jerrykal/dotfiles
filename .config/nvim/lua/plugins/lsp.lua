@@ -7,7 +7,7 @@ return {
       { "mason-org/mason-lspconfig.nvim", config = function() end },
       "snacks.nvim",
       "fidget.nvim",
-      "dropbar.nvim",
+      "nvim-navic",
     },
     opts = {
       -- LSP Server configs
@@ -30,7 +30,6 @@ return {
         signs = false,
       },
       inlay_hints = {
-        enabled = true,
         exclude = {}, -- filetypes for which you don't want to enable inlay hints
       },
     },
@@ -39,17 +38,21 @@ return {
       vim.diagnostic.config(opts.diagnostics)
 
       -- Inlay hints
-      if opts.inlay_hints.enabled then
-        Snacks.util.lsp.on({ method = "textDocument/inlayHint" }, function(bufnr)
-          if
-            vim.api.nvim_buf_is_valid(bufnr)
-            and vim.bo[bufnr].buftype == ""
-            and not vim.tbl_contains(opts.inlay_hints.exclude, vim.bo[bufnr].filetype)
-          then
-            vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
-          end
-        end)
-      end
+      Snacks.util.lsp.on({ method = "textDocument/inlayHint" }, function(bufnr)
+        if
+          vim.api.nvim_buf_is_valid(bufnr)
+          and vim.bo[bufnr].buftype == ""
+          and not vim.tbl_contains(opts.inlay_hints.exclude, vim.bo[bufnr].filetype)
+        then
+          vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+        end
+      end)
+
+      -- Folds
+      Snacks.util.lsp.on({ method = "textDocument/foldingRange" }, function()
+        vim.opt_local.foldmethod = "expr"
+        vim.opt_local.foldexpr = "v:lua.vim.lsp.foldexpr()"
+      end)
 
       -- Configure LSP servers
       if opts.servers["*"] then
@@ -95,39 +98,49 @@ return {
   },
 
   {
-    "Bekaboo/dropbar.nvim",
+    "SmiteshP/nvim-navic",
+    dependencies = { "snacks.nvim" },
+    lazy = true,
     opts = {
-      bar = {
-        sources = function(buf)
-          -- Remove path and treesitter source
-          local sources = require("dropbar.sources")
-          if vim.bo[buf].ft == "markdown" then
-            return { sources.markdown }
+      lsp = {
+        auto_attach = true,
+      },
+      highlight = true,
+      separator = "  ",
+      depth_limit_indicator = "…",
+      click = true,
+      icons = require("util.kind_icons").get(true),
+    },
+    config = function(_, opts)
+      require("nvim-navic").setup(opts)
+
+      vim.api.nvim_create_autocmd({ "TermOpen", "BufEnter", "BufWinEnter", "BufWritePost", "FileType", "LspAttach" }, {
+        group = vim.api.nvim_create_augroup("navic_winbar", { clear = true }),
+        pattern = "*",
+        callback = function(args)
+          for _, win in ipairs(vim.fn.win_findbuf(args.buf)) do
+            local buf = vim._resolve_bufnr(args.buf)
+            local stat = vim.uv.fs_stat(vim.api.nvim_buf_get_name(buf))
+            if
+              not vim.api.nvim_buf_is_valid(buf)
+              or not vim.api.nvim_win_is_valid(win)
+              or vim.fn.win_gettype(win) ~= ""
+              or vim.wo[win].winbar ~= ""
+              or vim.bo[buf].ft == "help"
+              or stat and stat.size > 1024 * 1024
+              or vim.tbl_isempty(vim.lsp.get_clients({
+                bufnr = buf,
+                method = "textDocument/documentSymbol",
+              }))
+            then
+              return
+            end
+
+            vim.wo[win][0].winbar = "  %{%v:lua.require'nvim-navic'.get_location()%}"
           end
-          if vim.bo[buf].buftype == "terminal" then
-            return { sources.terminal }
-          end
-          return { sources.lsp }
         end,
-      },
-      icons = {
-        ui = {
-          bar = {
-            separator = "  ",
-            extends = "…",
-          },
-        },
-        kinds = {
-          symbols = require("utils.kind_icons").get_icons(true),
-        },
-      },
-    },
-    -- stylua: ignore
-    keys = {
-      { "<leader>;", function() require("dropbar.api").pick() end, desc = "Pick symbols in winbar", },
-      { "[;", function() require("dropbar.api").goto_context_start() end, desc = "Go to start of current context", },
-      { "];", function() require("dropbar.api").select_next_context() end, desc = "Select next context", },
-    },
+      })
+    end,
   },
 
   {

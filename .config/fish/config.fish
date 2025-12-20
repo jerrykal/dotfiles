@@ -8,6 +8,9 @@ set -gx fish_cursor_insert line blink
 set -gx fish_cursor_replace_one underscore blink
 set -gx fish_cursor_visual block
 
+# Initialize atuin
+type -q atuin; and atuin init fish | source
+
 # Initialize zoxide
 type -q zoxide; and zoxide init fish | source
 

@@ -18,26 +18,3 @@ autocmd("DiagnosticChanged", {
     vim.cmd("redrawstatus")
   end,
 })
-
--- Automatically toggle relativenumber
-local toggle_relativenumber_augroup = augroup("toggle_relativenumber")
-autocmd({ "BufEnter", "FocusGained", "WinEnter", "CmdlineLeave" }, {
-  group = toggle_relativenumber_augroup,
-  pattern = "*",
-  callback = function()
-    if vim.o.number then
-      vim.o.relativenumber = true
-      vim.cmd("redraw")
-    end
-  end,
-})
-autocmd({ "BufLeave", "FocusLost", "WinLeave", "CmdlineEnter" }, {
-  group = toggle_relativenumber_augroup,
-  pattern = "*",
-  callback = function()
-    if vim.o.number then
-      vim.o.relativenumber = false
-      vim.cmd("redraw")
-    end
-  end,
-})

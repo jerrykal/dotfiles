@@ -40,10 +40,10 @@ local kind_icons = {
   Variable = "",
 }
 
----@param pad? boolean
+---@param add_right_padding? boolean
 ---@return table
-function M.get_icons(pad)
-  if pad then
+function M.get(add_right_padding)
+  if add_right_padding then
     local padded_icons = {}
     for key, icon in pairs(kind_icons) do
       padded_icons[key] = icon .. " "

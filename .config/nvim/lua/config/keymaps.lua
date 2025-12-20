@@ -27,10 +27,6 @@ map("v", ">", ">gv")
 map("n", "gco", "o<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add Comment Below" })
 map("n", "gcO", "O<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add Comment Above" })
 
--- Navigate modified(unsaved) buffers
-map("n", "]=", "<cmd>execute +v:count1 . 'bmodified'<cr>", { desc = "Next Modified Buffer" })
-map("n", "[=", "<cmd>execute -v:count1 . 'bmodified'<cr>", { desc = "Prev Modified Buffer" })
-
 -- https://github.com/mhinz/vim-galore#saner-behavior-of-n-and-n
 map("n", "n", "'Nn'[v:searchforward].'zv'", { expr = true })
 map("x", "n", "'Nn'[v:searchforward]", { expr = true })
@@ -70,6 +66,6 @@ map("n", "<leader><tab>[", "<cmd>tabprevious<cr>", { desc = "Prev Tab" })
 vim.keymap.set(
   "n",
   "<leader>to",
-  require("utils.tmux").open_buf_in_new_tmux_window,
+  require("util.tmux").open_buf_in_new_tmux_window,
   { desc = "Open current file in new Tmux window" }
 )
