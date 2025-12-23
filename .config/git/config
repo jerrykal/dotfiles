@@ -10,7 +10,7 @@
 	defaultBranch = main
 
 [core]
-	excludesfile = ~/.gitignore
+	excludesfile = ~/.config/git/ignore
 	pager = delta
 	autocrlf = input
 
