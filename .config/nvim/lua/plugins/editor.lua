@@ -515,21 +515,24 @@ return {
     },
   },
 
+  -- Seamless navigation between nvim and tmux
   {
-    "abecodes/tabout.nvim",
-    event = "InsertCharPre",
-    opts = {},
-  },
-
-  -- Allows for ctrl+h/j/k/l navigation between nvim and tmux
-  {
-    "christoomey/vim-tmux-navigator",
+    "mrjones2014/smart-splits.nvim",
+    event = "VeryLazy",
+    -- stylua: ignore
     keys = {
-      { "<c-h>", "<cmd><C-U>TmuxNavigateLeft<cr>" },
-      { "<c-j>", "<cmd><C-U>TmuxNavigateDown<cr>" },
-      { "<c-k>", "<cmd><C-U>TmuxNavigateUp<cr>" },
-      { "<c-l>", "<cmd><C-U>TmuxNavigateRight<cr>" },
-      { "<c-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>" },
+      -- Resizing
+      { "<A-h>", function() require("smart-splits").resize_left() end },
+      { "<A-j>", function() require("smart-splits").resize_down() end },
+      { "<A-k>", function() require("smart-splits").resize_up() end },
+      { "<A-l>", function() require("smart-splits").resize_right() end },
+
+      -- Navigation
+      { "<C-h>", function() require("smart-splits").move_cursor_left() end },
+      { "<C-j>", function() require("smart-splits").move_cursor_down() end },
+      { "<C-k>", function() require("smart-splits").move_cursor_up() end },
+      { "<C-l>", function() require("smart-splits").move_cursor_right() end },
+      { "<C-\\>", function() require("smart-splits").move_cursor_previous() end },
     },
   },
 }
