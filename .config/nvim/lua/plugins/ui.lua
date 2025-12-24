@@ -16,7 +16,9 @@ return {
       input = {},
       notifier = {},
       scope = {},
-      statuscolumn = {},
+      statuscolumn = {
+        left = { "sign", "mark" },
+      },
       words = {},
       styles = {
         notification = {

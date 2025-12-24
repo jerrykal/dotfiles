@@ -4,15 +4,11 @@ local map = vim.keymap.set
 map({ "n", "x" }, "j", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', { expr = true, silent = true })
 map({ "n", "x" }, "k", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', { expr = true, silent = true })
 
--- Save file
-map("n", "<C-s>", "<cmd>w<cr><esc>", { desc = "Save File" })
-map("n", "<C-S>", "<cmd>noa w<cr><esc>", { desc = "Save File Without Formatting" })
-
--- New file
-map("n", "<leader>fn", "<cmd>enew<cr>", { desc = "New File" })
-
 -- Use ESC to turn off search highlighting
 map("n", "<esc>", "<cmd>noh<cr>")
+
+-- Copy to system clipboard
+map("n", "<leader>y", '"*y', { desc = "Yank to System Clipboard" })
 
 -- Add undo break-points
 map("i", ",", ",<c-g>u")
@@ -45,9 +41,6 @@ local diagnostic_goto = function(next, severity)
     })
   end
 end
-map("n", "<leader>cd", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
-map("n", "]d", diagnostic_goto(true), { desc = "Next Diagnostic" })
-map("n", "[d", diagnostic_goto(false), { desc = "Prev Diagnostic" })
 map("n", "]e", diagnostic_goto(true, "ERROR"), { desc = "Next Error" })
 map("n", "[e", diagnostic_goto(false, "ERROR"), { desc = "Prev Error" })
 map("n", "]w", diagnostic_goto(true, "WARN"), { desc = "Next Warning" })
@@ -57,7 +50,7 @@ map("n", "[w", diagnostic_goto(false, "WARN"), { desc = "Prev Warning" })
 map("n", "<leader>l", "<cmd>Lazy<cr>", { desc = "Lazy" })
 
 -- Tabs
-map("n", "<leader><tab>a", "<cmd>tabnew<cr>", { desc = "New Tab" })
+map("n", "<leader><tab><tab>", "<cmd>tabnew<cr>", { desc = "New Tab" })
 map("n", "<leader><tab>d", "<cmd>tabclose<cr>", { desc = "Close Tab" })
 map("n", "<leader><tab>]", "<cmd>tabnext<cr>", { desc = "Next Tab" })
 map("n", "<leader><tab>[", "<cmd>tabprevious<cr>", { desc = "Prev Tab" })

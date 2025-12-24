@@ -13,7 +13,6 @@ return {
         border = "highlight_high",
       },
       highlight_groups = {
-        DiffDelete = { fg = "highlight_med", bg = "base" },
         WinBar = { bg = "base" },
         WinBarNC = { bg = "base" },
 
@@ -27,11 +26,10 @@ return {
         TreesitterContextLineNumber = { bg = "base" },
 
         -- folke/snacks.nvim
-        SnacksIndentScope = { fg = "muted" },
         SnacksIndent = { fg = "highlight_med" },
         SnacksIndentChunk = { fg = "highlight_med" },
-        SnacksDiffDelete = { bg = "love", blend = 20 },
-        SnacksDiffDeleteLineNr = { link = "SnacksDiffDelete" },
+        SnacksIndentScope = { fg = "muted" },
+        SnacksPickerBoxBorder = { fg = "surface", bg = "surface" },
 
         -- lewis6991/gitsigns
         GitSignsAddInline = { bg = "foam", blend = 40 },
@@ -39,6 +37,9 @@ return {
         GitSignsChangeInline = { bg = "gold", blend = 40 },
         GitSignsDeletePreview = { bg = "love", blend = 20 },
         GitSignsDeleteVirtLn = { link = "GitSignsDeletePreview" },
+
+        -- mfussenegger/nvim-dap
+        DapStoppedLine = { bg = "gold", blend = 20 },
       },
     },
     config = function(_, opts)

@@ -1,5 +1,10 @@
 return {
   {
+    "nvim-treesitter",
+    opts = { ensure_installed = { "json5" } },
+  },
+
+  {
     "nvim-lspconfig",
     dependencies = {
       { "b0o/SchemaStore.nvim", version = false },
@@ -14,6 +19,9 @@ return {
           end,
           settings = {
             json = {
+              format = {
+                enable = true,
+              },
               validate = { enable = true },
             },
           },

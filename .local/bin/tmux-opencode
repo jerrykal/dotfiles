@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+#
+# Switch to an existing opencode pane in the current working directory,
+# or create a new tmux window running opencode if one doesn't exist.
+# Meant to be run using a tmux keybind.
+#
+
+find_opencode_pane() {
+  local target_dir="$1"
+  tmux list-panes -s -F "#{session_name}:#{window_index}.#{pane_index} #{pane_pid}" | while read -r pane_info pane_pid; do
+    child_pids=$(pgrep -P "$pane_pid" 2>/dev/null)
+    for pid in $child_pids; do
+      cmd=$(ps -p "$pid" -o command= 2>/dev/null)
+      if echo "$cmd" | grep -q "opencode"; then
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+          # macOS
+          proc_cwd=$(lsof -p "$pid" 2>/dev/null | awk '$4=="cwd" {print $9}' | head -1)
+        else
+          # Linux
+          proc_cwd=$(readlink -f "/proc/$pid/cwd" 2>/dev/null)
+        fi
+
+        if [[ "$proc_cwd" == "$target_dir" ]]; then
+          echo "$pane_info"
+          return 0
+        fi
+      fi
+    done
+  done
+
+  return 1
+}
+
+OPENCODE_PANE=$(find_opencode_pane "$PWD")
+
+if [[ -n "$OPENCODE_PANE" ]]; then
+  SESSION=$(echo "$OPENCODE_PANE" | cut -d: -f1)
+  WINDOW=$(echo "$OPENCODE_PANE" | cut -d: -f2 | cut -d. -f1)
+  PANE=$(echo "$OPENCODE_PANE" | cut -d. -f2)
+
+  tmux switch-client -t "$SESSION:$WINDOW.$PANE"
+else
+  tmux new-window -n "opencode" -c "$CURRENT_DIR" "opencode"
+fi

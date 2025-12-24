@@ -61,7 +61,8 @@ return {
         map("v", "ghr", function() gitsigns.reset_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "Reset Hunk")
         map("n", "ghS", gitsigns.stage_buffer, "Stage Buffer")
         map("n", "ghR", gitsigns.reset_buffer, "Reset buffer")
-        map("n", "ghp", gitsigns.preview_hunk_inline, "Preview Hunk Inline")
+        map("n", "ghp", gitsigns.preview_hunk, "Preview Hunk")
+        map("n", "ghi", gitsigns.preview_hunk_inline, "Preview Hunk Inline")
 
         map("n", "ghb", function() gitsigns.blame_line({ full = true }) end, "Blame Line")
         map("n", "ghB", function() gitsigns.blame() end, "Blame Buffer")
@@ -73,21 +74,6 @@ return {
         map({ "o", "x" }, "ih", gitsigns.select_hunk, "GitSigns Select Hunk")
         -- stylua: ignore end
       end,
-    },
-  },
-
-  {
-    "sindrets/diffview.nvim",
-    cmd = { "DiffviewOpen", "DiffviewFileHistory" },
-    opts = {
-      file_panel = {
-        win_config = { position = "right" },
-      },
-    },
-    keys = {
-      { "<leader>gD", "<cmd>DiffviewOpen<cr>", desc = "Open Diffview" },
-      { "<leader>gHb", "<cmd>DiffviewFileHistory<cr>", desc = "Open File History Diffview(Branch)" },
-      { "<leader>gHf", "<cmd>DiffviewFileHistory %<cr>", desc = "Open File History Diffview(Current File)" },
     },
   },
 }

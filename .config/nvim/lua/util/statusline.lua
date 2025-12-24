@@ -1,3 +1,4 @@
+---@class util.statusline
 local M = {}
 
 local function git_status()

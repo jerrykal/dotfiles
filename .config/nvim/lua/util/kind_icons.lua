@@ -1,3 +1,4 @@
+---@class util.kind_icons
 local M = {}
 
 local kind_icons = {
@@ -40,8 +41,9 @@ local kind_icons = {
   Variable = "",
 }
 
+---Get kinds icon
 ---@param add_right_padding? boolean
----@return table
+---@return table<string, string>
 function M.get(add_right_padding)
   if add_right_padding then
     local padded_icons = {}

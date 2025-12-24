@@ -2,11 +2,11 @@ return {
   {
     "snacks.nvim",
     opts = {
-      explorer = {},
+      explorer = {
+        replace_netrw = false,
+      },
       picker = {
-        layout = {
-          layout = { backdrop = false },
-        },
+        prompt = "> ",
         sources = {
           explorer = {
             layout = { preset = "right" },
@@ -93,6 +93,15 @@ return {
       { "<leader>bd", function() Snacks.bufdelete() end, desc = "Delete Buffer" },
       { "<leader>rf", function() Snacks.rename.rename_file() end, desc = "Rename File" },
     },
+    init = function()
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "VeryLazy",
+        callback = function()
+          Snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>uw")
+          Snacks.toggle.inlay_hints():map("<leader>uh")
+        end,
+      })
+    end,
   },
 
   -- Navigate like the flash
@@ -303,6 +312,7 @@ return {
 
   {
     "stevearc/oil.nvim",
+    lazy = false,
     dependencies = { "mini.icons" },
     opts = {
       view_options = {
@@ -519,6 +529,9 @@ return {
   {
     "mrjones2014/smart-splits.nvim",
     event = "VeryLazy",
+    opts = {
+      at_edge = "stop",
+    },
     -- stylua: ignore
     keys = {
       -- Resizing
