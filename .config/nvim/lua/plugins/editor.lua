@@ -9,6 +9,8 @@ return {
         prompt = "> ",
         sources = {
           explorer = {
+            hidden = true,
+            ignored = true,
             layout = { preset = "right" },
           },
         },
@@ -174,12 +176,7 @@ return {
   {
     "folke/which-key.nvim",
     event = "VeryLazy",
-    opts = {
-      preset = "helix",
-      delay = function(ctx)
-        return ctx.plugin and 0 or 300
-      end,
-    },
+    opts = { preset = "helix" },
   },
 
   -- Diagnostic panel

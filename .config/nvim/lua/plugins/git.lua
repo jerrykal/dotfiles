@@ -76,4 +76,19 @@ return {
       end,
     },
   },
+
+  {
+    "sindrets/diffview.nvim",
+    cmd = { "DiffviewOpen", "DiffviewFileHistory" },
+    opts = {
+      file_panel = {
+        win_config = { position = "right" },
+      },
+    },
+    keys = {
+      { "<leader>gv", "<cmd>DiffviewOpen<cr>", desc = "Open Diffview" },
+      { "<leader>ghb", "<cmd>DiffviewFileHistory<cr>", desc = "Open File History Diffview(Branch)" },
+      { "<leader>ghf", "<cmd>DiffviewFileHistory %<cr>", desc = "Open File History Diffview(Current File)" },
+    },
+  },
 }

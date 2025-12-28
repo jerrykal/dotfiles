@@ -25,6 +25,35 @@ return {
   },
 
   {
+    "MeanderingProgrammer/render-markdown.nvim",
+    ft = "markdown",
+    dependencies = {
+      -- For toggling
+      "snacks.nvim",
+    },
+    opts = {
+      code = {
+        width = "block",
+        right_pad = 1,
+      },
+      heading = {
+        icons = {},
+      },
+      sign = {
+        enabled = false,
+      },
+    },
+    config = function(_, opts)
+      require("render-markdown").setup(opts)
+      Snacks.toggle({
+        name = "Render Markdown",
+        get = require("render-markdown").get,
+        set = require("render-markdown").set,
+      }):map("<leader>um")
+    end,
+  },
+
+  {
     "toppair/peek.nvim",
     cond = vim.fn.executable("deno") == 1,
     build = "deno task --quiet build:fast",

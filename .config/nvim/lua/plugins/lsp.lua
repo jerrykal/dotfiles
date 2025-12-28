@@ -93,7 +93,6 @@ return {
       { "<leader>ca", mode = { "n", "x" }, vim.lsp.buf.code_action, desc = "Code Action" },
       { "<leader>cr", mode = { "n", "x" }, vim.lsp.codelens.run , desc = "Run Codelens"},
       { "<leader>cR", mode = { "n", "x" }, vim.lsp.codelens.refresh , desc = "Refresh & Display Codelens"},
-      { "<leader>rn", vim.lsp.buf.rename , desc = "Rename"},
     },
   },
 

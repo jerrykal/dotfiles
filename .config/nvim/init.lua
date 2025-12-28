@@ -15,4 +15,5 @@ vim.api.nvim_create_autocmd("User", {
     pcall(require, config_root .. ".autocmds")
   end,
 })
-require("config.lazy")
+
+pcall(require, "config.lazy")
