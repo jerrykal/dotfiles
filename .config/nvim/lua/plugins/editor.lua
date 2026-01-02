@@ -13,6 +13,25 @@ return {
             ignored = true,
             layout = { preset = "right" },
           },
+          lsp_symbols = {
+            -- Focus on current symbol on show
+            on_show = function(picker)
+              local function cursor_in_range(cursor, range)
+                local row, col = cursor[1] - 1, cursor[2]
+                return (row > range.start.line or (row == range.start.line and col >= range.start.character))
+                  and (row < range["end"].line or (row == range["end"].line and col <= range["end"].character))
+              end
+
+              local cursor = vim.api.nvim_win_get_cursor(picker.main)
+              local symbols = picker:items()
+              for i = #symbols, 1, -1 do
+                if cursor_in_range(cursor, symbols[i].range) then
+                  picker.list.cursor = symbols[i].idx
+                  return
+                end
+              end
+            end,
+          },
         },
         win = {
           input = {

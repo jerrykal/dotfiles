@@ -113,8 +113,6 @@ return {
     event = "LazyFile",
     opts = {
       multiwindow = true,
-      mode = "cursor",
-      max_lines = 4,
     },
   },
 }

@@ -19,7 +19,7 @@ map(
 map("n", "<esc>", "<cmd>noh<cr>")
 
 -- Copy to system clipboard
-map("n", "<leader>y", '"+y', { desc = "Yank to System Clipboard" })
+map({ "n", "x" }, "<leader>y", '"+y', { desc = "Yank to System Clipboard" })
 
 -- Add undo break-points
 map("i", ",", ",<c-g>u")
@@ -42,6 +42,8 @@ map("n", "N", "'nN'[v:searchforward].'zv'", { expr = true })
 map("x", "N", "'nN'[v:searchforward]", { expr = true })
 map("o", "N", "'nN'[v:searchforward]", { expr = true })
 
+map("n", "<C-u>", "<C-u>zz")
+map("n", "<C-d>", "<C-d>zz")
 map("n", "x", '"_x')
 
 -- Diagnostic

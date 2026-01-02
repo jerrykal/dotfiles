@@ -6,44 +6,37 @@ local opt = vim.opt
 
 -- General options
 opt.colorcolumn = "120"
-opt.completeopt = { "menu", "menuone", "noselect" } -- Completion options
-opt.confirm = true -- Confirm before closing unsaved buffers
-opt.fillchars = {
-  foldopen = "",
-  foldclose = "",
-  fold = " ",
-  foldsep = " ",
-  diff = "╱",
-  eob = " ",
-}
+opt.completeopt = { "menu", "menuone", "noselect" }
+opt.confirm = true
+opt.fillchars = { foldopen = "", foldclose = "", fold = " ", foldsep = " ", diff = "╱", eob = " " }
 opt.guicursor =
   "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50,a:blinkwait700-blinkoff400-blinkon250,sm:block-blinkwait175-blinkoff150-blinkon175"
-opt.laststatus = 3 -- Global statueline
+opt.laststatus = 3
 opt.list = true
 opt.listchars = { tab = "» ", trail = "·", nbsp = "·", extends = "›", precedes = "‹" }
-opt.mouse = "a" -- Enable mouse support
+opt.mouse = "a"
 opt.mousemoveevent = true
 opt.number = true
-opt.pumblend = 10 -- Popup menu transparency
-opt.pumheight = 10 -- Max height of popup menu
+opt.pumblend = 10
+opt.pumheight = 10
 opt.relativenumber = true
-opt.scrolloff = 4
+opt.scrolloff = 8
 opt.sessionoptions = "blank,buffers,curdir,folds,globals,help,localoptions,skiprtp,tabpages,terminal,winpos,winsize"
-opt.shortmess:append("I") -- Disable intro message
+opt.shortmess:append("I")
 opt.sidescrolloff = 8
 opt.signcolumn = "yes:1"
-opt.splitbelow = true -- Open new windows to the bottom
+opt.splitbelow = true
 opt.splitkeep = "screen"
-opt.splitright = true -- Open new windows to the right
+opt.splitright = true
 opt.statusline = [[%!v:lua.require("util.statusline").statusline()]]
-opt.termguicolors = true -- Enable true colors
+opt.termguicolors = true
 opt.timeoutlen = 300
-opt.undofile = true -- Persistent undo
+opt.undofile = true
 opt.undolevels = 10000
-opt.updatetime = 200 -- Save swap file and trigger CursorHold
+opt.updatetime = 200
 opt.updatetime = 250
-opt.virtualedit = "block" -- Allow cursor to move anywhere in visual block mode
-opt.wrap = false -- Line wrapping off
+opt.virtualedit = "block"
+opt.wrap = false
 
 -- Search options
 opt.ignorecase = true

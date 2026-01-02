@@ -11,3 +11,7 @@
 
 # Tmux
 .config/tmux/plugins/
+
+# .local/bin
+.local/bin/*
+!.local/bin/tmux-opencode

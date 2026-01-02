@@ -6,8 +6,6 @@ return {
       "mason.nvim",
       { "mason-org/mason-lspconfig.nvim", config = function() end },
       "snacks.nvim",
-      "fidget.nvim",
-      "nvim-navic",
     },
     opts = {
       -- LSP Server configs
@@ -84,8 +82,8 @@ return {
       { "grd", function() Snacks.picker.lsp_declarations() end, desc = "Goto Declaration" },
       { "gai", function() Snacks.picker.lsp_incoming_calls() end, desc = "C[a]lls Incoming" },
       { "gao", function() Snacks.picker.lsp_outgoing_calls() end, desc = "C[a]lls Outgoing" },
-      { "<leader>ss", function () Snacks.picker.lsp_symbols() end, desc = "Document Symbols"},
-      { "<leader>sS", function () Snacks.picker.lsp_workspace_symbols() end, desc = "Workspace Symbols"},
+      { "<leader>@", function () Snacks.picker.lsp_symbols() end, desc = "Document Symbols"},
+      { "<leader>#", function () Snacks.picker.lsp_workspace_symbols() end, desc = "Workspace Symbols"},
 
       { "K", vim.lsp.buf.hover, desc = "Hover"},
       { "gk", vim.lsp.buf.signature_help, desc = "Signature Help"},
@@ -118,57 +116,5 @@ return {
         end
       end)
     end,
-  },
-
-  {
-    "SmiteshP/nvim-navic",
-    dependencies = { "snacks.nvim" },
-    lazy = true,
-    opts = {
-      lsp = {
-        auto_attach = true,
-      },
-      highlight = true,
-      separator = "  ",
-      depth_limit_indicator = "…",
-      click = true,
-      icons = require("util.kind_icons").get(true),
-    },
-    config = function(_, opts)
-      require("nvim-navic").setup(opts)
-
-      vim.api.nvim_create_autocmd({ "TermOpen", "BufEnter", "BufWinEnter", "BufWritePost", "FileType", "LspAttach" }, {
-        group = vim.api.nvim_create_augroup("navic_winbar", { clear = true }),
-        pattern = "*",
-        callback = function(args)
-          for _, win in ipairs(vim.fn.win_findbuf(args.buf)) do
-            local buf = vim._resolve_bufnr(args.buf)
-            local stat = vim.uv.fs_stat(vim.api.nvim_buf_get_name(buf))
-            if
-              not vim.api.nvim_buf_is_valid(buf)
-              or not vim.api.nvim_win_is_valid(win)
-              or vim.fn.win_gettype(win) ~= ""
-              or vim.wo[win].winbar ~= ""
-              or vim.bo[buf].ft == "help"
-              or stat and stat.size > 1024 * 1024
-              or vim.tbl_isempty(vim.lsp.get_clients({
-                bufnr = buf,
-                method = "textDocument/documentSymbol",
-              }))
-            then
-              return
-            end
-
-            vim.wo[win][0].winbar = "  %{%v:lua.require'nvim-navic'.get_location()%}"
-          end
-        end,
-      })
-    end,
-  },
-
-  {
-    "j-hui/fidget.nvim",
-    lazy = true,
-    opts = {},
   },
 }

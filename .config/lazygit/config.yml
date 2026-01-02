@@ -3,6 +3,7 @@ git:
     - colorArg: always
       pager: delta --paging=never
 gui:
+  nerdFontsVersion: "3"
   border: single
   theme:
     activeBorderColor:

@@ -13,7 +13,6 @@ return {
           enabled = false,
         },
       },
-      input = {},
       notifier = {},
       scope = {},
       statuscolumn = {
@@ -68,5 +67,11 @@ return {
         },
       },
     },
+  },
+
+  {
+    "j-hui/fidget.nvim",
+    lazy = false,
+    opts = {},
   },
 }
