@@ -46,7 +46,7 @@ return {
     },
     config = function(_, opts)
       require("rose-pine").setup(opts)
-      vim.cmd([[colorscheme rose-pine]])
+      vim.cmd("colorscheme rose-pine")
     end,
   },
 }

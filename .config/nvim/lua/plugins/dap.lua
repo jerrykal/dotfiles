@@ -45,6 +45,8 @@ return {
   -- Dap UI
   {
     "igorlfs/nvim-dap-view",
+    -- Let the plugin lazy load itself
+    lazy = false,
     opts = {
       windows = {
         terminal = {

@@ -1,14 +1,25 @@
 local map = vim.keymap.set
 
--- Allow moving the cursor through wrapped lines with j, k
-map({ "n", "x" }, "j", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', { expr = true, silent = true })
-map({ "n", "x" }, "k", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', { expr = true, silent = true })
+-- Allow moving the cursor through wrapped lines with j, k.
+-- Also set jump marks so we can jump back with ctrl-o/i after <count>j/k.
+map(
+  { "n", "x" },
+  "j",
+  'v:count > 0 || mode(1)[0:1] == "no" ? "m\'" . v:count . "j" : "gj"',
+  { expr = true, silent = true }
+)
+map(
+  { "n", "x" },
+  "k",
+  'v:count > 0 || mode(1)[0:1] == "no" ? "m\'" . v:count . "k" : "gk"',
+  { expr = true, silent = true }
+)
 
 -- Use ESC to turn off search highlighting
 map("n", "<esc>", "<cmd>noh<cr>")
 
 -- Copy to system clipboard
-map("n", "<leader>y", '"*y', { desc = "Yank to System Clipboard" })
+map("n", "<leader>y", '"+y', { desc = "Yank to System Clipboard" })
 
 -- Add undo break-points
 map("i", ",", ",<c-g>u")
@@ -30,6 +41,8 @@ map("o", "n", "'Nn'[v:searchforward]", { expr = true })
 map("n", "N", "'nN'[v:searchforward].'zv'", { expr = true })
 map("x", "N", "'nN'[v:searchforward]", { expr = true })
 map("o", "N", "'nN'[v:searchforward]", { expr = true })
+
+map("n", "x", '"_x')
 
 -- Diagnostic
 local diagnostic_goto = function(next, severity)
@@ -58,7 +71,7 @@ map("n", "<leader><tab>]", "<cmd>tabnext<cr>", { desc = "Next Tab" })
 map("n", "<leader><tab>[", "<cmd>tabprevious<cr>", { desc = "Prev Tab" })
 
 -- Tmux
-vim.keymap.set(
+map(
   "n",
   "<leader>to",
   require("util.tmux").open_buf_in_new_tmux_window,
