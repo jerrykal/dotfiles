@@ -3,7 +3,15 @@
   "theme": "rosepine",
   "permission": {
     "edit": "ask",
-    "bash": "ask",
+    "bash": {
+      "*": "ask",
+      "git push": "ask",
+      "git status": "allow",
+      "git diff": "allow",
+      "npm run build": "allow",
+      "ls": "allow",
+      "pwd": "allow"
+    }
   },
   "mcp": {
     "context7": {

@@ -9,7 +9,7 @@ set -gx fish_cursor_replace_one underscore blink
 set -gx fish_cursor_visual block
 
 # Initialize atuin
-type -q atuin; and atuin init fish | source
+type -q atuin; and atuin init fish --disable-up-arrow | source
 
 # Initialize zoxide
 type -q zoxide; and zoxide init fish | source

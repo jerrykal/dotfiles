@@ -13,7 +13,7 @@ opt.guicursor =
   "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50,a:blinkwait700-blinkoff400-blinkon250,sm:block-blinkwait175-blinkoff150-blinkon175"
 opt.laststatus = 3
 opt.list = true
-opt.listchars = { tab = "» ", trail = "·", nbsp = "·", extends = "›", precedes = "‹" }
+opt.listchars = { tab = "» ", trail = "·", nbsp = "␣", extends = "…", precedes = "‹" }
 opt.mouse = "a"
 opt.mousemoveevent = true
 opt.number = true

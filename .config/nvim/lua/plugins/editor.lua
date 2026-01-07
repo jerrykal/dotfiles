@@ -6,7 +6,7 @@ return {
         replace_netrw = false,
       },
       picker = {
-        prompt = "> ",
+        prompt = " ",
         sources = {
           explorer = {
             hidden = true,

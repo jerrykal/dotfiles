@@ -21,12 +21,6 @@ abbr -a t tmux
 abbr -a tt tmux attach \|\| tmux
 abbr -a ta tmux attach
 
-# vscode
-if type -q code
-    abbr -a co code
-    abbr -a co. code .
-end
-
 # git
 abbr -a g git
 abbr -a gi git init
@@ -48,16 +42,6 @@ abbr -a gr git reset
 abbr -a gco git checkout
 abbr -a gb git branch
 abbr -a gbd git branch -d
-
-# homebrew
-if type -q brew
-    abbr -a bi brew install
-    abbr -a bu brew uninstall
-    abbr -a buz brew uninstall --zap
-    abbr -a bl brew list
-    abbr -a bup brew update
-    abbr -a bupg brew upgrade
-end
 
 # Lazygit
 type -q lazygit; and abbr -a lg lazygit
@@ -86,11 +70,6 @@ if type -q docker
     abbr -a dcleanc docker rm $(docker ps -a -q)
     abbr -a dcleani docker rmi $(docker images -q)
     abbr -a dprune docker system prune
-end
-
-# devpod
-if type -q devpod
-    abbr -a dp devpod
 end
 
 # uv

@@ -32,6 +32,7 @@ find_opencode_pane() {
 }
 
 OPENCODE_PANE=$(find_opencode_pane "$PWD")
+WORKING_DIR=$1
 
 if [[ -n "$OPENCODE_PANE" ]]; then
   SESSION=$(echo "$OPENCODE_PANE" | cut -d: -f1)
@@ -40,5 +41,5 @@ if [[ -n "$OPENCODE_PANE" ]]; then
 
   tmux switch-client -t "$SESSION:$WINDOW.$PANE"
 else
-  tmux new-window -n "opencode" -c "$CURRENT_DIR" "opencode"
+  tmux new-window -n "opencode" -c "$WORKING_DIR" "opencode"
 fi
