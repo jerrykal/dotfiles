@@ -564,4 +564,12 @@ return {
       { "<C-\\>", function() require("smart-splits").move_cursor_previous() end },
     },
   },
+
+  -- Project scopped global marks
+  {
+    "mohseenrm/marko.nvim",
+    priority = 1000,
+    lazy = false,
+    opts = {},
+  },
 }
