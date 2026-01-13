@@ -31,8 +31,8 @@ find_opencode_pane() {
   return 1
 }
 
-OPENCODE_PANE=$(find_opencode_pane "$PWD")
 WORKING_DIR=$1
+OPENCODE_PANE=$(find_opencode_pane "$WORKING_DIR")
 
 if [[ -n "$OPENCODE_PANE" ]]; then
   SESSION=$(echo "$OPENCODE_PANE" | cut -d: -f1)
