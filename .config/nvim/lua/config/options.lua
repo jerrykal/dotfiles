@@ -5,13 +5,11 @@ vim.g.maplocalleader = "\\"
 local opt = vim.opt
 
 -- General options
-opt.colorcolumn = "120"
 opt.completeopt = { "menu", "menuone", "noselect" }
 opt.confirm = true
 opt.fillchars = { foldopen = "", foldclose = "", fold = " ", foldsep = " ", diff = "╱", eob = " " }
 opt.guicursor =
   "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50,a:blinkwait700-blinkoff400-blinkon250,sm:block-blinkwait175-blinkoff150-blinkon175"
-opt.laststatus = 3
 opt.list = true
 opt.listchars = { tab = "» ", trail = "·", nbsp = "␣", extends = "…", precedes = "‹" }
 opt.mouse = "a"

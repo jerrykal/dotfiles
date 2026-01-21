@@ -3,6 +3,9 @@ return {
     "NickvanDyke/opencode.nvim",
     config = function()
       vim.g.opencode_opts = {
+        events = {
+          enabled = false,
+        },
         provider = {
           enabled = "tmux",
           tmux = {
