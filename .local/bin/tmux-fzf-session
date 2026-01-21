@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+SESSION_ICON=""
+DIR_ICON="󰉋"
+
+get_sessions() {
+  current_session=$(tmux display-message -p '#S')
+  tmux list-sessions -F "$SESSION_ICON #{session_name}" 2>/dev/null | grep -vFx "$SESSION_ICON $current_session"
+}
+
+get_zoxide_dirs() {
+  if command -v zoxide >/dev/null 2>&1; then
+    zoxide query -l | sed "s/^/$DIR_ICON /"
+  fi
+}
+
+get_list_items() {
+  get_sessions
+  get_zoxide_dirs
+}
+
+has_session() {
+  tmux list-sessions | grep -q "^$1:"
+}
+
+switch_to() {
+  session_name="$1"
+  tmux switch-client -t "$session_name"
+}
+
+if [[ ! -n "$TMUX" ]]; then
+  exit 1
+fi
+
+selected=$(get_list_items | fzf --tmux)
+if [[ "$selected" =~ ^($SESSION_ICON|$DIR_ICON)\ (.+)$ ]]; then
+  selected="${BASH_REMATCH[2]}"
+fi
+if [[ -z $selected ]]; then
+  exit 0
+fi
+
+selected_name=$(basename "$selected")
+selected_name="${selected_name#.}"
+if ! has_session "$selected_name"; then
+  tmux new-session -ds "$selected_name" -c "$selected"
+fi
+switch_to "$selected_name"
