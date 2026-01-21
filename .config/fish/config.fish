@@ -8,6 +8,9 @@ set -gx fish_cursor_insert line blink
 set -gx fish_cursor_replace_one underscore blink
 set -gx fish_cursor_visual block
 
+# Initialize fzf
+type -q fzf; and fzf --fish | source
+
 # Initialize atuin
 type -q atuin; and atuin init fish --disable-up-arrow | source
 

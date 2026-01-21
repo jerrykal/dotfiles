@@ -8,6 +8,8 @@ abbr -a rmrf rm -rf
 
 abbr -a rs rsync -avh
 
+abbr -a o open
+
 # vim
 if type -q nvim
     abbr vi nvim

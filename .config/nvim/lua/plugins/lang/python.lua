@@ -7,8 +7,7 @@ return {
           settings = {
             basedpyright = {
               analysis = {
-                -- Disable type-checking by default, I'd like to enable this explicitly in pyproject.toml or pyrightconfig.json
-                typeCheckingMode = "off",
+                typeCheckingMode = "basic",
               },
             },
           },

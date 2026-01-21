@@ -41,5 +41,5 @@ if [[ -n "$OPENCODE_PANE" ]]; then
 
   tmux switch-client -t "$SESSION:$WINDOW.$PANE"
 else
-  tmux new-window -n "opencode" -c "$WORKING_DIR" "opencode"
+  tmux new-window -n "opencode" -c "$WORKING_DIR" "opencode --port"
 fi

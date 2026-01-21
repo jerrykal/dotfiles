@@ -49,8 +49,10 @@ return {
     lazy = false,
     opts = {
       windows = {
+        size = 0.4,
+        position = "right",
         terminal = {
-          position = "right",
+          position = "below",
         },
       },
     },
