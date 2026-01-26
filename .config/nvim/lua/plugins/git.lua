@@ -1,5 +1,4 @@
 return {
-  -- Lazygit integration
   {
     "snacks.nvim",
     -- stylua: ignore
@@ -9,7 +8,7 @@ return {
     },
   },
 
-  -- Git integration for buffers
+  -- Git integration with inline blame, diff signs and hunk operations
   {
     "lewis6991/gitsigns.nvim",
     event = "LazyFile",

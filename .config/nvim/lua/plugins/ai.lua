@@ -1,4 +1,5 @@
 return {
+  -- OpenCode integration for Neovim
   {
     "NickvanDyke/opencode.nvim",
     config = function()

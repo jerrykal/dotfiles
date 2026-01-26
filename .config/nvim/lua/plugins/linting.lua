@@ -1,4 +1,5 @@
 return {
+  -- Asynchronous linter runner for displaying code warnings and errors
   {
     "mfussenegger/nvim-lint",
     event = "LazyFile",

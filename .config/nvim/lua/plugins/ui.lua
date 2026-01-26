@@ -35,6 +35,7 @@ return {
     },
   },
 
+  -- Fast icon provider for files, filetypes and other UI elements
   {
     "nvim-mini/mini.icons",
     lazy = true,
@@ -45,6 +46,7 @@ return {
     end,
   },
 
+  -- Display LSP diagnostics inline at end of line instead of virtual text
   {
     "rachartier/tiny-inline-diagnostic.nvim",
     event = "LazyFile",
@@ -69,6 +71,7 @@ return {
     },
   },
 
+  -- LSP progress notifications in the corner of the editor
   {
     "j-hui/fidget.nvim",
     lazy = false,

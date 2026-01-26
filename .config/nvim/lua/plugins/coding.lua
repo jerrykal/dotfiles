@@ -1,8 +1,11 @@
 return {
-  -- Auto-completion
+  -- Fast autocompletion engine with LSP, snippets and signature help
   {
     "saghen/blink.cmp",
-    dependencies = { "rafamadriz/friendly-snippets" },
+    dependencies = {
+      -- Collection of snippets for many programming languages
+      "rafamadriz/friendly-snippets",
+    },
     version = "1.*",
     event = { "InsertEnter", "CmdlineEnter" },
     opts = {
@@ -45,7 +48,7 @@ return {
     },
   },
 
-  -- Better yank/paste
+  -- Yank history management with ring buffer and picker integration
   {
     "gbprod/yanky.nvim",
     dependencies = { "snacks.nvim" },
@@ -92,6 +95,7 @@ return {
     },
   },
 
+  -- Add, delete, and change surrounding characters (quotes, brackets, tags)
   {
     "nvim-mini/mini.surround",
     opts = {
@@ -116,6 +120,7 @@ return {
     },
   },
 
+  -- Extended text objects for functions, classes, blocks and more
   {
     "nvim-mini/mini.ai",
     event = "LazyFile",
@@ -151,18 +156,21 @@ return {
     end,
   },
 
+  -- Automatically close brackets, quotes, and other pairs while typing
   {
     "windwp/nvim-autopairs",
     event = { "InsertEnter" },
     opts = {},
   },
 
+  -- Smart comment toggling with treesitter awareness for embedded languages
   {
     "folke/ts-comments.nvim",
     event = "LazyFile",
     opts = {},
   },
 
+  -- Split or join code blocks (multiline ↔ single line) with treesitter
   {
     "Wansmer/treesj",
     keys = {
@@ -171,7 +179,7 @@ return {
     opts = { use_default_keymaps = false },
   },
 
-  -- Neovim lua_ls setup
+  -- Proper Lua LSP setup for Neovim plugin development
   {
     "folke/lazydev.nvim",
     ft = "lua",

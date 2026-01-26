@@ -1,4 +1,5 @@
 return {
+  -- Lightweight formatter runner with per-language formatter configuration
   {
     "stevearc/conform.nvim",
     event = { "BufWritePre" },

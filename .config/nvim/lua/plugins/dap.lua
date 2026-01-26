@@ -1,4 +1,5 @@
 return {
+  -- Debug Adapter Protocol client for debugging code in Neovim
   {
     "mfussenegger/nvim-dap",
     dependencies = {
@@ -39,21 +40,21 @@ return {
       { "<leader>dP", function() require("dap").pause() end, desc = "Pause" },
       { "<leader>ds", function() require("dap").session() end, desc = "Session" },
       { "<leader>dt", function() require("dap").terminate() end, desc = "Terminate" },
+      { "<down>", function() require("dap").step_over() end, desc = "Step Over" },
+      { "<right>", function() require("dap").step_into() end, desc = "Step Into" },
+      { "<left>", function() require("dap").step_out() end, desc = "Step Out" },
+      { "<up>", function() require("dap").restart_frame() end, desc = "Step Into" },
     },
   },
 
-  -- Dap UI
+  -- Minimal UI for nvim-dap
   {
     "igorlfs/nvim-dap-view",
     -- Let the plugin lazy load itself
     lazy = false,
     opts = {
-      windows = {
-        size = 0.4,
-        position = "right",
-        terminal = {
-          position = "below",
-        },
+      winbar = {
+        sections = { "watches", "scopes", "exceptions", "breakpoints", "threads", "repl", "console" },
       },
     },
     -- stylua: ignore
@@ -63,7 +64,7 @@ return {
     },
   },
 
-  -- mason.nvim integration
+  -- Bridge between mason.nvim and nvim-dap for automatic debugger setup
   {
     "jay-babu/mason-nvim-dap.nvim",
     dependencies = "mason.nvim",
@@ -72,6 +73,28 @@ return {
       automatic_installation = true,
       handlers = {},
       ensure_installed = {},
+    },
+  },
+
+  -- Autocompletion source for DAP REPL using blink.cmp
+  {
+    "mayromr/blink-cmp-dap",
+    ft = { "dap-repl" },
+  },
+  {
+    "blink.cmp",
+    opts = {
+      sources = {
+        per_filetype = {
+          ["dap-repl"] = { "dap" },
+        },
+        providers = {
+          dap = {
+            name = "dap",
+            module = "blink-cmp-dap",
+          },
+        },
+      },
     },
   },
 }

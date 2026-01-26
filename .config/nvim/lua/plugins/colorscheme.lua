@@ -1,4 +1,5 @@
 return {
+  -- Rose Pine color scheme with warm, muted tones
   {
     "rose-pine/neovim",
     name = "rose-pine",

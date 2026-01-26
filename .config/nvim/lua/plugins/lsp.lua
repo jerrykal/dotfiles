@@ -1,9 +1,11 @@
 return {
+  -- Official LSP client configuration for Neovim built-in LSP
   {
     "neovim/nvim-lspconfig",
     event = "LazyFile",
     dependencies = {
       "mason.nvim",
+      -- Bridge between mason.nvim and nvim-lspconfig for automatic LSP setup
       { "mason-org/mason-lspconfig.nvim", config = function() end },
       "snacks.nvim",
     },
@@ -94,7 +96,7 @@ return {
     },
   },
 
-  -- CLI tools and LSP package manager
+  -- Package manager for LSP servers, DAP adapters, linters and formatters
   {
     "mason-org/mason.nvim",
     cmd = "Mason",

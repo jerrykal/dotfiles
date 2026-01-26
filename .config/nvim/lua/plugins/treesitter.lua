@@ -1,4 +1,5 @@
 return {
+  -- Syntax highlighting and code understanding using tree-sitter parsers
   {
     "nvim-treesitter/nvim-treesitter",
     branch = "main",
@@ -73,6 +74,7 @@ return {
     end,
   },
 
+  -- Advanced text objects for functions, classes, parameters using treesitter
   {
     "nvim-treesitter/nvim-treesitter-textobjects",
     branch = "main",
@@ -107,6 +109,7 @@ return {
     end,
   },
 
+  -- Show current function/class context at the top of the window
   {
     "nvim-treesitter/nvim-treesitter-context",
     event = "LazyFile",

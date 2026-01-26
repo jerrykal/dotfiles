@@ -17,6 +17,7 @@ return {
     },
   },
 
+  -- Automatically save and restore editor sessions per directory
   {
     "rmagatti/auto-session",
     lazy = false,

@@ -125,7 +125,7 @@ return {
     end,
   },
 
-  -- Navigate like the flash
+  -- Fast navigation plugin for jumping to any visible text with minimal keystrokes
   {
     "folke/flash.nvim",
     opts = {
@@ -191,14 +191,14 @@ return {
     },
   },
 
-  -- Useful reminder for my keymappings
+  -- Shows available keybindings in popup while typing commands
   {
     "folke/which-key.nvim",
     event = "VeryLazy",
     opts = { preset = "helix" },
   },
 
-  -- Diagnostic panel
+  -- Pretty list for diagnostics, references, quickfix and location results
   {
     "folke/trouble.nvim",
     cmd = { "Trouble" },
@@ -250,6 +250,7 @@ return {
     },
   },
 
+  -- Highlight and search TODO, FIXME, NOTE comments in projects
   {
     "folke/todo-comments.nvim",
     event = "LazyFile",
@@ -268,6 +269,7 @@ return {
     },
   },
 
+  -- Quick file bookmarking and navigation with minimal keystrokes
   {
     "ThePrimeagen/harpoon",
     branch = "harpoon2",
@@ -277,23 +279,46 @@ return {
         save_on_toggle = true,
       },
     },
-    -- stylua: ignore
-    keys = {
-      { "<leader>A", function() require("harpoon"):list():prepend() end, desc = "Harpoon File (Prepend)" },
-      { "<leader>a", function() require("harpoon"):list():add() end, desc = "Harpoon File" },
-      { "<leader>h",
-        function()
-          local harpoon = require("harpoon")
-          harpoon.ui:toggle_quick_menu(harpoon:list())
-        end, desc = "Harpoon Quick Menu", },
-      { "<leader>1", function() require("harpoon"):list():select(1) end, desc = "Harpoon to File 1" },
-      { "<leader>2", function() require("harpoon"):list():select(2) end, desc = "Harpoon to File 2" },
-      { "<leader>3", function() require("harpoon"):list():select(3) end, desc = "Harpoon to File 3" },
-      { "<leader>4", function() require("harpoon"):list():select(4) end, desc = "Harpoon to File 4" },
-    },
+    keys = function()
+      local keys = {
+        {
+          "<leader>A",
+          function()
+            require("harpoon"):list():prepend()
+          end,
+          desc = "Harpoon File (Prepend)",
+        },
+        {
+          "<leader>a",
+          function()
+            require("harpoon"):list():add()
+          end,
+          desc = "Harpoon File",
+        },
+        {
+          "<leader>h",
+          function()
+            local harpoon = require("harpoon")
+            harpoon.ui:toggle_quick_menu(harpoon:list())
+          end,
+          desc = "Harpoon Quick Menu",
+        },
+      }
+
+      for i = 1, 9 do
+        table.insert(keys, {
+          "<leader>" .. i,
+          function()
+            require("harpoon"):list():select(i)
+          end,
+          desc = "Harpoon to File " .. i,
+        })
+      end
+      return keys
+    end,
   },
 
-  -- Better folding
+  -- Modern folding system with preview and better fold text display
   {
     "kevinhwang91/nvim-ufo",
     event = "LazyFile",
@@ -326,6 +351,7 @@ return {
     },
   },
 
+  -- Edit filesystem like a buffer for intuitive file operations
   {
     "stevearc/oil.nvim",
     lazy = false,
@@ -348,7 +374,7 @@ return {
     },
   },
 
-  -- Better dial
+  -- Enhanced increment/decrement for numbers, dates, booleans and more
   {
     "monaqa/dial.nvim",
     -- stylua: ignore
@@ -517,7 +543,7 @@ return {
     end,
   },
 
-  -- Search/replace in multiple files
+  -- Find and replace across multiple files with live preview
   {
     "MagicDuck/grug-far.nvim",
     opts = { headerMaxWidth = 80 },
@@ -541,7 +567,7 @@ return {
     },
   },
 
-  -- Seamless navigation between nvim and tmux
+  -- Seamless navigation and resizing between Neovim and tmux splits
   {
     "mrjones2014/smart-splits.nvim",
     event = "VeryLazy",
@@ -563,13 +589,5 @@ return {
       { "<C-l>", function() require("smart-splits").move_cursor_right() end },
       { "<C-\\>", function() require("smart-splits").move_cursor_previous() end },
     },
-  },
-
-  -- Project scopped global marks
-  {
-    "mohseenrm/marko.nvim",
-    priority = 1000,
-    lazy = false,
-    opts = {},
   },
 }

@@ -24,6 +24,7 @@ return {
     },
   },
 
+  -- Live markdown rendering with proper formatting in the editor
   {
     "MeanderingProgrammer/render-markdown.nvim",
     ft = "markdown",
@@ -53,6 +54,7 @@ return {
     end,
   },
 
+  -- Live markdown preview in browser with synchronized scrolling
   {
     "toppair/peek.nvim",
     cond = vim.fn.executable("deno") == 1,

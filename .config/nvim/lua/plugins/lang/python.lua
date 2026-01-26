@@ -26,6 +26,7 @@ return {
     },
   },
 
+  -- Python debugging support for nvim-dap using debugpy
   {
     "mfussenegger/nvim-dap-python",
     dependencies = { "mason-nvim-dap.nvim" },
@@ -48,6 +49,7 @@ return {
     },
   },
 
+  -- Python virtual environment selector with automatic detection
   {
     "linux-cultist/venv-selector.nvim",
     cmd = "VenvSelect",
