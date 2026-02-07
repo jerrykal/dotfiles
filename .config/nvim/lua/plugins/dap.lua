@@ -25,9 +25,9 @@ return {
     end,
     -- stylua: ignore
     keys = {
-      { "<leader>dB", function() require("dap").set_breakpoint(vim.fn.input('Breakpoint condition: ')) end, desc = "Breakpoint Condition" },
+      { "<c-.>", function() require("dap").toggle_breakpoint() end, desc = "Toggle Breakpoint" },
+      { "<s-c-.>", function() require("dap").set_breakpoint(vim.fn.input('Breakpoint condition: ')) end, desc = "Breakpoint Condition" },
       { "<leader>dl", function() require("dap").set_breakpoint(nil, nil, vim.fn.input("Log point message: ")) end, desc = "Set Log Point" },
-      { "<leader>db", function() require("dap").toggle_breakpoint() end, desc = "Toggle Breakpoint" },
       { "<leader>dc", function() require("dap").continue() end, desc = "Run/Continue" },
       { "<leader>dC", function() require("dap").run_to_cursor() end, desc = "Run to Cursor" },
       { "<leader>dg", function() require("dap").goto_() end, desc = "Go to Line (No Execute)" },
@@ -40,6 +40,7 @@ return {
       { "<leader>dP", function() require("dap").pause() end, desc = "Pause" },
       { "<leader>ds", function() require("dap").session() end, desc = "Session" },
       { "<leader>dt", function() require("dap").terminate() end, desc = "Terminate" },
+      { "<leader>dh", function() require("dap.ui.widgets").hover() end, desc = "DAP Hover", mode = { "n", "v" } },
       { "<down>", function() require("dap").step_over() end, desc = "Step Over" },
       { "<right>", function() require("dap").step_into() end, desc = "Step Into" },
       { "<left>", function() require("dap").step_out() end, desc = "Step Out" },
@@ -53,8 +54,14 @@ return {
     -- Let the plugin lazy load itself
     lazy = false,
     opts = {
-      winbar = {
-        sections = { "watches", "scopes", "exceptions", "breakpoints", "threads", "repl", "console" },
+      windows = {
+        terminal = {
+          position = "right",
+        },
+      },
+      icons = {
+        collapsed = " ",
+        expanded = " ",
       },
     },
     -- stylua: ignore

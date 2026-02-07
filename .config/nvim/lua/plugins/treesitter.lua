@@ -115,6 +115,7 @@ return {
     event = "LazyFile",
     opts = {
       multiwindow = true,
+      max_lines = 5,
     },
   },
 }

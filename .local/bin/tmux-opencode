@@ -8,8 +8,8 @@
 find_opencode_pane() {
   local target_dir="$1"
   tmux list-panes -s -F "#{session_name}:#{window_index}.#{pane_index} #{pane_pid}" | while read -r pane_info pane_pid; do
-    child_pids=$(pgrep -P "$pane_pid" 2>/dev/null)
-    for pid in $child_pids; do
+    candidate_pids="$pane_pid $(pgrep -P "$pane_pid" 2>/dev/null)"
+    for pid in $candidate_pids; do
       cmd=$(ps -p "$pid" -o command= 2>/dev/null)
       if echo "$cmd" | grep -q "opencode"; then
         if [[ "$OSTYPE" == "darwin"* ]]; then

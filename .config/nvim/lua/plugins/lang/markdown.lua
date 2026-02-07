@@ -26,32 +26,13 @@ return {
 
   -- Live markdown rendering with proper formatting in the editor
   {
-    "MeanderingProgrammer/render-markdown.nvim",
-    ft = "markdown",
-    dependencies = {
-      -- For toggling
-      "snacks.nvim",
-    },
+    "OXY2DEV/markview.nvim",
+    lazy = false, -- markview.nvim lazy loads itself
     opts = {
-      code = {
-        width = "block",
-        right_pad = 1,
-      },
-      heading = {
-        icons = {},
-      },
-      sign = {
-        enabled = false,
+      preview = {
+        hybrid_modes = { "n", "no", "c" },
       },
     },
-    config = function(_, opts)
-      require("render-markdown").setup(opts)
-      Snacks.toggle({
-        name = "Render Markdown",
-        get = require("render-markdown").get,
-        set = require("render-markdown").set,
-      }):map("<leader>um")
-    end,
   },
 
   -- Live markdown preview in browser with synchronized scrolling

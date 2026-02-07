@@ -17,67 +17,69 @@ return {
     },
   },
 
-  -- Automatically save and restore editor sessions per directory
+  -- Lightweight session management
   {
-    "rmagatti/auto-session",
-    lazy = false,
-    opts = {
-      session_lens = {
-        picker = "snacks",
-        mappings = {
-          delete_session = { { "i", "n" }, "<C-x>" },
-        },
-      },
-      -- Save & restore DAP breakpoints
-      save_extra_data = function(_)
-        local dap_plugin = require("lazy.core.config").plugins["nvim-dap"]
-        if not dap_plugin or not dap_plugin._.loaded then
-          return
-        end
+    "folke/persistence.nvim",
+    event = "BufReadPre",
+    opts = {},
+    config = function(_, opts)
+      require("persistence").setup(opts)
 
+      local function save_breakpoints()
         local ok, breakpoints = pcall(require, "dap.breakpoints")
         if not ok or not breakpoints then
           return
         end
 
         local bps = {}
-        local breakpoints_by_buf = breakpoints.get()
-        for buf, buf_bps in pairs(breakpoints_by_buf) do
-          bps[vim.api.nvim_buf_get_name(buf)] = buf_bps
+        for bufnr, buf_bps in pairs(breakpoints.get()) do
+          local fname = vim.api.nvim_buf_get_name(bufnr)
+          bps[fname] = buf_bps
         end
-        if vim.tbl_isempty(bps) then
+        vim.g.BREAKPOINTS = bps
+      end
+
+      local function load_breakpoints()
+        local ok, breakpoints = pcall(require, "dap.breakpoints")
+        if not ok or not breakpoints or not vim.g.BREAKPOINTS then
           return
         end
-        local extra_data = {
-          breakpoints = bps,
-        }
-        return vim.fn.json_encode(extra_data)
-      end,
-      restore_extra_data = function(_, extra_data)
-        local json = vim.fn.json_decode(extra_data)
 
-        if json.breakpoints then
-          local ok, breakpoints = pcall(require, "dap.breakpoints")
-
-          if not ok or not breakpoints then
-            return
-          end
-          for buf_name, buf_bps in pairs(json.breakpoints) do
+        for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+          local fname = vim.api.nvim_buf_get_name(buf)
+          local buf_bps = vim.g.BREAKPOINTS[fname]
+          if buf_bps ~= nil then
             for _, bp in pairs(buf_bps) do
               local line = bp.line
-              local opts = {
+              local bp_opts = {
                 condition = bp.condition,
                 log_message = bp.logMessage,
                 hit_condition = bp.hitCondition,
               }
-              breakpoints.set(opts, vim.fn.bufnr(buf_name), line)
+              breakpoints.set(bp_opts, vim.fn.bufnr(buf), line)
             end
           end
         end
-      end,
-    },
+      end
+
+      local augroup = vim.api.nvim_create_augroup("persist-breakpoints", { clear = true })
+      vim.api.nvim_create_autocmd("User", {
+        group = augroup,
+        pattern = "PersistenceSavePre",
+        callback = save_breakpoints,
+      })
+      vim.api.nvim_create_autocmd("User", {
+        group = augroup,
+        pattern = "PersistenceLoadPost",
+        callback = load_breakpoints,
+      })
+    end,
+    -- stylua: ignore
     keys = {
-      { "<leader>fs", "<cmd>AutoSession search<cr>", desc = "Sessions" },
+      { "<leader>qs", function() require("persistence").load() end, desc = "Restore Session" },
+      { "<leader>qS", function() require("persistence").select() end,desc = "Select Session" },
+      { "<leader>ql", function() require("persistence").load({ last = true }) end, desc = "Restore Last Session" },
+      { "<leader>qd", function() require("persistence").stop() end, desc = "Don't Save Current Session" },
     },
   },
 }

@@ -50,7 +50,6 @@
       "uv tool list *": "allow",
       "uv python list *": "allow",
       "uv help *": "allow",
-      "git push *": "ask"
     }
   },
   "mcp": {
