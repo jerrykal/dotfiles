@@ -6,8 +6,25 @@ return {
     version = false,
     lazy = false,
     build = ":TSUpdate",
-    opts_extend = { "ensure_installed" },
+    opts_extend = {
+      "indent",
+      "highlight.disable",
+      "folds.disable",
+      "ensure_installed.disable",
+    },
     opts = {
+      indent = {
+        enable = true,
+        disable = {},
+      },
+      highlight = {
+        enable = true,
+        disable = {},
+      },
+      folds = {
+        enable = true,
+        disable = {},
+      },
       ensure_installed = {
         "bash",
         "c",
@@ -44,9 +61,9 @@ return {
 
       vim.api.nvim_create_autocmd("FileType", {
         group = vim.api.nvim_create_augroup("treesitter", { clear = true }),
-        callback = function(event)
+        callback = function(ev)
           local ts = vim.treesitter
-          local ft = event.match
+          local ft = ev.match
           local lang = ts.language.get_lang(ft)
 
           -- Abort if the parser for the given filtetype is not available
@@ -54,19 +71,28 @@ return {
             return
           end
 
+          ---@param feat string
+          ---@param query string
+          local function enabled(feat, query)
+            local f = opts[feat] or {}
+            return f.enable ~= false
+              and not (type(f.disable) == "table" and vim.tbl_contains(f.disable, lang))
+              and ts.query.get(lang, query) ~= nil
+          end
+
           -- Highlight
-          if not vim.g.vscode and ts.query.get(lang, "highlights") ~= nil then
-            ts.start(event.buf, lang)
+          if not vim.g.vscode and enabled("highlight", "highlights") then
+            pcall(vim.treesitter.start, ev.buf)
           end
 
           -- Folds
-          if ts.query.get(lang, "folds") ~= nil then
+          if enabled("folds", "folds") then
             vim.opt_local.foldmethod = "expr"
             vim.opt_local.foldexpr = "v:lua.vim.treesitter.foldexpr()"
           end
 
           -- Indent
-          if ts.query.get(lang, "indents") ~= nil then
+          if enabled("indent", "indents") then
             vim.opt_local.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
           end
         end,
