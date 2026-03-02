@@ -37,16 +37,39 @@ return {
       -- Diagnostics
       vim.diagnostic.config(opts.diagnostics)
 
-      -- -- Inlay hints
-      -- Snacks.util.lsp.on({ method = "textDocument/inlayHint" }, function(bufnr)
-      --   if
-      --     vim.api.nvim_buf_is_valid(bufnr)
-      --     and vim.bo[bufnr].buftype == ""
-      --     and not vim.tbl_contains(opts.inlay_hints.exclude, vim.bo[bufnr].filetype)
-      --   then
-      --     vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
-      --   end
-      -- end)
+      -- Inlay hints
+      Snacks.util.lsp.on({ method = "textDocument/inlayHint" }, function(bufnr)
+        if
+          vim.api.nvim_buf_is_valid(bufnr)
+          and vim.bo[bufnr].buftype == ""
+          and not vim.tbl_contains(opts.inlay_hints.exclude, vim.bo[bufnr].filetype)
+        then
+          vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+        end
+      end)
+
+      -- Truncate inlay_hints longer than 20 characters
+      local orig = vim.lsp.handlers["textDocument/inlayHint"]
+      vim.lsp.handlers["textDocument/inlayHint"] = function(err, result, ctx)
+        if err or not result then
+          return orig(err, result, ctx)
+        end
+
+        for _, hint in ipairs(result) do
+          if hint.label then
+            local max_len = 20
+            local label = type(hint.label) == "string" and hint.label or hint.label.value or ""
+            if #label > max_len then
+              if label:sub(-1) == "=" then
+                hint.label = label:sub(1, max_len - 3) .. "… ="
+              else
+                hint.label = label:sub(1, max_len - 2) .. "… "
+              end
+            end
+          end
+        end
+        return orig(err, result, ctx)
+      end
 
       -- Folds
       Snacks.util.lsp.on({ method = "textDocument/foldingRange" }, function()
