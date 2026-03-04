@@ -49,7 +49,7 @@ log() {
 if [ ! -n "$SKIP_DEPS" ]; then
   log INFO "Checking for Homebrew installation..."
   if ! command -v brew &>/dev/null; then
-    echo "Homebrew not found. Installing..."
+    log INFO "Homebrew not found. Installing..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
     if [ $? -eq 0 ]; then
