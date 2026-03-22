@@ -7,12 +7,6 @@ return {
         events = {
           enabled = false,
         },
-        provider = {
-          enabled = "tmux",
-          tmux = {
-            options = "-h -l 30%",
-          },
-        },
       }
     end,
     -- stylua: ignore

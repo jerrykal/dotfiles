@@ -54,6 +54,9 @@ return {
     -- Let the plugin lazy load itself
     lazy = false,
     opts = {
+      winbar = {
+        show_keymap_hints = false,
+      },
       windows = {
         terminal = {
           position = "right",

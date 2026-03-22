@@ -10,6 +10,7 @@ return {
       "indent",
       "highlight.disable",
       "folds.disable",
+      "ensure_installed",
       "ensure_installed.disable",
     },
     opts = {

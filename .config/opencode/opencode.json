@@ -1,12 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "theme": "rosepine",
   "default_agent": "plan",
-  "tui": {
-    "scroll_acceleration": {
-      "enabled": true
-    },
-  },
   "permission": {
     "edit": "ask",
     "bash": {
@@ -28,6 +22,7 @@
       "echo *": "allow",
       "rg *": "allow",
       "find *": "allow",
+      "sort *": "allow",
       "git status *": "allow",
       "git diff *": "allow",
       "git log *": "allow",

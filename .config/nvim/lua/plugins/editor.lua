@@ -7,9 +7,9 @@ return {
       },
       picker = {
         prompt = " ",
+        hidden = true,
         sources = {
           explorer = {
-            hidden = true,
             ignored = true,
             layout = { preset = "right" },
           },
@@ -53,7 +53,7 @@ return {
     -- stylua: ignore
     keys = {
       -- Top Pickers & Explorer
-      { "<C-p>", function() Snacks.picker.smart() end, desc = "Smart Find Files" },
+      { "<C-p>", function() Snacks.picker.files() end, desc = "Smart Find Files" },
       { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
       { "<leader>/", function() Snacks.picker.grep() end, desc = "Grep" },
       { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },

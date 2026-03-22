@@ -19,4 +19,8 @@ function fish_user_key_bindings
     bind -M default \ce end-of-line
     bind -M default \cb backward-char
     bind -M default \cf forward-char
+
+    # Add this to disable fzf shift-tab completion
+    bind shift-tab complete-and-search
+    bind -M insert shift-tab complete-and-search
 end
