@@ -3,16 +3,8 @@ return {
     "nvim-lspconfig",
     opts = {
       servers = {
-        basedpyright = {
-          settings = {
-            basedpyright = {
-              analysis = {
-                typeCheckingMode = "basic",
-              },
-            },
-          },
-        },
         ruff = {},
+        ty = {},
       },
     },
   },

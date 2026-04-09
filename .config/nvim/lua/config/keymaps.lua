@@ -71,11 +71,3 @@ map("n", "<leader><tab><tab>", "<cmd>tabnew<cr>", { desc = "New Tab" })
 map("n", "<leader><tab>d", "<cmd>tabclose<cr>", { desc = "Close Tab" })
 map("n", "<leader><tab>]", "<cmd>tabnext<cr>", { desc = "Next Tab" })
 map("n", "<leader><tab>[", "<cmd>tabprevious<cr>", { desc = "Prev Tab" })
-
--- Tmux
-map(
-  "n",
-  "<leader>to",
-  require("util.tmux").open_buf_in_new_tmux_window,
-  { desc = "Open current file in new Tmux window" }
-)

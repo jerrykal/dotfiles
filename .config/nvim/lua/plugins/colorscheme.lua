@@ -19,6 +19,9 @@ return {
         ["@markup.italic"] = { italic = true },
         htmlItalic = { italic = true },
 
+        WinBar = { link = "Normal" },
+        WinBarNC = { link = "Normal" },
+
         -- nvim-treesitter/nvim-treesitter-context
         TreesitterContextLineNumber = { link = "LineNr" },
 

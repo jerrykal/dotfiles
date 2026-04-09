@@ -3,5 +3,8 @@
   "theme": "rosepine",
   "scroll_acceleration": {
     "enabled": true
+  },
+  "keybinds": {
+    "variant_list": "ctrl+shift+t"
   }
 }

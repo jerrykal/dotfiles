@@ -4,5 +4,5 @@ end
 
 set -gx EZA_CONFIG_DIR $XDG_CONFIG_HOME/eza
 
-alias ls="eza --color=always --group-directories-first"
+alias ls="eza --color=always --group-directories-first --git"
 alias tree="ls --tree"

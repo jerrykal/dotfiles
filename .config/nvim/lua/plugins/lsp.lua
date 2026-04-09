@@ -119,6 +119,23 @@ return {
     },
   },
 
+  {
+    "SmiteshP/nvim-navic",
+    dependencies = { "nvim-lspconfig" },
+    opts = {
+      icons = require("util.kind_icons").get(true),
+      highlight = true,
+      separator = "  ",
+      lsp = {
+        auto_attach = true,
+      },
+    },
+    config = function(_, opts)
+      require("nvim-navic").setup(opts)
+      vim.o.winbar = "  %{%v:lua.require'nvim-navic'.get_location()%}"
+    end,
+  },
+
   -- Package manager for LSP servers, DAP adapters, linters and formatters
   {
     "mason-org/mason.nvim",

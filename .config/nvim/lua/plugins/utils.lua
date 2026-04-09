@@ -1,22 +1,4 @@
 return {
-  {
-    "snacks.nvim",
-    opts = {
-      bigfile = {},
-      image = {},
-      quickfile = {},
-      scratch = {
-        ft = "markdown",
-      },
-    },
-    -- stylua: ignore
-    keys = {
-      { "<leader>z",  function() Snacks.zen.zoom() end, desc = "Toggle Zoom" },
-      { "<leader>.", function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },
-      { "<leader>S", function() Snacks.scratch.select() end, desc = "Select Scratch Buffer" },
-    },
-  },
-
   -- Lightweight session management
   {
     "folke/persistence.nvim",

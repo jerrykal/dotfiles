@@ -1,0 +1,2 @@
+[default_session]
+preview_command = "eza --all -1 --group-directories-first --color=always {}"

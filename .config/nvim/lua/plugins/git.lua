@@ -1,13 +1,4 @@
 return {
-  {
-    "snacks.nvim",
-    -- stylua: ignore
-    keys = {
-      { "<leader>gg", function() Snacks.lazygit() end, desc = "Lazygit", },
-      { "<leader>gB", function() Snacks.gitbrowse() end, desc = "Git Browse", mode = { "n", "v" } },
-    },
-  },
-
   -- Git integration with inline blame, diff signs and hunk operations
   {
     "lewis6991/gitsigns.nvim",

@@ -34,17 +34,4 @@ return {
       },
     },
   },
-
-  -- Live markdown preview in browser with synchronized scrolling
-  {
-    "toppair/peek.nvim",
-    cond = vim.fn.executable("deno") == 1,
-    build = "deno task --quiet build:fast",
-    ft = { "markdown" },
-    config = function()
-      require("peek").setup()
-      vim.api.nvim_create_user_command("PeekOpen", require("peek").open, {})
-      vim.api.nvim_create_user_command("PeekClose", require("peek").close, {})
-    end,
-  },
 }
