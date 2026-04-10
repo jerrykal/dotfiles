@@ -62,3 +62,6 @@ local unique_id = vim.fn.fnamemodify(workspace_path, ":t") .. "_" .. vim.fn.sha2
 local shadafile = cache_dir .. "/myshada/" .. unique_id .. ".shada"
 
 opt.shadafile = shadafile
+
+-- enable ui2
+require("vim._core.ui2").enable()
