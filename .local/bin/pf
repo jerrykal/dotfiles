@@ -1,0 +1,365 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/pf"
+STARTUP_TIMEOUT=15
+
+usage() {
+  cat <<'EOF'
+Usage:
+  pf <host> <local-port> [remote-port]
+  pf list
+  pf close <id>
+
+Examples:
+  pf devbox 5432
+  pf devbox 8080 3000
+  pf list
+  pf close 1
+EOF
+}
+
+ensure_deps() {
+  local missing=()
+
+  command -v autossh >/dev/null 2>&1 || missing+=("autossh")
+  command -v ssh >/dev/null 2>&1 || missing+=("ssh")
+
+  if ((${#missing[@]} > 0)); then
+    printf 'Missing required command(s): %s\n' "${missing[*]}" >&2
+    exit 1
+  fi
+}
+
+ensure_state_dir() {
+  mkdir -p "$STATE_DIR"
+}
+
+is_valid_port() {
+  local port="$1"
+  [[ "$port" =~ ^[0-9]+$ ]] && ((port >= 1 && port <= 65535))
+}
+
+meta_path() {
+  local id="$1"
+  printf '%s/%s.meta\n' "$STATE_DIR" "$id"
+}
+
+socket_path() {
+  local id="$1"
+  printf '%s/%s.sock\n' "$STATE_DIR" "$id"
+}
+
+pidfile_path() {
+  local id="$1"
+  printf '%s/%s.pid\n' "$STATE_DIR" "$id"
+}
+
+log_path() {
+  local id="$1"
+  printf '%s/%s.log\n' "$STATE_DIR" "$id"
+}
+
+load_meta() {
+  local meta="$1"
+  # shellcheck disable=SC1090
+  source "$meta"
+}
+
+write_meta() {
+  local meta="$1"
+
+  cat >"$meta" <<EOF
+id=$(printf '%q' "$id")
+host=$(printf '%q' "$host")
+local_port=$(printf '%q' "$local_port")
+remote_port=$(printf '%q' "$remote_port")
+socket=$(printf '%q' "$socket")
+pidfile=$(printf '%q' "$pidfile")
+logfile=$(printf '%q' "$logfile")
+EOF
+}
+
+next_id() {
+  local highest=0
+  local meta base current
+
+  shopt -s nullglob
+  for meta in "$STATE_DIR"/*.meta; do
+    base=${meta##*/}
+    current=${base%.meta}
+    if [[ "$current" =~ ^[0-9]+$ ]] && ((current > highest)); then
+      highest=$current
+    fi
+  done
+  shopt -u nullglob
+
+  printf '%s\n' $((highest + 1))
+}
+
+pid_from_file() {
+  local pidfile="$1"
+
+  [[ -f "$pidfile" ]] || return 1
+
+  local pid
+  pid=$(<"$pidfile")
+  [[ "$pid" =~ ^[0-9]+$ ]] || return 1
+  printf '%s\n' "$pid"
+}
+
+pid_alive() {
+  local pid="$1"
+  kill -0 "$pid" >/dev/null 2>&1
+}
+
+control_ok() {
+  local host="$1"
+  local socket="$2"
+
+  [[ -S "$socket" ]] || return 1
+  ssh -S "$socket" -O check -o BatchMode=yes "$host" >/dev/null 2>&1
+}
+
+last_log_line() {
+  local logfile="$1"
+
+  [[ -f "$logfile" ]] || return 0
+  awk 'NF { line = $0 } END { print line }' "$logfile"
+}
+
+cleanup_files() {
+  local id="$1"
+  rm -f "$(meta_path "$id")" "$(socket_path "$id")" "$(pidfile_path "$id")" "$(log_path "$id")"
+}
+
+close_tunnel() {
+  local id="$1"
+  local meta
+
+  meta=$(meta_path "$id")
+  [[ -f "$meta" ]] || {
+    printf 'No tunnel found with id %s\n' "$id" >&2
+    return 1
+  }
+
+  unset host local_port remote_port socket pidfile logfile
+  load_meta "$meta"
+
+  ssh -S "$socket" -O exit -o BatchMode=yes "$host" >/dev/null 2>&1 || true
+
+  local pid=''
+  if pid=$(pid_from_file "$pidfile"); then
+    if pid_alive "$pid"; then
+      kill "$pid" >/dev/null 2>&1 || true
+      for _ in {1..20}; do
+        pid_alive "$pid" || break
+        sleep 0.25
+      done
+      if pid_alive "$pid"; then
+        kill -9 "$pid" >/dev/null 2>&1 || true
+      fi
+    fi
+  fi
+
+  cleanup_files "$id"
+}
+
+status_for_meta() {
+  local meta="$1"
+  local pid=''
+
+  unset id host local_port remote_port socket pidfile logfile
+  load_meta "$meta"
+
+  if pid=$(pid_from_file "$pidfile") && pid_alive "$pid"; then
+    if control_ok "$host" "$socket"; then
+      printf 'connected\n'
+    else
+      printf 'failing\n'
+    fi
+    return 0
+  fi
+
+  printf 'stopped\n'
+}
+
+print_list() {
+  local metas=()
+  local meta status info
+
+  shopt -s nullglob
+  metas=("$STATE_DIR"/*.meta)
+  shopt -u nullglob
+
+  if ((${#metas[@]} == 0)); then
+    printf 'No port forwards found.\n'
+    return 0
+  fi
+
+  printf '%-4s %-20s %-8s %-8s %-10s %s\n' 'ID' 'HOST' 'LOCAL' 'REMOTE' 'STATUS' 'INFO'
+  for meta in $(printf '%s\n' "${metas[@]}" | sort -V); do
+    unset id host local_port remote_port socket pidfile logfile
+    load_meta "$meta"
+    status=$(status_for_meta "$meta")
+    info='-'
+
+    case "$status" in
+    failing)
+      info=$(last_log_line "$logfile")
+      [[ -n "$info" ]] || info='Tunnel is down; autossh is retrying.'
+      ;;
+    stopped)
+      info='Manager exited; removing stale entry.'
+      printf '%-4s %-20s %-8s %-8s %-10s %s\n' "$id" "$host" "$local_port" "$remote_port" "$status" "$info"
+      cleanup_files "$id"
+      continue
+      ;;
+    esac
+
+    printf '%-4s %-20s %-8s %-8s %-10s %s\n' "$id" "$host" "$local_port" "$remote_port" "$status" "$info"
+  done
+}
+
+local_port_in_use() {
+  local port="$1"
+  lsof -nP -iTCP:"$port" -sTCP:LISTEN >/dev/null 2>&1
+}
+
+existing_tunnel_id() {
+  local wanted_host="$1"
+  local wanted_local="$2"
+  local wanted_remote="$3"
+  local meta status
+
+  shopt -s nullglob
+  for meta in "$STATE_DIR"/*.meta; do
+    unset id host local_port remote_port socket pidfile logfile
+    load_meta "$meta"
+    if [[ "$host" == "$wanted_host" && "$local_port" == "$wanted_local" && "$remote_port" == "$wanted_remote" ]]; then
+      status=$(status_for_meta "$meta")
+      if [[ "$status" != 'stopped' ]]; then
+        printf '%s\n' "$id"
+        shopt -u nullglob
+        return 0
+      fi
+      cleanup_files "$id"
+    fi
+  done
+  shopt -u nullglob
+
+  return 1
+}
+
+start_tunnel() {
+  host="$1"
+  local_port="$2"
+  remote_port="${3:-$2}"
+
+  is_valid_port "$local_port" || {
+    printf 'Invalid local port: %s\n' "$local_port" >&2
+    exit 1
+  }
+
+  is_valid_port "$remote_port" || {
+    printf 'Invalid remote port: %s\n' "$remote_port" >&2
+    exit 1
+  }
+
+  local existing_id=''
+  if existing_id=$(existing_tunnel_id "$host" "$local_port" "$remote_port"); then
+    printf 'Tunnel already exists as id %s\n' "$existing_id" >&2
+    exit 1
+  fi
+
+  if local_port_in_use "$local_port"; then
+    printf 'Local port %s is already in use\n' "$local_port" >&2
+    exit 1
+  fi
+
+  id=$(next_id)
+  socket=$(socket_path "$id")
+  pidfile=$(pidfile_path "$id")
+  logfile=$(log_path "$id")
+
+  : >"$logfile"
+  write_meta "$(meta_path "$id")"
+
+  AUTOSSH_GATETIME=30 \
+    AUTOSSH_LOGFILE="$logfile" \
+    AUTOSSH_LOGLEVEL=6 \
+    AUTOSSH_PIDFILE="$pidfile" \
+    nohup autossh -M 0 -N \
+    -o BatchMode=yes \
+    -o ExitOnForwardFailure=yes \
+    -o ServerAliveInterval=30 \
+    -o ServerAliveCountMax=3 \
+    -o ControlMaster=yes \
+    -o ControlPath="$socket" \
+    -o ControlPersist=no \
+    -L "127.0.0.1:${local_port}:127.0.0.1:${remote_port}" \
+    "$host" >/dev/null 2>&1 &
+
+  local pid=''
+  local started=0
+  for ((attempt = 1; attempt <= STARTUP_TIMEOUT * 4; attempt++)); do
+    if pid=$(pid_from_file "$pidfile") && pid_alive "$pid"; then
+      started=1
+      if control_ok "$host" "$socket"; then
+        printf 'Created tunnel %s: localhost:%s -> %s:%s\n' "$id" "$local_port" "$host" "$remote_port"
+        return 0
+      fi
+    elif ((started == 1)); then
+      break
+    fi
+    sleep 0.25
+  done
+
+  local reason
+  reason=$(last_log_line "$logfile")
+  [[ -n "$reason" ]] || reason='Timed out waiting for the initial connection to succeed.'
+
+  if [[ -n "$pid" ]] && pid_alive "$pid"; then
+    kill "$pid" >/dev/null 2>&1 || true
+  fi
+  cleanup_files "$id"
+
+  printf 'Failed to create tunnel: %s\n' "$reason" >&2
+  exit 1
+}
+
+main() {
+  ensure_deps
+  ensure_state_dir
+
+  case "${1:-}" in
+  list)
+    [[ $# -eq 1 ]] || {
+      usage >&2
+      exit 1
+    }
+    print_list
+    ;;
+  close)
+    [[ $# -eq 2 && "$2" =~ ^[0-9]+$ ]] || {
+      usage >&2
+      exit 1
+    }
+    close_tunnel "$2"
+    printf 'Closed tunnel %s\n' "$2"
+    ;;
+  '' | -h | --help)
+    usage
+    ;;
+  *)
+    [[ $# -ge 2 && $# -le 3 ]] || {
+      usage >&2
+      exit 1
+    }
+    start_tunnel "$@"
+    ;;
+  esac
+}
+
+main "$@"

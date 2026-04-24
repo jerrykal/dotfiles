@@ -5,7 +5,6 @@ git:
 gui:
   nerdFontsVersion: "3"
   border: single
-  showFileTree: false
   theme:
     activeBorderColor:
       - "#31748f"

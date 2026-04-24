@@ -12,6 +12,47 @@ return {
       picker = {
         prompt = " ",
         sources = {
+          directories = {
+            title = "Directories",
+            hidden = true,
+            ignored = false,
+            finder = function(opts, ctx)
+              local args = { "--type", "d", "--color", "never", "-E", ".git" }
+
+              if opts.hidden then
+                table.insert(args, "--hidden")
+              end
+              if opts.ignored then
+                table.insert(args, "--no-ignore")
+              end
+
+              return require("snacks.picker.source.proc").proc(
+                ctx:opts({
+                  cmd = "fd",
+                  args = args,
+                  cwd = ctx:cwd(),
+                  transform = function(item)
+                    item.cwd = ctx:cwd()
+                    item.file = item.text
+                    item.dir = true
+                  end,
+                }),
+                ctx
+              )
+            end,
+            format = "file",
+            preview = "file",
+            show_empty = true,
+            supports_live = true,
+            confirm = function(picker, item)
+              picker:close()
+              if item then
+                vim.schedule(function()
+                  require("oil").open(require("snacks.picker.util").path(item))
+                end)
+              end
+            end,
+          },
           files = { hidden = true },
           grep = { hidden = true },
           explorer = {
@@ -113,7 +154,7 @@ return {
     -- stylua: ignore
     keys = {
       -- Top Pickers & Explorer
-      { "<C-p>", function() Snacks.picker.files() end, desc = "Smart Find Files" },
+      { "<C-p>", function() Snacks.picker.smart() end, desc = "Smart Find Files" },
       { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
       { "<leader>/", function() Snacks.picker.grep() end, desc = "Grep" },
       { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
@@ -122,6 +163,7 @@ return {
 
       -- Find
       { "<leader>fb", function() Snacks.picker.buffers() end, desc = "Buffers" },
+      { "<leader>fd", function() Snacks.picker.directories() end, desc = "Find Directories" },
       { "<leader>fm", function() Snacks.picker.buffers({ modified = true }) end, desc = "Modified Buffers" },
       { "<leader>fc", function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end, desc = "Find Config File" },
       { "<leader>ff", function() Snacks.picker.files() end, desc = "Find Files" },

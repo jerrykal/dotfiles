@@ -19,5 +19,3 @@ type -q zoxide; and zoxide init fish | source
 
 # Hook direnv
 type -q direnv; and direnv hook fish | source
-
-set -gx OPENCODE_EXPERIMENTAL_LSP_TY true

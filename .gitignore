@@ -15,4 +15,5 @@
 # .local/bin
 .local/bin/*
 !.local/bin/tmux-opencode
-!.local/bin/tmux-fzf-session
+!.local/bin/tmux-sesh
+!.local/bin/pf

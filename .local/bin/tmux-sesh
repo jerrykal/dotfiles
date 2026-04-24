@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+mapfile -t selection < <(
+  sesh list --icons | fzf --tmux=80%,70% \
+    --multi \
+    --no-sort --ansi --border-label ' Sessions ' --prompt '> ' \
+    --expect=alt-enter \
+    --accept-nth 2.. \
+    --bind 'ctrl-x:execute-silent(bash -c '\''for target in "$@"; do tmux kill-session -t "=$target"; done'\'' _ {+2..})+reload(sesh list --icons)' \
+    --preview-window 'right:55%' \
+    --preview 'sesh preview {}'
+) || exit 0
+
+key=${selection[0]:-}
+target=${selection[1]:-${selection[0]:-}}
+
+[[ -n "$target" ]] || exit 0
+
+if [[ "$key" == "alt-enter" ]] && tmux has-session -t "=$target" 2>/dev/null; then
+  duplicate="$target 2"
+  if tmux has-session -t "=$duplicate" 2>/dev/null; then
+    tmux switch-client -t "=$duplicate"
+  else
+    tmux new-session -d -t "=$target" -s "$duplicate" &&
+      tmux switch-client -t "=$duplicate"
+  fi
+else
+  sesh connect "$target"
+fi

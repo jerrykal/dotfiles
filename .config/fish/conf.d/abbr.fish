@@ -18,11 +18,6 @@ else
     abbr vi vim
 end
 
-# tmux
-abbr -a t tmux
-abbr -a tt tmux attach \|\| tmux
-abbr -a ta tmux attach
-
 # git
 abbr -a g git
 abbr -a gi git init

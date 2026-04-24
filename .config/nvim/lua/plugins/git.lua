@@ -34,7 +34,6 @@ return {
             vim.cmd.normal({ "]h", bang = true })
           else
             gitsigns.nav_hunk("next")
-            gitsigns.preview_hunk_inline()
           end
         end, "Next Hunk")
         map("n", "[h", function()
@@ -42,7 +41,6 @@ return {
             vim.cmd.normal({ "[h", bang = true })
           else
             gitsigns.nav_hunk("prev")
-            gitsigns.preview_hunk_inline()
           end
         end, "Prev Hunk")
         map("n", "ghs", gitsigns.stage_hunk, "Stage Hunk")
@@ -64,6 +62,34 @@ return {
         map({ "o", "x" }, "ih", gitsigns.select_hunk, "GitSigns Select Hunk")
         -- stylua: ignore end
       end,
+    },
+  },
+
+  {
+    "esmuellert/codediff.nvim",
+    cmd = "CodeDiff",
+    opts = {
+      diff = {
+        layout = "inline",
+      },
+      explorer = {
+        position = "left",
+        -- height = 10,
+        focus_on_select = true,
+        initial_focus = "original",
+      },
+      keymaps = {
+        view = {
+          stage_hunk = "ghs", -- Stage hunk under cursor to git index
+          unstage_hunk = "ghu", -- Unstage hunk under cursor from git index
+          discard_hunk = "ghr", -- Discard hunk under cursor (working tree only)
+          next_hunk = "]h",
+          prev_hunk = "[h",
+        },
+      },
+    },
+    keys = {
+      { "<leader>cd", "<cmd>CodeDiff<cr>", desc = "Open Code Diff View" },
     },
   },
 }

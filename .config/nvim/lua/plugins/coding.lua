@@ -170,15 +170,6 @@ return {
     opts = {},
   },
 
-  -- Split or join code blocks (multiline ↔ single line) with treesitter
-  {
-    "Wansmer/treesj",
-    keys = {
-      { "<leader>j", "<cmd>TSJToggle<cr>", desc = "Join Toggle" },
-    },
-    opts = { use_default_keymaps = false },
-  },
-
   -- Proper Lua LSP setup for Neovim plugin development
   {
     "folke/lazydev.nvim",
