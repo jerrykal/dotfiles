@@ -31,15 +31,45 @@ find_opencode_pane() {
   return 1
 }
 
+pane_exists() {
+  tmux list-panes -a -F "#{pane_id}" | grep -Fxq "$1"
+}
+
 WORKING_DIR=$1
+CURRENT_PANE=$2
+CLIENT_ID=$3
+LAST_PANE_OPTION="@opencode_last_pane_${CLIENT_ID}"
 OPENCODE_PANE=$(find_opencode_pane "$WORKING_DIR")
+OPENCODE_PANE_ID=
 
 if [[ -n "$OPENCODE_PANE" ]]; then
+  OPENCODE_PANE_ID=$(tmux display-message -p -t "$OPENCODE_PANE" "#{pane_id}")
+fi
+
+if [[ -n "$CURRENT_PANE" && -n "$OPENCODE_PANE_ID" && "$CURRENT_PANE" == "$OPENCODE_PANE_ID" ]]; then
+  LAST_PANE=$(tmux show-options -gvq "$LAST_PANE_OPTION")
+  if [[ -n "$LAST_PANE" ]] && pane_exists "$LAST_PANE"; then
+    tmux switch-client -t "$LAST_PANE"
+  else
+    tmux display-message "No previous pane recorded for opencode"
+  fi
+  exit 0
+fi
+
+if [[ -n "$OPENCODE_PANE" ]]; then
+  if [[ -n "$CURRENT_PANE" ]]; then
+    tmux set-option -gq "$LAST_PANE_OPTION" "$CURRENT_PANE"
+  fi
+
   SESSION=$(echo "$OPENCODE_PANE" | cut -d: -f1)
   WINDOW=$(echo "$OPENCODE_PANE" | cut -d: -f2 | cut -d. -f1)
   PANE=$(echo "$OPENCODE_PANE" | cut -d. -f2)
 
   tmux switch-client -t "$SESSION:$WINDOW.$PANE"
 else
+  if [[ -n "$CURRENT_PANE" ]]; then
+    tmux set-option -gq "$LAST_PANE_OPTION" "$CURRENT_PANE"
+  fi
+
   tmux new-window -c "$WORKING_DIR" "opencode --port"
 fi

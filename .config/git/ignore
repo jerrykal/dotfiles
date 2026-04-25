@@ -283,3 +283,6 @@ __marimo__/
 
 # OpenCode
 .opencode/
+
+# OpenSpec
+openspec/
