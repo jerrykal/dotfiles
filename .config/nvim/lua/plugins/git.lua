@@ -7,8 +7,8 @@ return {
       signs = {
         add = { text = "▏" },
         change = { text = "▏" },
-        delete = { text = "-" },
-        topdelete = { text = "-" },
+        delete = { text = "_" },
+        topdelete = { text = "‾" },
         changedelete = { text = "▏" },
         untracked = { text = "▏" },
       },
@@ -69,23 +69,8 @@ return {
     "esmuellert/codediff.nvim",
     cmd = "CodeDiff",
     opts = {
-      diff = {
-        layout = "inline",
-      },
       explorer = {
-        position = "left",
-        -- height = 10,
         focus_on_select = true,
-        initial_focus = "original",
-      },
-      keymaps = {
-        view = {
-          stage_hunk = "ghs", -- Stage hunk under cursor to git index
-          unstage_hunk = "ghu", -- Unstage hunk under cursor from git index
-          discard_hunk = "ghr", -- Discard hunk under cursor (working tree only)
-          next_hunk = "]h",
-          prev_hunk = "[h",
-        },
       },
     },
     keys = {

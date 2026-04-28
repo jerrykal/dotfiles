@@ -282,7 +282,10 @@ __marimo__/
 .streamlit/secrets.toml
 
 # OpenCode
-.opencode/
+.opencode/*
 
 # OpenSpec
-openspec/
+openspec/*
+
+# Claude Code
+.claude/*

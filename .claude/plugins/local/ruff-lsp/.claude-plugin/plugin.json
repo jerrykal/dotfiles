@@ -1,0 +1,4 @@
+{
+  "name": "ruff-lsp",
+  "description": "Python LSP via Astral Ruff"
+}

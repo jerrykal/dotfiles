@@ -6,3 +6,8 @@ README.md
 Brewfile
 install.sh
 .DS_Store
+
+.local/bin
+!.local/bin/pf
+!.local/bin/tmux-opencode
+!.local/bin/tmux-sesh

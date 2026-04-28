@@ -3,8 +3,22 @@ return {
     "nvim-lspconfig",
     opts = {
       servers = {
+        ty = {
+          capabilities = {
+            workspace = {
+              didChangeWatchedFiles = {
+                dynamicRegistration = true,
+                relativePatternSupport = true,
+              },
+            },
+          },
+          settings = {
+            ty = {
+              diagnosticMode = "workspace",
+            },
+          },
+        },
         ruff = {},
-        ty = {},
       },
     },
   },

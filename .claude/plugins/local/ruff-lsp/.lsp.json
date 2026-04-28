@@ -1,0 +1,13 @@
+{
+  "ty": {
+    "command": "uvx",
+    "args": [
+      "ruff@latest",
+      "server"
+    ],
+    "extensionToLanguage": {
+      ".py": "python",
+      ".pyi": "python"
+    }
+  }
+}

@@ -17,3 +17,10 @@
 !.local/bin/tmux-opencode
 !.local/bin/tmux-sesh
 !.local/bin/pf
+
+# 1. Ignore everything in the .claude folder
+.claude/*
+.claude/plugins/*
+!.claude/plugins/
+!.claude/plugins/local/
+!.claude/settings.json

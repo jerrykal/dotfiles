@@ -84,3 +84,8 @@ end
 if type -q opencode
     abbr -a oc opencode
 end
+
+# claude code
+if type -q claude
+    abbr -a c claude
+end
