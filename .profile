@@ -54,3 +54,6 @@ if command -v fzf >/dev/null 2>&1; then
   export FZF_ALT_C_OPTS="--preview '$fzf_dir_preview'"
   export FZF_CTRL_T_OPTS="--preview 'if test -d {}; then $fzf_dir_preview; else $fzf_file_preview; fi'"
 fi
+
+# Claude
+export CLAUDE_CODE_TMUX_TRUECOLOR=true
