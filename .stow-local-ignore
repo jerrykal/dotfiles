@@ -1,13 +1,14 @@
+.DS_Store
 .git
+.gitignore
 .stfolder
 .stignore
-.gitignore
-README.md
 Brewfile
+CLAUDE.md
+README.md
 install.sh
-.DS_Store
 
-.local/bin
+.local/bin/
 !.local/bin/pf
-!.local/bin/tmux-opencode
 !.local/bin/tmux-sesh
+

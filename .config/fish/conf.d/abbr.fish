@@ -12,9 +12,10 @@ abbr -a o open
 
 # vim
 if type -q nvim
+    abbr v nvim
     abbr vi nvim
-    abbr vim nvim
 else
+    abbr v vim
     abbr vi vim
 end
 
