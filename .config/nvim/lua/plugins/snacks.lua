@@ -236,6 +236,7 @@ return {
         callback = function()
           Snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>uw")
           Snacks.toggle.inlay_hints():map("<leader>uh")
+          Snacks.toggle.diagnostics():map("<leader>ud")
         end,
       })
     end,

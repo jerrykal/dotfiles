@@ -43,6 +43,16 @@ return {
     cmd = { "Trouble" },
     opts = {
       modes = {
+        diagnostics = {
+          filter = {
+            ["not"] = {
+              any = {
+                { severity = vim.diagnostic.severity.HINT },
+                { severity = vim.diagnostic.severity.INFO },
+              },
+            },
+          },
+        },
         lsp_document_symbols = {
           format = "{kind_icon} {symbol.name}",
         },
