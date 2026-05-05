@@ -1,6 +1,7 @@
 ---
 name: commit
 description: Analyze currently staged git changes and craft a Conventional Commits-formatted message, then create the commit. Use whenever the user invokes /commit, asks to "commit the staged changes", "write a commit message", "make a conventional commit", or otherwise wants help turning what's already in the index into a well-structured commit. Trigger even when the user doesn't say the words "conventional commits" — if they're asking to commit staged work, this is the skill.
+allowed-tools: Bash(git *), AskUserQuestion
 ---
 
 # /commit
@@ -9,15 +10,27 @@ Turn the user's currently staged changes into a single well-structured commit th
 
 The user has already decided *what* to commit by staging it. Your job is to read that diff carefully, write a message that will still make sense to someone bisecting a regression six months from now, and create the commit.
 
+## Working tree snapshot
+
+The output below is the source of truth for this commit — do **not** re-run these commands. They've already been fetched for you.
+
+### `git status`
+
+!`git status`
+
+### `git diff --cached`
+
+!`git diff --cached`
+
+### `git log -10 --pretty=format:'%h %s'`
+
+!`git log -10 --pretty=format:'%h %s'`
+
 ## Workflow
 
-### 1. Inspect the working tree
+### 1. Read the snapshot above
 
-Run these in parallel — you need all three before you can write a good message:
-
-- `git status` — see what's staged vs. unstaged vs. untracked
-- `git diff --cached` — read the staged changes (this is the source of truth)
-- `git log -10 --pretty=format:'%h %s'` — match the repo's existing style (casing, scope vocabulary, whether bodies are common, etc.)
+Use the embedded `git status`, `git diff --cached`, and `git log` output above — that's everything you need to write the message. Don't call these commands yourself.
 
 If `git diff --cached` is empty, stop and tell the user there's nothing staged. Do **not** run `git add` to "fix" it — staging is the user's call, and silently widening the commit's scope is the kind of thing that loses work.
 
@@ -39,13 +52,13 @@ Pick the type that best describes the *intent* of the change:
 | `chore`    | Tooling/repo housekeeping that doesn't fit elsewhere |
 | `revert`   | Reverts a previous commit |
 
-If the diff genuinely spans multiple types (e.g., a `feat` mixed with an unrelated `fix`), surface this to the user before committing — that's usually a signal the commit should be split. Don't silently pick the "biggest" type and bury the rest.
+If the diff genuinely spans multiple types (e.g., a `feat` mixed with an unrelated `fix`), surface this to the user before committing — that's usually a signal the commit should be split. Don't silently pick the "biggest" type and bury the rest. Ask via the `AskUserQuestion` tool (e.g., options: "Split into separate commits", "Commit as one — pick primary type"), not freeform prose.
 
 ### 3. Pick a scope (optional)
 
 A scope is a short noun in parentheses naming the area of the codebase being changed: `feat(auth): ...`, `fix(parser): ...`. Useful when the repo has clearly delineated areas; skip when there isn't an obvious one.
 
-Look at recent commits (`git log`) to see what scopes the repo already uses and **match the existing casing and vocabulary**. If the project doesn't use scopes, don't introduce them.
+Look at the embedded `git log` output above to see what scopes the repo already uses and **match the existing casing and vocabulary**. If the project doesn't use scopes, don't introduce them.
 
 ### 4. Write the subject line
 
@@ -83,7 +96,9 @@ When you do write one:
 
 ### 7. Create the commit
 
-Show the proposed message to the user first, then commit using a HEREDOC so multi-line messages format correctly:
+Show the proposed message to the user first, then commit using a HEREDOC so multi-line messages format correctly.
+
+**Asking the user anything during this skill — confirming the message, picking between candidate subjects, choosing a type/scope when ambiguous, deciding whether to split — must go through the `AskUserQuestion` tool, not freeform prose.** Put the proposed commit message in an option's `description` (or `preview` when comparing two candidates side-by-side) so the user sees what they're approving. A typical confirmation looks like one question with options "Commit as proposed", "Edit message", "Cancel". Don't ask procedural meta-questions ("ready to commit?") on their own — bundle the actual content into the choice.
 
 ```bash
 git commit -m "$(cat <<'EOF'
