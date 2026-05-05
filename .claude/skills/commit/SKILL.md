@@ -2,6 +2,7 @@
 name: commit
 description: Analyze currently staged git changes and craft a Conventional Commits-formatted message, then create the commit. Use whenever the user invokes /commit, asks to "commit the staged changes", "write a commit message", "make a conventional commit", or otherwise wants help turning what's already in the index into a well-structured commit. Trigger even when the user doesn't say the words "conventional commits" — if they're asking to commit staged work, this is the skill.
 allowed-tools: Bash(git *), AskUserQuestion
+model: sonnet
 ---
 
 # /commit
