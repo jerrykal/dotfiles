@@ -156,7 +156,7 @@ return {
     -- stylua: ignore
     keys = {
       -- Top Pickers & Explorer
-      { "<C-p>", function() Snacks.picker.smart({ multi = {"buffers", "recent", "files", "directories"} }) end, desc = "Smart Find Files" },
+      { "<leader><space>", function() Snacks.picker.smart({ multi = {"buffers", "recent", "files", "directories"} }) end, desc = "Smart Find Files" },
       { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
       { "<leader>/", function() Snacks.picker.grep() end, desc = "Grep" },
       { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
@@ -234,9 +234,19 @@ return {
       vim.api.nvim_create_autocmd("User", {
         pattern = "VeryLazy",
         callback = function()
-          Snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>uw")
-          Snacks.toggle.inlay_hints():map("<leader>uh")
-          Snacks.toggle.diagnostics():map("<leader>ud")
+          local persist = require("util.toggle_persist").wrap
+          persist(Snacks.toggle.option("wrap", { name = "Wrap" })):map("<leader>uw")
+          persist(Snacks.toggle.inlay_hints()):map("<leader>uh")
+          persist(Snacks.toggle.diagnostics()):map("<leader>ud")
+          persist(Snacks.toggle({
+            name = "Format on Save",
+            get = function()
+              return not vim.g.disable_autoformat
+            end,
+            set = function(state)
+              vim.g.disable_autoformat = not state
+            end,
+          })):map("<leader>uf")
         end,
       })
     end,

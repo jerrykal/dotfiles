@@ -85,7 +85,8 @@
       "source": {
         "source": "github",
         "repo": "astral-sh/claude-code-plugins"
-      }
+      },
+      "autoUpdate": true
     }
   },
   "spinnerTipsEnabled": false,
