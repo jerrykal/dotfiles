@@ -1,8 +1,9 @@
 ---
 name: answer
-description: 'Extract unanswered questions from the most recent assistant message and present them to the user via AskUserQuestion. Use when the user invokes /answer, says "let me answer your questions", or wants to bulk-respond to questions the assistant just asked.'
+description: Present pending questions from the most recent assistant message via AskUserQuestion for structured bulk-response.
 allowed-tools: AskUserQuestion
 model: haiku
+disable-model-invocation: true
 ---
 
 # Answer
