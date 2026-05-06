@@ -1,7 +1,8 @@
 ---
 name: uv-setup
-description: Migrate an existing Python project to be managed by uv so the user can reproduce the environment with a single `uv sync`. Use whenever the user invokes `/uv-setup`, asks to "set up uv for this project", "convert this repo to uv", "migrate from pip/conda/poetry/pipenv to uv", or otherwise wants to bootstrap a uv environment for a project that wasn't originally managed with uv. Reads the project's README and existing dependency files (requirements*.txt, environment.yml, setup.py/cfg, Pipfile, pyproject.toml), produces a working uv project, writes UV_SETUP.md summarizing what was done, and surfaces warnings for any dependencies that can't be expressed through uv (conda-only packages, system libraries, hardware-specific wheels, etc.).
+description: Migrate an existing Python project (pip / conda / poetry / pipenv / setuptools) to uv so the environment reproduces with a single `uv sync`. Writes UV_SETUP.md and flags dependencies uv can't fully own.
 allowed-tools: Bash(uv init *) Bash(uv python *) Bash(uv add *) Bash(uv lock *) Bash(uv sync *) Bash(uv pip list *) Bash(uv tree *) Bash(uv run *)
+disable-model-invocation: true
 ---
 
 # uv-setup

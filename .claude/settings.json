@@ -75,11 +75,10 @@
   },
   "enabledPlugins": {
     "context7@claude-plugins-official": true,
-    "plugin-dev@claude-plugins-official": true,
-    "playground@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true,
     "astral@astral-sh": true,
-    "skill-creator@claude-plugins-official": true
+    "skill-creator@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "astral-sh": {
@@ -89,6 +88,9 @@
       },
       "autoUpdate": true
     }
+  },
+  "skillOverrides": {
+    "find-skills": "user-invocable-only"
   },
   "spinnerTipsEnabled": false,
   "tui": "fullscreen",

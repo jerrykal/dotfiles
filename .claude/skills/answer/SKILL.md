@@ -2,7 +2,6 @@
 name: answer
 description: Present pending questions from the most recent assistant message via AskUserQuestion for structured bulk-response.
 allowed-tools: AskUserQuestion
-model: haiku
 disable-model-invocation: true
 ---
 
