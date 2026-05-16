@@ -1,5 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "skillListingBudgetFraction": 0.015,
   "attribution": {
     "commit": "",
     "pr": ""
@@ -36,6 +37,9 @@
       "Bash(wget *)",
       "Bash(chmod *)"
     ]
+  },
+  "skillOverrides": {
+    "find-skills": "user-invocable-only"
   },
   "hooks": {
     "Stop": [
@@ -77,8 +81,7 @@
     "context7@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true,
     "astral@astral-sh": true,
-    "skill-creator@claude-plugins-official": true,
-    "claude-md-management@claude-plugins-official": true
+    "skill-creator@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "astral-sh": {
@@ -89,12 +92,11 @@
       "autoUpdate": true
     }
   },
-  "skillOverrides": {
-    "find-skills": "user-invocable-only"
-  },
   "spinnerTipsEnabled": false,
+  "effortLevel": "medium",
   "tui": "fullscreen",
   "theme": "dark",
+  "editorMode": "normal",
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true
 }

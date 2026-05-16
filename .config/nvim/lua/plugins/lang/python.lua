@@ -4,14 +4,14 @@ return {
     opts = {
       servers = {
         ty = {
-          capabilities = {
-            workspace = {
-              didChangeWatchedFiles = {
-                dynamicRegistration = true,
-                relativePatternSupport = true,
-              },
-            },
-          },
+          -- capabilities = {
+          --   workspace = {
+          --     didChangeWatchedFiles = {
+          --       dynamicRegistration = true,
+          --       relativePatternSupport = true,
+          --     },
+          --   },
+          -- },
           settings = {
             ty = {
               diagnosticMode = "workspace",
