@@ -30,4 +30,4 @@ else
   tokens_fmt="$total_tokens"
 fi
 
-printf "${BOLD}${COLOR}%s${RESET} ${DIM}(%.1f%%)${RESET}" "$tokens_fmt" "$used_pct"
+printf "${BOLD}${COLOR}%s${RESET} ${DIM}(%d%%)${RESET}" "$tokens_fmt" "$used_pct"
