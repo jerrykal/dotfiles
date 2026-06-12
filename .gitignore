@@ -20,7 +20,8 @@
 
 # 1. Ignore everything in the .claude folder
 .claude/*
-!.claude/scripts/
-!.claude/skills/
 !.claude/CLAUDE.md
+!.claude/scripts/
 !.claude/settings.json
+!.claude/skills/
+!.claude/statusline.sh

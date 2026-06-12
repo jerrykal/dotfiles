@@ -1,2 +1,11 @@
 .git
 fish/fish_variables
+
+// Ignore everything in the .claude folder except tracked items
+// (negations must precede the broad ignore — Syncthing matches first-wins)
+!.claude/scripts/
+!.claude/skills/
+!.claude/CLAUDE.md
+!.claude/settings.json
+!.claude/statusline.sh
+.claude/*

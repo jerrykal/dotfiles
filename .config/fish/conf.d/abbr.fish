@@ -81,12 +81,12 @@ if type -q uv
     abbr -a da deactivate
 end
 
-# opencode
-if type -q opencode
-    abbr -a oc opencode
+# pi
+if type -q pi
+    abbr -a p pi
 end
 
-# claude code
+# claude-code
 if type -q claude
     abbr -a c claude
 end

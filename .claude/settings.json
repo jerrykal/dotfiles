@@ -1,10 +1,64 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "skillListingBudgetFraction": 0.015,
+  "agentPushNotifEnabled": true,
   "attribution": {
     "commit": "",
     "pr": ""
   },
+  "editorMode": "normal",
+  "effortLevel": "medium",
+  "enabledPlugins": {
+    "astral@astral-sh": true,
+    "code-simplifier@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "astral-sh": {
+      "autoUpdate": true,
+      "source": {
+        "repo": "astral-sh/claude-code-plugins",
+        "source": "github"
+      }
+    }
+  },
+  "hooks": {
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "TITLE='Claude Code' BODY=$(jq -r '.message // \"Notification\"') ~/.claude/scripts/notify.sh",
+            "type": "command"
+          }
+        ],
+        "matcher": "^(?!idle_prompt$).*"
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "TITLE='Claude Code' BODY='Task complete' ~/.claude/scripts/notify.sh",
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "StopFailure": [
+      {
+        "hooks": [
+          {
+            "async": true,
+            "command": "TITLE='Claude Code' BODY='Task failed' ~/.claude/scripts/notify.sh",
+            "type": "command"
+          }
+        ]
+      }
+    ]
+  },
+  "model": "opus",
   "permissions": {
     "allow": [
       "Skill",
@@ -12,6 +66,7 @@
       "WebSearch",
       "mcp__plugin_context7_context7"
     ],
+    "defaultMode": "auto",
     "deny": [
       "Read(**/.env*)",
       "Read(**/.dev.vars*)",
@@ -38,65 +93,16 @@
       "Bash(chmod *)"
     ]
   },
+  "skillListingBudgetFraction": 0.015,
   "skillOverrides": {
     "find-skills": "user-invocable-only"
   },
-  "hooks": {
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "TITLE='Claude Code' BODY='Task complete' ~/.claude/scripts/notify.sh",
-            "async": true
-          }
-        ]
-      }
-    ],
-    "StopFailure": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "TITLE='Claude Code' BODY='Task failed' ~/.claude/scripts/notify.sh",
-            "async": true
-          }
-        ]
-      }
-    ],
-    "Notification": [
-      {
-        "matcher": "^(?!idle_prompt$).*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "TITLE='Claude Code' BODY=$(jq -r '.message // \"Notification\"') ~/.claude/scripts/notify.sh",
-            "async": true
-          }
-        ]
-      }
-    ]
-  },
-  "enabledPlugins": {
-    "context7@claude-plugins-official": true,
-    "code-simplifier@claude-plugins-official": true,
-    "astral@astral-sh": true,
-    "skill-creator@claude-plugins-official": true
-  },
-  "extraKnownMarketplaces": {
-    "astral-sh": {
-      "source": {
-        "source": "github",
-        "repo": "astral-sh/claude-code-plugins"
-      },
-      "autoUpdate": true
-    }
-  },
+  "skipAutoPermissionPrompt": true,
   "spinnerTipsEnabled": false,
-  "effortLevel": "medium",
-  "tui": "fullscreen",
   "theme": "dark",
-  "editorMode": "normal",
-  "agentPushNotifEnabled": true,
-  "skipAutoPermissionPrompt": true
+  "tui": "fullscreen",
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.dotfiles/.claude/statusline.sh"
+  }
 }
