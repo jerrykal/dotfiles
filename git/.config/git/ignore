@@ -63,6 +63,16 @@ nohup.out
 # Local lazy.nvim spec
 .lazy.lua
 
+# --- Claude Code ---
+# Personal local settings and per-machine runtime state. Shared project config
+# (.claude/settings.json, commands/, agents/, skills/) stays committable.
+.claude/settings.local.json
+.claude/todos/
+.claude/shell-snapshots/
+.claude/projects/
+.claude/statsig/
+.claude/history.jsonl
+
 # --- Python ---
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -280,9 +290,3 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
-
-# OpenSpec
-openspec/*
-
-# Claude Code
-.claude/*
