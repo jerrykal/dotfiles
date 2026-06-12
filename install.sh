@@ -24,6 +24,7 @@ if [[ "${1:-}" != "--skip-deps" ]]; then
   log "Installing Brewfile packages..."
   brew bundle install || log "warning: some Homebrew packages failed; continuing."
 
+  log "Installing Claude Code..."
   command -v claude &>/dev/null || curl -fsSL https://claude.ai/install.sh | bash
 fi
 

@@ -281,9 +281,6 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# OpenCode
-.opencode/*
-
 # OpenSpec
 openspec/*
 

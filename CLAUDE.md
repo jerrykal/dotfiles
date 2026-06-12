@@ -88,4 +88,4 @@ When adding a new local plugin, register it in `marketplace.json` *and* enable i
 
 ### Local scripts (`.local/bin`)
 
-Custom helpers (`pf`, `tmux-opencode`, `tmux-sesh`) live in the `bin/` package (`bin/.local/bin/`). `$PATH` includes `~/.local/bin` via `.profile`. Add a new script under `bin/.local/bin/` and run `just relink`. (Machine-specific absolute symlinks that other tools drop into `~/.local/bin`, e.g. `claude`/`codex`, are not tracked — Stow ignores absolute symlinks anyway.)
+Custom helpers (`pf`, `tmux-sesh`) live in the `bin/` package (`bin/.local/bin/`). `$PATH` includes `~/.local/bin` via `.profile`. Add a new script under `bin/.local/bin/` and run `just relink`. (Machine-specific absolute symlinks that other tools drop into `~/.local/bin`, e.g. `claude`/`codex`, are not tracked — Stow ignores absolute symlinks anyway.)
