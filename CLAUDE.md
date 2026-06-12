@@ -94,6 +94,8 @@ Anything that should run in *all* shells (env vars, PATH) belongs in `.profile`.
 
 When adding a new local plugin, register it in `marketplace.json` *and* enable it in `settings.json`'s `enabledPlugins`.
 
+Because `claude` is `--no-folding`, a skill installed into `~/.claude/skills/<name>/` lands as real files with no link back to the repo. Run `just new-skills` to list untracked skills, then `just adopt-skill <name>` to move one into `claude/.claude/skills/` and relink it (Stow then symlinks the files back into `~/.claude`). Commit from the laptop; Syncthing carries it to remotes. Plugin-delivered skills (under `~/.claude/plugins/`) are managed via `enabledPlugins` instead, not adopted.
+
 ### Local scripts (`.local/bin`)
 
 Custom helpers (`pf`, `tmux-sesh`) live in the `bin/` package (`bin/.local/bin/`). `$PATH` includes `~/.local/bin` via `.profile`. Add a new script under `bin/.local/bin/` and run `just relink`. (Machine-specific absolute symlinks that other tools drop into `~/.local/bin`, e.g. `claude`/`codex`, are not tracked — Stow ignores absolute symlinks anyway.)
