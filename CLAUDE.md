@@ -43,7 +43,9 @@ There is no test suite, lint config, or build step at the repo level — each to
 
 ### git ignore
 
-There is no `.stow-local-ignore` — in the per-package layout Stow reads ignore files from each *package's* root, not the repo root, and the packages contain only tracked config, so none is needed. `.gitignore` is just OS cruft, Syncthing markers, and a defense-in-depth list of runtime/generated artifacts (`fisher/`, tmux `plugins/`, nvim `plugin/`/`spell/`, `fish_variables`) that regenerate at their real `~` locations and must never be committed.
+There is no `.stow-local-ignore` — in the per-package layout Stow reads ignore files from each *package's* root, not the repo root, and the packages contain only tracked config, so none is needed. `.gitignore` is just OS cruft plus a defense-in-depth list of runtime/generated artifacts (`fisher/`, tmux `plugins/`, nvim `plugin/`/`spell/`, `fish_variables`) that regenerate at their real `~` locations and must never be committed.
+
+This repo is synced across machines by **git/GitHub only** — it is no longer a Syncthing folder (the old `.stignore`/`.stfolder` markers are gone). To set up a new machine, clone the repo and run `./install.sh`.
 
 ### Shell entrypoints
 
