@@ -4,31 +4,46 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-Personal dotfiles, deployed by symlinking the repo's contents into `$HOME` with [GNU Stow](https://www.gnu.org/software/stow/). The repository root is treated as a single Stow "package" — every top-level file/dir (except those listed in `.stow-local-ignore`) is mirrored into `$HOME` at the corresponding path.
+Personal dotfiles, deployed by symlinking into `$HOME` with [GNU Stow](https://www.gnu.org/software/stow/). The repo is organized as **one Stow "package" per application** — each top-level dir (`nvim/`, `fish/`, `claude/`, `shell/`, `bin/`, …) contains a `$HOME`-shaped subtree that mirrors into `$HOME`.
 
-That means: paths in the repo are paths on disk. `/.config/nvim/init.lua` becomes `~/.config/nvim/init.lua`, `/.profile` becomes `~/.profile`, etc.
+That means a repo path is its home path **with the leading package dir stripped**:
+
+- `nvim/.config/nvim/init.lua` → `~/.config/nvim/init.lua`
+- `shell/.profile` → `~/.profile`
+- `claude/.claude/settings.json` → `~/.claude/settings.json`
+- `bin/.local/bin/pf` → `~/.local/bin/pf`
+
+Stow always runs from the repo root, so its default target is the parent dir (`$HOME`). Most packages **fold** (the Stow default): `~/.config/atuin` is a single symlink to the package dir. The packages listed in `nofold` in the `justfile` — `claude`, `fish`, `nvim`, `tmux` — are instead stowed with `--no-folding`, which forces **file-level** symlinks so the directory stays a real dir. Those are the packages whose config dir also accumulates runtime/generated files (fisher plugins, TPM plugins, nvim `plugin/`/`spell/`, live `~/.claude` state); keeping the dir real prevents that state from leaking back into the repo. To move a package between the two behaviors, edit `nofold` and `just relink <pkg>`.
 
 ## Common commands
 
+Day-to-day management is via [`just`](https://github.com/casey/just) (see `justfile`):
+
 ```bash
-./install.sh              # Install Homebrew + Brewfile packages, then run `stow -v .`
-./install.sh --skip-deps  # Re-run stow only (skip Homebrew install/update)
-stow -v .                 # Refresh symlinks after adding/removing tracked files
-stow -Dv .                # Unstow (remove symlinks) — rarely needed
-brew bundle install       # Sync packages from Brewfile
-brew bundle cleanup       # Show packages installed but not in Brewfile
+just                  # list recipes
+just link             # symlink all packages into $HOME (just link nvim tmux for a subset)
+just relink           # restow after renaming/removing tracked files
+just unlink           # remove symlinks
+just check            # dry-run — shows what would change (silent when up to date)
+just deps             # brew bundle install
+just install          # deps + link (first-time setup)
+
+./install.sh          # bootstrap: install Homebrew + Brewfile, then `just link`
+./install.sh --skip-deps   # skip Homebrew; just link (falls back to raw stow if `just` is absent)
 ```
 
 There is no test suite, lint config, or build step at the repo level — each tool's config lives under its own subtree and is exercised by running that tool.
 
 ## Architecture and conventions
 
-### Stow ignore vs git ignore
+### Adding a package / file
 
-Two ignore files do different jobs and both must be kept consistent:
+- **New file in an existing package:** drop it under the package's `$HOME`-shaped path (e.g. `nvim/.config/nvim/lua/...`) and run `just relink` so the new file gets its symlink.
+- **New application:** create a top-level package dir with the home-shaped subtree (e.g. `foo/.config/foo/config`), then add `foo` to the `packages` list in `justfile` (and the fallback list in `install.sh`).
 
-- `.stow-local-ignore` — what `stow` skips when symlinking. Things that exist in the repo but should NOT appear in `$HOME` (e.g. `.git`, `README.md`, `Brewfile`, `install.sh`).
-- `.gitignore` — what git tracks. Used here as an *allow-list* for `.local/bin/` and `.claude/plugins/`: everything is ignored by default and only specific files are un-ignored with `!`. When adding a new tracked script under `.local/bin/`, add an explicit `!.local/bin/<name>` line.
+### git ignore
+
+There is no `.stow-local-ignore` — in the per-package layout Stow reads ignore files from each *package's* root, not the repo root, and the packages contain only tracked config, so none is needed. `.gitignore` is just OS cruft, Syncthing markers, and a defense-in-depth list of runtime/generated artifacts (`fisher/`, tmux `plugins/`, nvim `plugin/`/`spell/`, `fish_variables`) that regenerate at their real `~` locations and must never be committed.
 
 ### Shell entrypoints
 
@@ -71,4 +86,4 @@ When adding a new local plugin, register it in `marketplace.json` *and* enable i
 
 ### Local scripts (`.local/bin`)
 
-Custom helpers (`pf`, `tmux-opencode`, `tmux-sesh`, `tmux-pi`) live here. `$PATH` includes `~/.local/bin` via `.profile`. Note the allow-list pattern in `.gitignore` — new scripts must be explicitly un-ignored to be tracked.
+Custom helpers (`pf`, `tmux-opencode`, `tmux-sesh`) live in the `bin/` package (`bin/.local/bin/`). `$PATH` includes `~/.local/bin` via `.profile`. Add a new script under `bin/.local/bin/` and run `just relink`. (Machine-specific absolute symlinks that other tools drop into `~/.local/bin`, e.g. `claude`/`codex`, are not tracked — Stow ignores absolute symlinks anyway.)

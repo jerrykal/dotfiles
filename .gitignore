@@ -1,27 +1,15 @@
-.stfolder
-.stversions
+# OS cruft
+.DS_Store
 
-# Fish
-.config/fish/fish_variables
-.config/fish/fisher/
+# Syncthing folder markers
+.stfolder/
+.stversions/
 
-# Neovim
-.config/nvim/plugin/
-.config/nvim/spell/
-
-# Tmux
-.config/tmux/plugins/
-
-# .local/bin
-.local/bin/*
-!.local/bin/tmux-opencode
-!.local/bin/tmux-sesh
-!.local/bin/pf
-
-# 1. Ignore everything in the .claude folder
-.claude/*
-!.claude/CLAUDE.md
-!.claude/scripts/
-!.claude/settings.json
-!.claude/skills/
-!.claude/statusline.sh
+# Runtime/generated artifacts. With the per-package layout these regenerate at
+# their real ~ locations and normally never appear in the repo; listed here as
+# defense-in-depth so they can never be committed by accident.
+fish/.config/fish/fisher/
+fish/.config/fish/fish_variables
+tmux/.config/tmux/plugins/
+nvim/.config/nvim/plugin/
+nvim/.config/nvim/spell/

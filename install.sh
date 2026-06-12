@@ -86,9 +86,25 @@ if [ -z "${SKIP_DEPS:-}" ]; then
     'curl -fsSL https://claude.ai/install.sh | bash'
 fi
 
-log INFO "Setting up dotfiles using 'stow'..."
-if stow -v .; then
-  log INFO "Dotfiles set up successfully using 'stow'."
+log INFO "Linking dotfiles with 'just link'..."
+if command -v just &>/dev/null; then
+  link_ok=0
+  just link && link_ok=1
 else
-  log WARN "'stow' execution encountered issues. Check your dotfiles setup."
+  # Bootstrap fallback: 'just' not on PATH yet (e.g. --skip-deps on a fresh box).
+  # Mirror the justfile: fold by default, --no-folding for the runtime-heavy pkgs.
+  log WARN "'just' not found; falling back to direct stow invocation."
+  packages="atuin bat bin claude eza fish git lazygit mise nvim opencode ruff sesh shell tmux"
+  nofold=" claude fish nvim tmux "
+  link_ok=1
+  for p in $packages; do
+    case "$nofold" in *" $p "*) fold="--no-folding" ;; *) fold="" ;; esac
+    stow --verbose $fold "$p" || link_ok=0
+  done
+fi
+
+if [ "$link_ok" = 1 ]; then
+  log INFO "Dotfiles linked successfully."
+else
+  log WARN "Linking encountered issues. Check your dotfiles setup."
 fi
