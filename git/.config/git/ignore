@@ -48,30 +48,33 @@ nohup.out
 
 # --- Visual Studio Code ---
 .vscode/*
-# !.vscode/settings.json
-# !.vscode/tasks.json
-# !.vscode/launch.json
-# !.vscode/extensions.json
-# !.vscode/*.code-snippets
-# !*.code-workspace
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+!*.code-workspace
 
 # Built Visual Studio Code Extensions
 *.vsix
 
 # --- Neovim ---
-
 # Local lazy.nvim spec
 .lazy.lua
 
 # --- Claude Code ---
-# Personal local settings and per-machine runtime state. Shared project config
-# (.claude/settings.json, commands/, agents/, skills/) stays committable.
-.claude/settings.local.json
-.claude/todos/
-.claude/shell-snapshots/
-.claude/projects/
-.claude/statsig/
-.claude/history.jsonl
+# Allowlist: ignore everything under .claude/ by default, then re-include the
+# shared project config worth committing. Personal local settings and per-machine
+# runtime state (settings.local.json, todos/, shell-snapshots/, projects/,
+# statsig/, history.jsonl, worktree/, ...) fall through to ignored.
+# Note: exclude the dir's *contents* (/*), not the dir itself — git can't
+# re-include a path whose parent dir is excluded.
+.claude/*
+!.claude/settings.json
+!.claude/commands/
+!.claude/agents/
+!.claude/skills/
+!.claude/hooks/
 
 # --- Python ---
 # Byte-compiled / optimized / DLL files
@@ -269,13 +272,6 @@ cython_debug/
 #   Ignore directories containing user credentials, local state, and settings.
 #   Learn more at https://abstra.io/docs
 .abstra/
-
-# Visual Studio Code
-#   Visual Studio Code specific template is maintained in a separate VisualStudioCode.gitignore
-#   that can be found at https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
-#   and can be added to the global gitignore or merged into this file. However, if you prefer,
-#   you could uncomment the following to ignore the entire vscode folder
-# .vscode/
 
 # Ruff stuff:
 .ruff_cache/
