@@ -20,6 +20,7 @@ brew "tmux"
 brew "tree-sitter-cli"
 brew "tuxedo"
 brew "uv"
+brew "webstonehq/tap/tuxedo", trusted: true
 brew "wget"
 brew "zoxide"
-tap "webstonehq/tap"
+tap "webstonehq/tap", trusted: true
