@@ -1,6 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "skillListingBudgetFraction": 0.015,
+  "env": {
+    "CLAUDE_CODE_SCROLL_SPEED": "0.5"
+  },
   "attribution": {
     "commit": "",
     "pr": ""
@@ -39,7 +42,7 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "opus",
+  "model": "fable",
   "hooks": {
     "Notification": [
       {
@@ -84,7 +87,8 @@
     "astral@astral-sh": true,
     "code-simplifier@claude-plugins-official": true,
     "context7@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true
+    "skill-creator@claude-plugins-official": true,
+    "claude-code-setup@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "astral-sh": {
@@ -100,8 +104,5 @@
   "theme": "dark",
   "editorMode": "normal",
   "agentPushNotifEnabled": true,
-  "skipAutoPermissionPrompt": true,
-  "env": {
-    "CLAUDE_CODE_SCROLL_SPEED": "0.5"
-  }
+  "skipAutoPermissionPrompt": true
 }
