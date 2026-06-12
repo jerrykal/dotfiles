@@ -16,10 +16,8 @@ if not test -d $fisher_path
     end
 end
 
-if test -z "$fisher_path" || test "$fisher_path" = "$__fish_config_dir"
-    exit
-end
-
-for file in $fisher_path/conf.d/*.fish
-    source $file
+if test -d $fisher_path/conf.d
+    for file in $fisher_path/conf.d/*.fish
+        source $file
+    end
 end
