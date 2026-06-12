@@ -35,7 +35,6 @@ abbr -a gds git diff --staged
 abbr -a gls git ls-files
 abbr -a gp git push
 abbr -a grm git rm
-abbr -a gC git checkout
 abbr -a gr git reset
 abbr -a gco git checkout
 abbr -a gb git branch
@@ -46,29 +45,7 @@ type -q lazygit; and abbr -a lg lazygit
 
 # python
 abbr -a py python
-abbr -a pipl pip list
-abbr -a pipi pip install
-abbr -a pipir pip install -r requirements.txt
-abbr -a pipsh pip show
-abbr -a pipsr pip search
-abbr -a pipfr pip freeze
 abbr -a --set-cursor tsb tensorboard --logdir=%
-
-# docker
-if type -q docker
-    abbr -a d docker
-    abbr -a dps docker ps
-    abbr -a dpsa docker ps -a
-    abbr -a dil docker images
-    abbr -a de docker exec it
-    abbr -a dstop docker stop
-    abbr -a drm docker rm
-    abbr -a drmi docker rmi
-    abbr -a dlogs docker logs -f
-    abbr -a dcleanc docker rm $(docker ps -a -q)
-    abbr -a dcleani docker rmi $(docker images -q)
-    abbr -a dprune docker system prune
-end
 
 # uv
 if type -q uv
