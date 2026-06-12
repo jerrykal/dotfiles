@@ -6,7 +6,6 @@
     "pr": ""
   },
   "editorMode": "normal",
-  "effortLevel": "medium",
   "enabledPlugins": {
     "astral@astral-sh": true,
     "code-simplifier@claude-plugins-official": true,
@@ -103,6 +102,6 @@
   "tui": "fullscreen",
   "statusLine": {
     "type": "command",
-    "command": "bash ~/.dotfiles/.claude/statusline.sh"
+    "command": "bash ~/.claude/statusline.sh"
   }
 }
