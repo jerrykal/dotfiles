@@ -45,7 +45,15 @@ There is no test suite, lint config, or build step at the repo level — each to
 
 There is no `.stow-local-ignore` — in the per-package layout Stow reads ignore files from each *package's* root, not the repo root, and the packages contain only tracked config, so none is needed. `.gitignore` is just OS cruft plus a defense-in-depth list of runtime/generated artifacts (`fisher/`, tmux `plugins/`, nvim `plugin/`/`spell/`, `fish_variables`) that regenerate at their real `~` locations and must never be committed.
 
-This repo is synced across machines by **git/GitHub only** — it is no longer a Syncthing folder (the old `.stignore`/`.stfolder` markers are gone). To set up a new machine, clone the repo and run `./install.sh`.
+### Syncing across machines
+
+The **laptop is the source of truth** and the only machine with a real `.git` — commit and push from there as usual. Remote machines receive the working tree via [Syncthing](https://syncthing.net) instead of `git pull`:
+
+- `.stignore` (tracked) excludes `.git` from the sync, so Syncthing never touches git internals — no repo corruption, no `.sync-conflict-*` files inside `.git`. It also mirrors `.gitignore`'s runtime/generated artifacts so those stay per-machine.
+- The laptop folder is **Send Only**; remotes are **Receive Only**. Edits flow laptop → remotes, matching the "edit on the laptop, sync everywhere" model. (Both machines must be online at the same time to sync — Syncthing has no async drop-box like GitHub.)
+- `.stfolder`/`.stversions` are Syncthing's own runtime markers and are gitignored.
+
+Bringing up a remote: install Syncthing (`brew "syncthing"` is in the Brewfile), pair it with the laptop, accept the shared `~/.dotfiles` folder as **Receive Only**, then run `./install.sh --skip-deps` (or `just link`) once to create the Stow symlinks — stow doesn't need git, so the absent `.git` is fine. `just sync-id` prints a machine's device ID for pairing. To bootstrap a machine the git way instead, clone the repo and run `./install.sh`.
 
 ### Shell entrypoints
 
