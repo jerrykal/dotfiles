@@ -152,6 +152,15 @@ return {
       scratch = {
         ft = "markdown",
       },
+      lazygit = {
+        win = {
+          keys = {
+            -- q hides the window (keeps lazygit running) instead of quitting it.
+            -- <leader>gg re-toggles it with state preserved. Press <C-c> to quit lazygit instead.
+            hide = { "q", function(self) self:hide() end, mode = "t", desc = "Hide lazygit" },
+          },
+        },
+      },
     },
     -- stylua: ignore
     keys = {
