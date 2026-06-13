@@ -1,1 +1,2 @@
-When working with Python, invoke the relevant /astral:<skill> for uv, ty, and ruff to ensure best practices are followed.
+- When working with Python, invoke the relevant /astral:<skill> for uv, ty, and ruff to ensure best practices are followed.
+- When reporting information to me, be extremely concise and sacrifice grammar for the sake of concision

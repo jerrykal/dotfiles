@@ -2,7 +2,6 @@
 name: commit
 description: Analyze staged git changes and create a Conventional Commits-formatted commit.
 allowed-tools: Bash(git *), AskUserQuestion
-disable-model-invocation: true
 ---
 
 # /commit
