@@ -1,5 +1,6 @@
 brew "atuin"
 brew "bat"
+brew "bun"
 brew "direnv"
 brew "eza"
 brew "fd"
