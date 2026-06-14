@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+> **Keep `README.md` in sync.** It is the human-facing mirror of this file: the package list, the repo-path ↔ home-path table, the fold/`nofold` explanation, the `just` / `install.sh` command listings, and the Syncthing sync model all appear in both. Whenever a change touches any of those — adding/removing a package, adding or renaming a `just` recipe, changing the install flow, altering the sync setup — update the matching section of `README.md` in the **same** change. Treat a diff that updates one without the other as incomplete.
+
 ## What this repo is
 
 Personal dotfiles, deployed by symlinking into `$HOME` with [GNU Stow](https://www.gnu.org/software/stow/). The repo is organized as **one Stow "package" per application** — each top-level dir (`nvim/`, `fish/`, `claude/`, `shell/`, `bin/`, …) contains a `$HOME`-shaped subtree that mirrors into `$HOME`.
@@ -25,11 +27,13 @@ just link             # symlink all packages into $HOME (just link nvim tmux for
 just relink           # restow after renaming/removing tracked files
 just unlink           # remove symlinks
 just check            # dry-run — shows what would change (silent when up to date)
+just prune            # remove dead symlinks pointing into this repo (just prune-check to dry-run)
+just adopt            # pull existing $HOME files into the repo, then symlink back (migration aid)
 just deps             # brew bundle install
 just install          # deps + link (first-time setup)
 
-./install.sh          # bootstrap: install Homebrew + Brewfile, then `just link`
-./install.sh --skip-deps   # skip Homebrew; just link (falls back to raw stow if `just` is absent)
+./install.sh          # bootstrap: Homebrew + Brewfile + Claude Code, then `just link`
+./install.sh --skip-deps   # link only (errors out if `just` is absent — no raw-stow fallback)
 ```
 
 There is no test suite, lint config, or build step at the repo level — each tool's config lives under its own subtree and is exercised by running that tool.
@@ -39,7 +43,7 @@ There is no test suite, lint config, or build step at the repo level — each to
 ### Adding a package / file
 
 - **New file in an existing package:** drop it under the package's `$HOME`-shaped path (e.g. `nvim/.config/nvim/lua/...`) and run `just relink` so the new file gets its symlink.
-- **New application:** create a top-level package dir with the home-shaped subtree (e.g. `foo/.config/foo/config`), then add `foo` to the `packages` list in `justfile` (and the fallback list in `install.sh`).
+- **New application:** create a top-level package dir with the home-shaped subtree (e.g. `foo/.config/foo/config`), then add `foo` to the `packages` list in the `justfile`. (`install.sh` doesn't list packages — it just calls `just link`.)
 
 ### git ignore
 
