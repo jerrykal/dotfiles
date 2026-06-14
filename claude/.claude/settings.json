@@ -77,6 +77,16 @@
           }
         ]
       }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/context-mode-cache-heal.mjs"
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
@@ -87,8 +97,10 @@
     "astral@astral-sh": true,
     "code-simplifier@claude-plugins-official": true,
     "context7@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true,
-    "claude-code-setup@claude-plugins-official": true
+    "skill-creator@claude-plugins-official": false,
+    "claude-code-setup@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true,
+    "context-mode@context-mode": true
   },
   "extraKnownMarketplaces": {
     "astral-sh": {
@@ -97,6 +109,12 @@
         "repo": "astral-sh/claude-code-plugins"
       },
       "autoUpdate": true
+    },
+    "context-mode": {
+      "source": {
+        "source": "github",
+        "repo": "mksglu/context-mode"
+      }
     }
   },
   "spinnerTipsEnabled": false,
