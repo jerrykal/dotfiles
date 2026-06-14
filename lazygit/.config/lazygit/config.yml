@@ -5,6 +5,7 @@ git:
 gui:
   nerdFontsVersion: "3"
   border: single
+  sidePanelWidth: 0.2
   theme:
     activeBorderColor:
       - "#31748f"
