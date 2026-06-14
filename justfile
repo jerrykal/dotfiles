@@ -35,6 +35,14 @@ check *pkgs=packages:
 adopt *pkgs=packages:
     @just _apply "--adopt" "{{pkgs}}"
 
+# Remove dead symlinks pointing into this repo (default: scan $HOME). e.g. `just prune ~/.config`
+prune dir='':
+    @just _prune "" "{{dir}}"
+
+# Dry-run prune — list dead symlinks without deleting (default: scan $HOME)
+prune-check dir='':
+    @just _prune "--no" "{{dir}}"
+
 # List user skills installed in ~/.claude that aren't tracked in the repo yet
 new-skills:
     #!/usr/bin/env bash
@@ -80,3 +88,39 @@ _apply action pkgs:
       case " {{nofold}} " in *" $p "*) fold="--no-folding" ;; esac
       stow --verbose {{action}} $fold "$p"
     done
+
+# internal: find broken symlinks under <dir> (default $HOME) that point into this
+# repo; delete them by default, or just list them (dry run) when mode=--no.
+_prune mode dir:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    root="{{dir}}"; root="${root:-$HOME}"; root="${root%/}"
+    repo=$(basename "$PWD")
+    dead=()
+    while IFS= read -r -d '' link; do
+      tgt=$(readlink "$link")
+      case "$tgt" in "$repo"/*|*/"$repo"/*) ;; *) continue ;; esac  # only our links
+      [ -e "$link" ] || dead+=("$link")                            # target gone -> dead
+    done < <(find "$root" \
+        \( -name .git -o -name node_modules -o -name .cache \) -prune -o \
+        -type l -print0 2>/dev/null)
+    if [ ${#dead[@]} -eq 0 ]; then echo "✓ no dead links into $repo"; exit 0; fi
+    printf '  %s\n' "${dead[@]}"
+    if [ "{{mode}}" = "--no" ]; then
+      echo "${#dead[@]} dead link(s) — run \`just prune\` to remove (empty parent dirs pruned too)"
+      exit 0
+    fi
+    rm -- "${dead[@]}"
+    # climb from each link's parent, rmdir'ing dirs that are now empty — rmdir
+    # only deletes empties, so it self-limits; never past the scan root or $HOME.
+    dirs=0
+    for link in "${dead[@]}"; do
+      d="${link%/*}"
+      while [ "$d" != "$root" ] && [ "$d" != "$HOME" ] && [ "$d" != "/" ]; do
+        rmdir "$d" 2>/dev/null || break
+        dirs=$((dirs + 1)); d="${d%/*}"
+      done
+    done
+    msg="removed ${#dead[@]} dead link(s)"
+    [ "$dirs" -gt 0 ] && msg="$msg + $dirs empty dir(s)"
+    echo "$msg"
