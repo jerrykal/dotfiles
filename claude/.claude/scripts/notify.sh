@@ -10,6 +10,13 @@
 
 emit() { printf '\e]777;notify;%s;%s\a' "$TITLE" "$BODY"; }
 
+# Disambiguate otherwise-identical notifications. Ghostty (and most emulators)
+# suppress a notification whose title+body exactly matches the previous one, so
+# two tasks finishing in the same window back-to-back would silently drop the
+# second "Task complete". A second-resolution timestamp keeps each one distinct
+# and doubles as a "when did it finish" readout.
+BODY="$BODY · $(date +%H:%M:%S)"
+
 if [ -z "$TMUX" ]; then
   emit
   exit 0
