@@ -44,6 +44,17 @@
   },
   "model": "opus",
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/block-dangerous-git.sh"
+          }
+        ]
+      }
+    ],
     "Notification": [
       {
         "matcher": "^(?!idle_prompt$).*",
@@ -77,17 +88,10 @@
           }
         ]
       }
-    ],
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/context-mode-cache-heal.mjs"
-          }
-        ]
-      }
     ]
+  },
+  "worktree": {
+    "baseRef": "fresh"
   },
   "statusLine": {
     "type": "command",
@@ -95,12 +99,11 @@
   },
   "enabledPlugins": {
     "astral@astral-sh": true,
-    "code-simplifier@claude-plugins-official": true,
-    "context7@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": false,
     "skill-creator@claude-plugins-official": false,
-    "claude-code-setup@claude-plugins-official": true,
+    "claude-code-setup@claude-plugins-official": false,
     "superpowers@claude-plugins-official": true,
-    "context-mode@context-mode": true
+    "ponytail@ponytail": true
   },
   "extraKnownMarketplaces": {
     "astral-sh": {
@@ -110,10 +113,10 @@
       },
       "autoUpdate": true
     },
-    "context-mode": {
+    "ponytail": {
       "source": {
         "source": "github",
-        "repo": "mksglu/context-mode"
+        "repo": "DietrichGebert/ponytail"
       }
     }
   },
