@@ -21,8 +21,8 @@ local vscode = require("vscode-neovim")
 -- stylua: ignore start
 
 -- Let vscode handle undo/redo
-map({"n"}, "u", function() vscode.call("undo") end)
-map({"n"}, "<C-r>", function() vscode.call("redo") end)
+-- map({"n"}, "u", function() vscode.call("undo") end)
+-- map({"n"}, "<C-r>", function() vscode.call("redo") end)
 
 -- Diagnostics
 map("n", "[d", function() vscode.call("editor.action.marker.prev") end)
@@ -48,6 +48,5 @@ map("n", "<leader>dB", function() vscode.call("editor.debug.action.conditionalBr
 map("n", "<leader>di", function() vscode.call("editor.debug.action.toggleInlineBreakpoint") end)
 map("n", "<leader>ds", function() vscode.call("workbench.action.debug.start") end)
 map("n", "<leader>dc", function() vscode.call("workbench.action.debug.continue") end)
--- TODO
 
 -- stylua: ignore end
