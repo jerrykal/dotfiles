@@ -35,7 +35,7 @@ EOF
 )"
 ```
 
-Show the proposed message, then commit and run `git status` to confirm. Reach for `AskUserQuestion` only when something's genuinely ambiguous — the diff should be split, the type or scope is a real toss-up — not as a routine confirmation gate.
+Always get approval before committing: present the proposed message through `AskUserQuestion` (options like "Commit as proposed" / "Edit" / "Cancel"), with the full message in an option's `description` so the user sees exactly what they're approving. Commit only once they approve, then run `git status` to confirm.
 
 ## Hard rules
 
