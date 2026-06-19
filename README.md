@@ -53,10 +53,13 @@ exercised by running that tool.
 
 ## Syncing across machines
 
-The **laptop is the source of truth** and the only machine with a real `.git`;
-commit and push from there. Remote machines receive the working tree via
-[Syncthing](https://syncthing.net) (laptop = *Send Only*, remotes =
-*Receive Only*), with `.stignore` excluding `.git` and runtime artifacts. On a
+The **laptop is the source of truth** by convention — it's the only machine with
+a real `.git`, so commit and push from there. Working trees sync via
+[Syncthing](https://syncthing.net) with every machine sharing the folder as
+*Send & Receive* (Syncthing's standard, bidirectional [folder
+type](https://docs.syncthing.net/users/foldertypes.html) — an edit on a remote
+flows back to the laptop too), and `.stignore` excluding `.git` and runtime
+artifacts so a `*.sync-conflict-*` can never corrupt git. On a
 remote, run `./install.sh --skip-deps` once to create the Stow symlinks —
 Stow doesn't need git, so the absent `.git` is fine. `just sync-id` prints a
 machine's Syncthing device ID for pairing.
