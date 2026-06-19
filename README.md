@@ -16,9 +16,10 @@ home path with the leading package dir stripped:
 | `shell/.profile` | `~/.profile` |
 | `claude/.claude/settings.json` | `~/.claude/settings.json` |
 | `bin/.local/bin/pf` | `~/.local/bin/pf` |
+| `skills/.agents/skills/teach/SKILL.md` | `~/.agents/skills/teach/SKILL.md` |
 
 Packages: `atuin` `bat` `bin` `claude` `eza` `fish` `git` `lazygit` `mise`
-`nvim` `ruff` `sesh` `shell` `tmux`.
+`nvim` `ruff` `sesh` `shell` `skills` `tmux`.
 
 Most packages **fold** (the Stow default — the whole dir becomes one symlink).
 The packages in `nofold` (`claude`, `fish`, `nvim`, `tmux`) are stowed with

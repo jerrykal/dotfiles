@@ -98,7 +98,17 @@ Anything that should run in *all* shells (env vars, PATH) belongs in `.profile`.
 
 When adding a new local plugin, register it in `marketplace.json` *and* enable it in `settings.json`'s `enabledPlugins`.
 
-Because `claude` is `--no-folding`, a skill installed into `~/.claude/skills/<name>/` lands as real files with no link back to the repo. To track one, move it into `claude/.claude/skills/<name>/` and run `just relink claude` (Stow then symlinks the files back into `~/.claude`). Commit from the laptop; Syncthing carries it to remotes. Plugin-delivered skills (under `~/.claude/plugins/`) are managed via `enabledPlugins` instead, not adopted.
+Because `claude` is `--no-folding`, a skill installed into `~/.claude/skills/<name>/` lands as real files with no link back to the repo. To track a **locally-authored** one, move it into `claude/.claude/skills/<name>/` and run `just relink claude` (Stow then symlinks the files back into `~/.claude`). Commit from the laptop; Syncthing carries it to remotes. Plugin-delivered skills (under `~/.claude/plugins/`) are managed via `enabledPlugins` instead, not adopted. Skills installed by the [vercel-labs/skills](https://github.com/vercel-labs/skills) tool are tracked by the separate `skills` package below — not here.
+
+### Global skills (`skills` package)
+
+The `skills` package tracks globally-installed agent skills — mostly those the [vercel-labs/skills](https://github.com/vercel-labs/skills) CLI installs into `~/.agents/skills/`. It **folds** (the Stow default), so `~/.agents/skills` and `~/.local/state/skills` are each a single symlink into the repo. That's deliberate: because those dirs ARE the repo, anything the CLI writes there — a newly installed skill, an updated lockfile — lands directly in `skills/` and is tracked with no relink step. Three things live under it:
+
+- `skills/.agents/skills/<name>/` — the skill content. `~/.agents/skills` → this dir, so the CLI installs/updates/removes skills straight into the repo.
+- `skills/.local/state/skills/.skill-lock.json` — the CLI's lockfile (what's installed, from where, at which hash). `~/.local/state/skills` folds too, so lock writes flow straight in.
+- `skills/.claude/skills/<name>` — the symlinks that point Claude Code at those skills. This dir does **not** fold: `~/.claude/skills/` is shared with the `claude` package (it holds locally-authored skills like `commit-*`), so Stow keeps it a real dir and links each entry file-level. Each entry is a **relative** symlink `../../.agents/skills/<name>`, stored in git *as a symlink* (mode `120000`); the relative target resolves at both `~/.claude/skills/` and inside the repo because `.agents/skills` is tracked in the same package.
+
+Workflow after the CLI adds a new skill: its **content** is auto-tracked (it was written into the repo via the fold), but its `~/.claude/skills/<name>` symlink is created in the shared real dir and is **not** — adopt it by `mv ~/.claude/skills/<name> skills/.claude/skills/` then `just relink skills`. Then commit (the lockfile change is the usual companion). Removing a skill: the CLI deletes the repo content; also delete the stale `skills/.claude/skills/<name>` symlink and `just relink skills`.
 
 ### Local scripts (`.local/bin`)
 
