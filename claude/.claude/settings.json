@@ -1,6 +1,5 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "skillListingBudgetFraction": 0.015,
   "env": {
     "CLAUDE_CODE_SCROLL_SPEED": "0.5"
   },
@@ -141,6 +140,7 @@
   "tui": "fullscreen",
   "theme": "dark",
   "editorMode": "normal",
+  "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true
 }
