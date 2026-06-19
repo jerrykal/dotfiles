@@ -98,7 +98,7 @@ Anything that should run in *all* shells (env vars, PATH) belongs in `.profile`.
 
 When adding a new local plugin, register it in `marketplace.json` *and* enable it in `settings.json`'s `enabledPlugins`.
 
-Because `claude` is `--no-folding`, a skill installed into `~/.claude/skills/<name>/` lands as real files with no link back to the repo. Run `just new-skills` to list untracked skills, then `just adopt-skill <name>` to move one into `claude/.claude/skills/` and relink it (Stow then symlinks the files back into `~/.claude`). Commit from the laptop; Syncthing carries it to remotes. Plugin-delivered skills (under `~/.claude/plugins/`) are managed via `enabledPlugins` instead, not adopted.
+Because `claude` is `--no-folding`, a skill installed into `~/.claude/skills/<name>/` lands as real files with no link back to the repo. To track one, move it into `claude/.claude/skills/<name>/` and run `just relink claude` (Stow then symlinks the files back into `~/.claude`). Commit from the laptop; Syncthing carries it to remotes. Plugin-delivered skills (under `~/.claude/plugins/`) are managed via `enabledPlugins` instead, not adopted.
 
 ### Local scripts (`.local/bin`)
 

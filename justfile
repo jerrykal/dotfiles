@@ -43,30 +43,6 @@ prune dir='':
 prune-check dir='':
     @just _prune "--no" "{{dir}}"
 
-# List user skills installed in ~/.claude that aren't tracked in the repo yet
-new-skills:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    for d in "$HOME"/.claude/skills/*/; do
-      name=$(basename "$d")
-      [ -e "claude/.claude/skills/$name" ] && continue   # already tracked
-      [ -L "${d%/}" ] && continue                        # upstream symlink (e.g. skill-creator)
-      [ -f "$d/SKILL.md" ] || continue                   # only real skills
-      echo "$name"
-    done
-
-# Move a newly-installed user skill into the repo, then symlink it back
-adopt-skill name:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    src="$HOME/.claude/skills/{{name}}"
-    dst="claude/.claude/skills/{{name}}"
-    [ -e "$dst" ] && { echo "already tracked: $dst"; exit 1; }
-    [ -d "$src" ] || { echo "no such skill: $src"; exit 1; }
-    mv "$src" "$dst"
-    just relink claude
-    echo "Adopted {{name}} — review then: git add $dst && git commit"
-
 # Print this machine's Syncthing device ID (for pairing remotes)
 sync-id:
     @syncthing device-id 2>/dev/null || echo "syncthing not installed/configured yet"
