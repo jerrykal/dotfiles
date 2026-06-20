@@ -23,7 +23,13 @@ Format: `<type>(<scope>): <subject>`, where type is one of `feat fix docs style 
 
 ## Creating it
 
-Inspect the diff you're about to commit and the recent `git log`, then commit with a HEREDOC so multi-line messages survive:
+Run in order; each ✓ gate holds before moving on:
+
+1. **Stage** what belongs in this commit (see *What to commit*). ✓ `git diff --cached` shows exactly this change, nothing unrelated.
+2. **Inspect** the staged diff and `git log -20`. ✓ the message mirrors the scopes, casing, and vocabulary already in the log.
+3. **Draft** the message (see *Writing the message*).
+4. **Approve**: present the full proposed message through `AskUserQuestion` (options like "Commit as proposed" / "Edit" / "Cancel", full message in an option's `description` so the user sees exactly what they approve). ✓ the user chose to commit.
+5. **Commit** with a HEREDOC (below) so multi-line messages survive, then **confirm** with `git status`.
 
 ```bash
 git commit -m "$(cat <<'EOF'
@@ -34,8 +40,6 @@ tripped an index-out-of-bounds. Returns Err early instead.
 EOF
 )"
 ```
-
-Always get approval before committing: present the proposed message through `AskUserQuestion` (options like "Commit as proposed" / "Edit" / "Cancel"), with the full message in an option's `description` so the user sees exactly what they're approving. Commit only once they approve, then run `git status` to confirm.
 
 ## Hard rules
 
