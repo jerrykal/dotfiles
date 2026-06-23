@@ -1,27 +1,17 @@
 ---
-name: uv-setup
+name: uv-migrate
 description: Migrate an existing Python project (pip / conda / poetry / pipenv / setuptools) to uv so the environment reproduces with a single `uv sync`. Writes UV_SETUP.md and flags dependencies uv can't fully own.
 allowed-tools: Bash(uv init *) Bash(uv python *) Bash(uv add *) Bash(uv lock *) Bash(uv sync *) Bash(uv pip list *) Bash(uv tree *) Bash(uv run *)
 disable-model-invocation: true
 ---
 
-# uv-setup
+# uv-migrate
 
 Bootstrap an existing Python project so it can be managed by [uv](https://docs.astral.sh/uv/). The end state: the user (or a teammate) clones the repo and runs `uv sync` to get a working environment.
 
-The project may have been originally managed by pip, conda/mamba, poetry, pipenv, or plain `setup.py`. Your job is to faithfully reproduce that environment under uv, document what you did, and clearly flag anything that uv can't fully own (system packages, conda-only deps, GPU toolchains).
+The project may have been originally managed by pip, conda/mamba, poetry, pipenv, or plain `setup.py`. Your job is to faithfully reproduce that environment under uv, document what you did, and clearly flag anything that uv can't fully **own** (system packages, conda-only deps, GPU toolchains).
 
-## When to invoke
-
-This skill is the right tool when the user says any of:
-
-- `/uv-setup`
-- "set up uv for this project"
-- "migrate this repo to uv"
-- "make `uv sync` work in this project"
-- "convert this requirements.txt / environment.yml / Pipfile to uv"
-
-If the project already has `uv.lock` and `pyproject.toml` and `uv sync` works as-is, say so and stop — don't re-migrate a working uv project.
+**Preflight:** if the project already has `uv.lock` + `pyproject.toml` and `uv sync` works as-is, say so and stop — don't re-migrate a working uv project.
 
 ## High-level workflow
 
@@ -33,7 +23,7 @@ Five phases, in order. Don't skip phases — each one feeds the next.
 4. **Validate** — run `uv sync` and verify it works. Smoke-test if the README points to an obvious entrypoint.
 5. **Document** — write `UV_SETUP.md` and (if appropriate) update `CLAUDE.md`.
 
-The user's expectation is that after this skill runs, **`uv sync` is the one command that reproduces the environment**. Everything else (system packages, GPU drivers) goes into UV_SETUP.md as documented prerequisites.
+The contract: **`uv sync` reproduces everything uv owns**. Everything it can't own — system packages, GPU drivers, post-install downloads — becomes a documented prerequisite in UV_SETUP.md.
 
 ## Phase 1: Detect
 
@@ -61,7 +51,7 @@ Check for, in order of authority:
 | `Pipfile` + `Pipfile.lock` | pipenv | see `references/pipenv.md` |
 | `environment.yml` / `environment.yaml` | conda / mamba | see `references/conda.md` |
 | `requirements*.txt` | pip | see `references/pip.md` |
-| `setup.py` / `setup.cfg` | setuptools | needs migration to PEP 621 |
+| `setup.py` / `setup.cfg` | setuptools | PEP 621 migration — see `references/setuptools.md` |
 
 A project may have several. Use the most authoritative one as the source of truth, but cross-check the others — README often points at one and the others are CI/dev-only.
 
@@ -96,7 +86,7 @@ If the user is in auto mode and the plan is unsurprising (pure-pip project, no w
 
 ## Phase 3: Migrate
 
-Read the appropriate `references/<source>.md` for detailed steps. The general pattern:
+Read **only** the `references/<source>.md` matching the ecosystem you detected — not all of them. The general pattern:
 
 1. **Initialize uv project** (if no `pyproject.toml` yet): `uv init --no-workspace` (use `--lib` for libraries, `--app` for apps; default is fine if unsure). Don't clobber an existing `pyproject.toml` — read and edit it instead.
 2. **Pin Python**: `uv python pin <version>` — creates `.python-version`.
@@ -177,32 +167,13 @@ This project uses `uv` for environment management. See `UV_SETUP.md` for migrati
 
 If `CLAUDE.md` already exists, append a section rather than overwriting. If the user said "don't touch CLAUDE.md", skip this step.
 
-## Warnings: dependencies uv can't fully own
+## Warnings: what uv can't own
 
-This is the most important thing this skill gets right. Read `references/warnings.md` for the full catalog. The headline categories:
+The skill's most important output. Anything uv can't **own** becomes a documented prerequisite, never a silent gap. `references/warnings.md` is the catalog — read it before Phase 2 so the warnings land in the plan. The nine categories:
 
-- **Conda-only packages** (no PyPI equivalent): `mkl`, `cudatoolkit`, `cudnn`, `nccl`, `mpich`, `gdal` (sometimes), `rdkit` (older), `pymol-open-source`, etc.
-- **System libraries** that Python wheels link against: `libgl`, `ffmpeg`, `graphviz`, `libpq`, `tesseract`, `openssl-dev`, `libffi-dev`, etc. — uv installs the Python binding but the system lib must be installed via apt/brew/dnf.
-- **GPU/CUDA stacks**: PyTorch, JAX, TensorFlow GPU builds often require an exact CUDA version. uv supports them via [extra-index-url](https://docs.astral.sh/uv/guides/integration/pytorch/), but the host CUDA driver is the user's responsibility.
-- **Editable installs of sibling repos** (`pip install -e ../other-repo`): map to `uv add --editable ../other-repo` or workspace members.
-- **Private indexes / git+ssh deps**: supported by uv but require credentials; flag for the user.
-- **Compiler toolchains**: packages with `pip install`-time C/Fortran compilation need `gcc`/`clang`/`gfortran` on the host.
-- **Post-install model/data downloads**: `python -m spacy download en_core_web_sm`, `playwright install chromium`, NLTK corpora, HuggingFace caches. Document as post-install steps; don't try to encode them in `pyproject.toml`.
+conda-only packages · system libraries · GPU/accelerator stacks · compiler toolchains · editable sibling repos · private/git+ssh indexes · post-install model/data downloads · non-Python runtimes · platform-specific deps
 
-For each warning, the UV_SETUP.md entry should say **what** is needed, **why** uv can't manage it, and **how** to install it.
-
-## Source-specific playbooks
-
-When you've identified the source ecosystem in Phase 1, read the corresponding reference file before starting Phase 3:
-
-- `references/pip.md` — requirements*.txt projects (most common)
-- `references/conda.md` — environment.yml / mamba projects (most warnings here)
-- `references/poetry.md` — Poetry projects
-- `references/pipenv.md` — Pipfile / Pipfile.lock projects
-- `references/setuptools.md` — setup.py / setup.cfg projects
-- `references/warnings.md` — the catalog of non-uv-configurable cases
-
-Read only the one(s) you need — don't load all of them up front.
+For each, the UV_SETUP.md entry answers three things: **what** is needed, **why** uv can't own it, **how** to install it.
 
 ## Style
 
