@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+# Optional arg: skip the picker, connect to the first matching session.
+if [[ -n "${1:-}" ]]; then
+  target=$(sesh list --icons | fzf --filter="$1" --no-sort --accept-nth 2.. | head -1)
+  [[ -n "$target" ]] || exit 0
+  sesh connect "$target"
+  exit 0
+fi
+
 mapfile -t selection < <(
   sesh list --icons | fzf --tmux=80%,70% \
     --multi \

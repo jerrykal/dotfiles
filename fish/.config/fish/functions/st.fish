@@ -1,3 +1,3 @@
 function st --description "SSH then launch Tmux"
-    ssh -t $argv[1] "bash -l -c 'tmux-sesh'"
+    ssh -t $argv[1] "bash -l -c 'tmux-sesh $argv[2]'"
 end
