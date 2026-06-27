@@ -106,10 +106,9 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/mattpocock/skills.git",
       "skillPath": "skills/productivity/writing-great-skills/SKILL.md",
-      "skillFolderHash": "9252419010c7944edb297aa79b3f61a338a4f1f2",
-      "pluginName": "mattpocock-skills",
+      "skillFolderHash": "0875ef784dfdf0a3860f1cdc3937c2796b0314a5",
       "installedAt": "2026-06-19T05:55:48.991Z",
-      "updatedAt": "2026-06-19T05:55:48.991Z"
+      "updatedAt": "2026-06-26T16:49:33.918Z"
     },
     "web-design-guidelines": {
       "source": "vercel-labs/agent-skills",
