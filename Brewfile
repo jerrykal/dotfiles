@@ -1,7 +1,7 @@
 brew "atuin"
+brew "bash"
 brew "bat"
 brew "bun"
-brew "direnv"
 brew "eza"
 brew "fd"
 brew "fish"
@@ -21,9 +21,6 @@ brew "stow"
 brew "syncthing"
 brew "tmux"
 brew "tree-sitter-cli"
-brew "tuxedo"
 brew "uv"
-brew "webstonehq/tap/tuxedo", trusted: true
 brew "wget"
 brew "zoxide"
-tap "webstonehq/tap", trusted: true

@@ -18,6 +18,3 @@ type -q atuin; and atuin init fish --disable-up-arrow | source
 
 # Initialize zoxide
 type -q zoxide; and zoxide init fish | source
-
-# Hook direnv
-type -q direnv; and direnv hook fish | source
