@@ -4,7 +4,7 @@
 # Stow runs from this dir, so its default target is the parent — exactly $HOME.
 
 # All packages, in link order. Add new package dirs here.
-packages := "atuin bat bin claude eza fish git lazygit mise nvim ruff sesh shell skills tmux"
+packages := "atuin bat bin btop claude eza fish git lazygit mise nvim ruff sesh shell skills tmux"
 
 # Packages whose config dir also accumulates runtime/generated files — fisher
 # plugins, TPM plugins, nvim plugin/spell/, live ~/.claude state. These are

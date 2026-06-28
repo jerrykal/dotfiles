@@ -1,6 +1,7 @@
 brew "atuin"
 brew "bash"
 brew "bat"
+brew "btop"
 brew "bun"
 brew "eza"
 brew "fd"
