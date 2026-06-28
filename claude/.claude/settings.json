@@ -128,7 +128,6 @@
   "spinnerTipsEnabled": false,
   "effortLevel": "xhigh",
   "tui": "fullscreen",
-  "theme": "custom:rose-pine",
   "editorMode": "normal",
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
