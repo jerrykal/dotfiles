@@ -101,7 +101,6 @@
     "astral@astral-sh": true,
     "superpowers@claude-plugins-official": true,
     "ponytail@ponytail": true,
-    "frontend-design@claude-plugins-official": true,
     "context-mode@context-mode": true
   },
   "extraKnownMarketplaces": {
@@ -128,7 +127,7 @@
   "spinnerTipsEnabled": false,
   "effortLevel": "xhigh",
   "tui": "fullscreen",
-  "editorMode": "normal",
+  "theme": "dark",
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true
