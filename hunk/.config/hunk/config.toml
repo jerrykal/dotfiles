@@ -1,0 +1,72 @@
+theme = "custom"
+
+# Rosé Pine ("main" variant) tuned for full saturation instead of the
+# washed-out Shiki-derived built-in. Diff backgrounds blend the palette colour
+# over base #191724 (DiffAdd/DiffDelete=20%, DiffText/content=38%).
+# git_add=foam, git_change=rose, git_delete=love, git_rename=pine,
+# untracked=subtle (rose-pine default groups).
+[custom_theme]
+base  = "rose-pine"  # inherit Shiki rose-pine for accurate code highlighting
+label = "Rosé Pine"
+
+# chrome
+background  = "#191724"  # base
+panel       = "#1f1d2e"  # surface
+panelAlt    = "#26233a"  # overlay
+border      = "#6e6a86"  # muted
+accent      = "#c4a7e7"  # iris (Visual / link)
+accentMuted = "#5d5172"  # iris @40% over base
+text        = "#e0def4"  # text
+muted       = "#908caa"  # subtle
+
+# diff line backgrounds (DiffAdd / DiffDelete blend 20)
+addedBg        = "#333c48"  # foam @20%
+removedBg      = "#43293a"  # love @20%
+contextBg      = "#191724"
+movedAddedBg   = "#1e2a39"  # pine @20%
+movedRemovedBg = "#3b344b"  # iris @20%
+
+# intra-line (changed-word) highlights (DiffText-style blend 38)
+addedContentBg   = "#4b5d68"  # foam @38%
+removedContentBg = "#69384e"  # love @38%
+contextContentBg = "#191724"
+
+# gutter signs
+addedSignColor   = "#9ccfd8"  # foam
+removedSignColor = "#eb6f92"  # love
+
+# line numbers + cursor
+lineNumberBg = "#191724"
+lineNumberFg = "#6e6a86"  # muted (LineNr)
+selectedHunk = "#26233a"  # overlay (CursorLine)
+
+# summary badges
+badgeAdded   = "#9ccfd8"  # foam
+badgeRemoved = "#eb6f92"  # love
+badgeNeutral = "#908caa"  # subtle
+
+# file status (Diffview group mappings)
+fileNew       = "#9ccfd8"  # foam (added)
+fileDeleted   = "#eb6f92"  # love
+fileRenamed   = "#31748f"  # pine
+fileModified  = "#ebbcba"  # rose (change)
+fileUntracked = "#908caa"  # subtle
+
+# agent notes
+noteBorder          = "#c4a7e7"  # iris
+noteBackground      = "#2a2538"  # iris @10%
+noteTitleBackground = "#443b55"  # iris @25%
+noteTitleText       = "#e0def4"
+
+[custom_theme.syntax]
+default     = "#e0def4"  # text
+keyword     = "#31748f"  # pine
+string      = "#f6c177"  # gold
+comment     = "#6e6a86"  # muted
+number      = "#f6c177"  # gold
+function    = "#ebbcba"  # rose
+property    = "#9ccfd8"  # foam
+type        = "#9ccfd8"  # foam
+variable    = "#e0def4"  # text
+operator    = "#908caa"  # subtle
+punctuation = "#908caa"  # subtle

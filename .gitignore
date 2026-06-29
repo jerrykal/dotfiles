@@ -9,6 +9,7 @@
 # their real ~ locations and normally never appear in the repo; listed here as
 # defense-in-depth so they can never be committed by accident.
 btop/.config/btop/btop.log
+hunk/.config/hunk/state.json
 fish/.config/fish/fisher/
 fish/.config/fish/fish_variables
 tmux/.config/tmux/plugins/

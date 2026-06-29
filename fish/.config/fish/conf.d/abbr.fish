@@ -68,3 +68,9 @@ if type -q claude
     abbr -a c claude
     abbr -a ca claude agents
 end
+
+# modem-dev/hunk
+if type -q hunk
+    abbr -a hd hunk diff
+    abbr -a hds hunk diff --staged
+end
