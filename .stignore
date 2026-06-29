@@ -14,6 +14,8 @@
 
 // Runtime/generated artifacts — mirror of .gitignore. These regenerate at their
 // real ~ locations per machine and must never propagate between machines.
+/btop/.config/btop/btop.log
+/hunk/.config/hunk/state.json
 /fish/.config/fish/fisher
 /fish/.config/fish/fish_variables
 /tmux/.config/tmux/plugins
