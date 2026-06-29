@@ -22,10 +22,9 @@ Packages: `atuin` `bat` `bin` `btop` `claude` `eza` `fish` `git` `hunk`
 `lazygit` `mise` `nvim` `ruff` `sesh` `shell` `skills` `tmux`.
 
 Most packages **fold** (the Stow default — the whole dir becomes one symlink).
-The packages in `nofold` (`claude`, `fish`, `hunk`, `nvim`, `tmux`) are stowed
-with `--no-folding` so the dir stays real and the runtime/generated files those
-tools drop in (fisher/TPM plugins, nvim `plugin/`/`spell/`, live `~/.claude`
-state, hunk `state.json`) never leak back into the repo.
+The packages in `nofold` (`claude`) are stowed with `--no-folding` so the dir
+stays real and the runtime/generated files those tools drop in (live `~/.claude`
+state) never leak back into the repo.
 
 ## Installation
 
