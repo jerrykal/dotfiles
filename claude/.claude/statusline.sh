@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Status line: <bold+colored tokens>(<dimmed percentage>)
-# Color coding (Claude theme): green < 50%, yellow 50–80%, red > 80%
+# Color coding (Rosé Pine): foam < 50%, gold 50–80%, love > 80%
 
 input=$(cat)
 
@@ -12,13 +12,13 @@ RESET='\033[0m'
 BOLD='\033[1m'
 DIM='\033[2m'
 
-# Claude theme palette (24-bit truecolor)
+# Rosé Pine palette (24-bit truecolor)
 if (( $(echo "$used_pct >= 80" | bc -l) )); then
-  COLOR='\033[38;2;191;77;67m'    # red    #BF4D43
+  COLOR='\033[38;2;235;111;146m'  # love #eb6f92
 elif (( $(echo "$used_pct >= 50" | bc -l) )); then
-  COLOR='\033[38;2;214;165;74m'   # yellow #D6A54A
+  COLOR='\033[38;2;246;193;119m'  # gold #f6c177
 else
-  COLOR='\033[38;2;111;176;127m'  # green  #6FB07F
+  COLOR='\033[38;2;156;207;216m'  # foam #9ccfd8
 fi
 
 # Shorten token count: 142350 -> 142k, 1500000 -> 1.5M

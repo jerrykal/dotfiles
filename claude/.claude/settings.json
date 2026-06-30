@@ -127,7 +127,7 @@
   "spinnerTipsEnabled": false,
   "effortLevel": "xhigh",
   "tui": "fullscreen",
-  "theme": "dark",
+  "theme": "custom:rose-pine",
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true
