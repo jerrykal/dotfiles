@@ -125,7 +125,7 @@
     }
   },
   "spinnerTipsEnabled": false,
-  "effortLevel": "xhigh",
+  "effortLevel": "high",
   "tui": "fullscreen",
   "theme": "custom:rose-pine",
   "inputNeededNotifEnabled": true,
