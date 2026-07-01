@@ -1,5 +1,5 @@
-[settings]
-env_file = '.env'
+[env]
+_.file = ".env"
 
 [tools]
 bun = "latest"
