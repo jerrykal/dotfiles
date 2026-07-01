@@ -1,2 +1,9 @@
 [settings]
 env_file = '.env'
+
+[tools]
+bun = "latest"
+go = "latest"
+node = "latest"
+npm = "latest"
+rust = "latest"
