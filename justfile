@@ -10,7 +10,7 @@ packages := "atuin bat bin btop claude eza fish git hunk lazygit mise nvim ruff 
 # live ~/.claude state. These are stowed with --no-folding so the directory
 # stays REAL and those files never land in the repo. Everything else folds
 # normally (one symlink per package).
-nofold := "claude"
+nofold := "claude bin"
 
 _default:
     @just --list --unsorted
