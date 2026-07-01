@@ -11,11 +11,11 @@ label = "Rosé Pine"
 
 # chrome
 background  = "#191724"  # base
-panel       = "#1f1d2e"  # surface
-panelAlt    = "#26233a"  # overlay
-border      = "#6e6a86"  # muted
+panel       = "#191724"  # base
+panelAlt    = "#1f1d2e"  # surface
+border      = "#56526e"  # highlight-high
 accent      = "#c4a7e7"  # iris (Visual / link)
-accentMuted = "#5d5172"  # iris @40% over base
+accentMuted = "#6e6a86"  # muted
 text        = "#e0def4"  # text
 muted       = "#908caa"  # subtle
 
