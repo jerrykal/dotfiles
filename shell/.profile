@@ -57,3 +57,8 @@ fi
 
 # Claude
 export CLAUDE_CODE_TMUX_TRUECOLOR=true
+
+# CUDA
+if [ -d /usr/local/cuda/bin ]; then
+  export PATH=/usr/local/cuda/bin:$PATH
+fi
