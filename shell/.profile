@@ -62,3 +62,6 @@ export CLAUDE_CODE_TMUX_TRUECOLOR=true
 if [ -d /usr/local/cuda/bin ]; then
   export PATH=/usr/local/cuda/bin:$PATH
 fi
+
+# Machine-local config (untracked)
+[ -f "$HOME/.profile.local" ] && . "$HOME/.profile.local"
