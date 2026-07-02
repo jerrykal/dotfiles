@@ -18,3 +18,6 @@ type -q atuin; and atuin init fish --disable-up-arrow | source
 
 # Initialize zoxide
 type -q zoxide; and zoxide init fish | source
+
+# Machine-local config, gitignored
+test -f $__fish_config_dir/local.fish; and source $__fish_config_dir/local.fish
