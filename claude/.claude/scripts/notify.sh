@@ -31,8 +31,17 @@ loc=$(tmux display-message -pt "$TMUX_PANE" '#{session_name}:#{window_index} #{w
 # Notify every attached client, except one that is focused *and* already
 # viewing Claude's window — the user is watching, so stay quiet there.
 # Fields are space-free (tty, @window, 0/1), so default word-splitting is safe.
+notified=0
 while read -r ctty cwindow cfocused; do
   [ -n "$ctty" ] || continue
   [ "$cfocused" = 1 ] && [ "$cwindow" = "$my_window" ] && continue
   emit >"$ctty" 2>/dev/null
+  notified=1
 done < <(tmux list-clients -F '#{client_tty} #{window_id} #{?#{m:*focused*,#{client_flags}},1,0}' 2>/dev/null)
+
+# If a notification actually went out (the user wasn't already watching this
+# window), invert this window's status-bar tab so it's obvious *which*
+# background window wants attention. The per-window override clears itself when
+# the window is next selected — see the session-window-changed hook in
+# ~/.config/tmux/tmux.theme.conf.
+[ "$notified" = 1 ] && tmux set-option -w -t "$my_window" window-status-style reverse 2>/dev/null

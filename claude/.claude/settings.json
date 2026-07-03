@@ -91,7 +91,8 @@
     ]
   },
   "worktree": {
-    "baseRef": "fresh"
+    "baseRef": "fresh",
+    "bgIsolation": "none"
   },
   "statusLine": {
     "type": "command",
