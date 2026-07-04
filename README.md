@@ -18,13 +18,13 @@ home path with the leading package dir stripped:
 | `bin/.local/bin/pf` | `~/.local/bin/pf` |
 | `skills/.agents/skills/teach/SKILL.md` | `~/.agents/skills/teach/SKILL.md` |
 
-Packages: `atuin` `bat` `bin` `btop` `claude` `eza` `fish` `git` `hunk`
+Packages: `atuin` `bat` `bin` `btop` `claude` `eza` `fish` `git` `herdr` `hunk`
 `lazygit` `mise` `nvim` `ruff` `sesh` `shell` `skills` `tmux`.
 
 Most packages **fold** (the Stow default — the whole dir becomes one symlink).
-The packages in `nofold` (`claude`) are stowed with `--no-folding` so the dir
-stays real and the runtime/generated files those tools drop in (live `~/.claude`
-state) never leak back into the repo.
+The packages in `nofold` (`claude`, `bin`, `herdr`) are stowed with `--no-folding`
+so the dir stays real and the runtime/generated files those tools drop in (live
+`~/.claude` state, `herdr`'s logs + `session.json`) never leak back into the repo.
 
 ## Installation
 

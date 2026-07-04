@@ -4,13 +4,13 @@
 # Stow runs from this dir, so its default target is the parent — exactly $HOME.
 
 # All packages, in link order. Add new package dirs here.
-packages := "atuin bat bin btop claude eza fish git hunk lazygit mise nvim ruff sesh shell skills tmux"
+packages := "atuin bat bin btop claude eza fish git herdr hunk lazygit mise nvim ruff sesh shell skills tmux"
 
 # Packages whose config dir also accumulates runtime/generated files — e.g.
 # live ~/.claude state. These are stowed with --no-folding so the directory
 # stays REAL and those files never land in the repo. Everything else folds
 # normally (one symlink per package).
-nofold := "claude bin"
+nofold := "claude bin herdr"
 
 _default:
     @just --list --unsorted

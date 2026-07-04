@@ -10,6 +10,8 @@
 # defense-in-depth so they can never be committed by accident.
 btop/.config/btop/btop.log
 hunk/.config/hunk/state.json
+herdr/.config/herdr/session.json
+herdr/.config/herdr/*.log
 fish/.config/fish/fisher/
 fish/.config/fish/fish_variables
 fish/.config/fish/local.fish

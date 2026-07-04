@@ -66,6 +66,26 @@
             "async": true
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "command": "bash '/home/jerrylee/.claude/hooks/herdr-agent-state.sh' session",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      },
+      {
+        "hooks": [
+          {
+            "command": "bash '/Users/jerrylee/.claude/hooks/herdr-agent-state.sh' session",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
       }
     ],
     "StopFailure": [
