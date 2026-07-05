@@ -1,7 +1,7 @@
 ---
 name: uv-migrate
 description: Migrate an existing Python project (pip / conda / poetry / pipenv / setuptools) to uv so the environment reproduces with a single `uv sync`. Writes UV_SETUP.md and flags dependencies uv can't fully own.
-allowed-tools: Bash(uv init *) Bash(uv python *) Bash(uv add *) Bash(uv lock *) Bash(uv sync *) Bash(uv pip list *) Bash(uv tree *) Bash(uv run *)
+allowed-tools: Bash(uv init:*), Bash(uv python:*), Bash(uv add:*), Bash(uv lock:*), Bash(uv sync:*), Bash(uv pip list:*), Bash(uv tree:*), Bash(uv run:*)
 disable-model-invocation: true
 ---
 
@@ -15,13 +15,13 @@ The project may have been originally managed by pip, conda/mamba, poetry, pipenv
 
 ## High-level workflow
 
-Five phases, in order. Don't skip phases — each one feeds the next.
+Five phases, in order. Don't skip phases.
 
 1. **Detect** — read README and dependency files; figure out the source ecosystem and Python version.
 2. **Plan** — present what you'll do and what you'll warn about. Get user confirmation before mutating files.
 3. **Migrate** — run uv commands to construct `pyproject.toml`, `.python-version`, `uv.lock`.
 4. **Validate** — run `uv sync` and verify it works. Smoke-test if the README points to an obvious entrypoint.
-5. **Document** — write `UV_SETUP.md` and (if appropriate) update `CLAUDE.md`.
+5. **Document** — write `UV_SETUP.md`.
 
 The contract: **`uv sync` reproduces everything uv owns**. Everything it can't own — system packages, GPU drivers, post-install downloads — becomes a documented prerequisite in UV_SETUP.md.
 
@@ -77,12 +77,11 @@ Before changing any files, summarize the plan to the user. Cover:
 - Python version you'll pin
 - Where dependencies will come from
 - Whether you'll preserve a `requirements.txt` (you usually should — it's a useful fallback for non-uv users)
-- **Warnings**: any dependency that uv won't be able to install. See `references/warnings.md` for the catalog.
-- Whether you'll touch `CLAUDE.md`
+- **Warnings**: before writing the plan, read `references/warnings.md` and check every dependency against its catalog — every match becomes a warning in the plan, and later an entry in UV_SETUP.md.
 
 Ask the user once: "Proceed with this migration plan?" Wait for confirmation. This is the right place to pause because the next phase mutates files in their repo.
 
-If the user is in auto mode and the plan is unsurprising (pure-pip project, no warnings), you can proceed without confirming — but always still surface warnings before migrating.
+Skip the confirmation only when the user pre-approved in the invocation (e.g. "migrate to uv, don't ask") or the session is non-interactive — even then, print the plan and warnings before migrating.
 
 ## Phase 3: Migrate
 
@@ -116,7 +115,7 @@ When migrating from `requirements-dev.txt`, treat it as the `dev` group. From `e
    - Conflicting version pins → loosen the offending pin or report as a warning.
    - Package not on PyPI → it might be conda-only or a private package; document as a warning.
    - Python version too restrictive → adjust `requires-python`.
-2. Check that the venv contains the expected top-level packages: `uv pip list` (or `uv tree`).
+2. Cross-check `uv tree` (or `uv pip list`) against the source dependency files: every dependency is either installed or listed as a warning — nothing silently dropped.
 3. **Smoke test** if the README has an obvious entrypoint:
    - CLI tool: `uv run <cli> --help`
    - Test suite: `uv run pytest --collect-only`
@@ -126,58 +125,10 @@ When migrating from `requirements-dev.txt`, treat it as the `dev` group. From `e
 
 ## Phase 5: Document
 
-### Write UV_SETUP.md
-
-Use the template at `assets/UV_SETUP.template.md`. Fill in:
-
-- **Source ecosystem** detected (pip/conda/poetry/pipenv/etc.)
-- **Files added** (`pyproject.toml`, `uv.lock`, `.python-version`, etc.)
-- **Files preserved** (`requirements.txt`, `environment.yml`)
-- **System prerequisites** that must be installed outside uv (with install commands per OS where known)
-- **Post-install steps** (model downloads, etc.) the user must run after `uv sync`
-- **Warnings** — anything that didn't translate cleanly
-- **Quick start** for new contributors:
-  ```bash
-  uv sync
-  uv run <whatever the README's entrypoint was>
-  ```
-
-Place `UV_SETUP.md` in the project root.
-
-### Update CLAUDE.md (conditionally)
-
-Update `CLAUDE.md` (or create a minimal one) **only if** any of these hold:
-
-- The project is one a Claude Code agent will likely work in repeatedly (the user is actively developing it).
-- The original README directs users to non-uv commands (`pip install`, `conda activate`) that an agent might mistakenly follow.
-- There are post-install gotchas an agent needs to know (e.g., "always run via `uv run`, never `python` directly").
-
-When updating, add a focused section:
-
-```markdown
-## Python environment
-
-This project uses `uv` for environment management. See `UV_SETUP.md` for migration details.
-
-- Run anything Python-related via `uv run` (e.g., `uv run pytest`, `uv run python script.py`).
-- Add deps with `uv add <pkg>`, never `pip install`.
-- The lockfile is `uv.lock` — commit it.
-- System prerequisites are listed in UV_SETUP.md and must be installed manually.
-```
-
-If `CLAUDE.md` already exists, append a section rather than overwriting. If the user said "don't touch CLAUDE.md", skip this step.
-
-## Warnings: what uv can't own
-
-The skill's most important output. Anything uv can't **own** becomes a documented prerequisite, never a silent gap. `references/warnings.md` is the catalog — read it before Phase 2 so the warnings land in the plan. The nine categories:
-
-conda-only packages · system libraries · GPU/accelerator stacks · compiler toolchains · editable sibling repos · private/git+ssh indexes · post-install model/data downloads · non-Python runtimes · platform-specific deps
-
-For each, the UV_SETUP.md entry answers three things: **what** is needed, **why** uv can't own it, **how** to install it.
+Fill in `assets/UV_SETUP.template.md` and write it to the project root as `UV_SETUP.md`. Done when no `{{placeholder}}` remains — and every warning surfaced in Phase 2 appears in it.
 
 ## Style
 
 - Be concrete in UV_SETUP.md: paste the exact `uv` commands you ran. The user should be able to re-derive your work.
-- Don't claim a project is fully reproducible via `uv sync` if there are system prereqs — be honest about what's needed outside uv.
 - If the README is ambiguous, prefer the more conservative interpretation (more warnings, not fewer).
 - Use the `astral:uv` skill (`uv` skill from the Astral plugin) for general uv usage questions — this skill focuses on the migration workflow, not uv fundamentals.
