@@ -3,6 +3,11 @@ return {
   {
     "OXY2DEV/markview.nvim",
     lazy = false, -- markview.nvim lazy loads itself
+    opts = {
+      preview = {
+        hybrid_modes = { "n" },
+      },
+    },
   },
 
   {
