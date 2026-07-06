@@ -18,7 +18,7 @@ opt.number = true
 opt.pumblend = 10
 opt.pumheight = 10
 opt.relativenumber = true
-opt.scrolloff = 8
+opt.scrolloff = 5
 opt.sessionoptions = "blank,buffers,curdir,folds,globals,help,localoptions,skiprtp,tabpages,terminal,winpos,winsize"
 opt.shortmess:append("I")
 opt.sidescrolloff = 8
