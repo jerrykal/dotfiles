@@ -68,7 +68,6 @@
   "enabledPlugins": {
     "astral@astral-sh": true,
     "context-mode@context-mode": true,
-    "ponytail@ponytail": true,
     "superpowers@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
@@ -83,12 +82,6 @@
       "source": {
         "source": "github",
         "repo": "mksglu/context-mode"
-      }
-    },
-    "ponytail": {
-      "source": {
-        "source": "github",
-        "repo": "DietrichGebert/ponytail"
       }
     }
   },

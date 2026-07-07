@@ -11,7 +11,7 @@ fi
 mapfile -t selection < <(
   sesh list --icons | fzf --tmux=80%,70% \
     --multi \
-    --no-sort --ansi --border-label ' Sessions ' --prompt '> ' \
+    --no-sort --ansi --border-label " Sessions (${USER}@${HOSTNAME}) " --prompt '> ' \
     --expect=alt-enter \
     --accept-nth 2.. \
     --bind 'ctrl-x:execute-silent(bash -c '\''for target in "$@"; do tmux kill-session -t "=$target"; done'\'' _ {+2..})+reload(sesh list --icons)' \
