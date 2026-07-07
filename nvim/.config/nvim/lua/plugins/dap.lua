@@ -40,6 +40,7 @@ return {
       { "<leader>dP", function() require("dap").pause() end, desc = "Pause" },
       { "<leader>ds", function() require("dap").session() end, desc = "Session" },
       { "<leader>dt", function() require("dap").terminate() end, desc = "Terminate" },
+      { "<leader>df", function() require("dap").focus_frame() end, desc = "Jump to Current Frame" },
       { "<leader>dh", function() require("dap.ui.widgets").hover() end, desc = "DAP Hover", mode = { "n", "v" } },
       { "<down>", function() require("dap").step_over() end, desc = "Step Over" },
       { "<right>", function() require("dap").step_into() end, desc = "Step Into" },
@@ -55,6 +56,7 @@ return {
     lazy = false,
     opts = {
       winbar = {
+        sections = { "watches", "scopes", "exceptions", "breakpoints", "threads", "repl", "console" },
         show_keymap_hints = false,
       },
       windows = {

@@ -245,7 +245,20 @@ return {
         callback = function()
           local persist = require("util.toggle_persist").wrap
           persist(Snacks.toggle.option("wrap", { name = "Wrap" })):map("<leader>uw")
-          persist(Snacks.toggle.inlay_hints()):map("<leader>uh")
+          -- Global variant of Snacks.toggle.inlay_hints(), which is buffer-local
+          -- and therefore can't be persisted. lsp.lua's attach hook checks
+          -- vim.g.inlay_hints before enabling hints on new buffers.
+          persist(Snacks.toggle({
+            id = "inlay_hints",
+            name = "Inlay Hints",
+            get = function()
+              return vim.g.inlay_hints ~= false
+            end,
+            set = function(state)
+              vim.g.inlay_hints = state
+              vim.lsp.inlay_hint.enable(state)
+            end,
+          })):map("<leader>uh")
           persist(Snacks.toggle.diagnostics()):map("<leader>ud")
           persist(Snacks.toggle({
             name = "Format on Save",

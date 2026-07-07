@@ -40,7 +40,8 @@ return {
       -- Inlay hints
       Snacks.util.lsp.on({ method = "textDocument/inlayHint" }, function(bufnr)
         if
-          vim.api.nvim_buf_is_valid(bufnr)
+          vim.g.inlay_hints ~= false -- <leader>uh toggle, persisted per-workspace
+          and vim.api.nvim_buf_is_valid(bufnr)
           and vim.bo[bufnr].buftype == ""
           and not vim.tbl_contains(opts.inlay_hints.exclude, vim.bo[bufnr].filetype)
         then
