@@ -67,8 +67,7 @@
   },
   "enabledPlugins": {
     "astral@astral-sh": true,
-    "context-mode@context-mode": true,
-    "superpowers@claude-plugins-official": true
+    "context-mode@context-mode": true
   },
   "extraKnownMarketplaces": {
     "astral-sh": {
