@@ -19,5 +19,12 @@ match=$(tmux list-panes -F '#{pane_current_command} #{pane_id}' |
 if [[ -n "$match" ]]; then
   tmux select-pane -t "$match"
 else
-  tmux split-window -h -l 40% -c "$path" claude
+  # Claude pane takes whatever main-pane-width leaves over.
+  main=$(tmux show-options -gwv main-pane-width)
+  if [[ "$main" == *% ]]; then
+    width="$((100 - ${main%\%}))%"
+  else
+    width=$(($(tmux display-message -p '#{window_width}') - main))
+  fi
+  tmux split-window -h -l "$width" -c "$path" claude
 fi
