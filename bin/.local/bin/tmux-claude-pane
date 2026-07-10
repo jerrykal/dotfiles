@@ -19,12 +19,6 @@ match=$(tmux list-panes -F '#{pane_current_command} #{pane_id}' |
 if [[ -n "$match" ]]; then
   tmux select-pane -t "$match"
 else
-  # Claude pane takes whatever main-pane-width leaves over.
-  main=$(tmux show-options -gwv main-pane-width)
-  if [[ "$main" == *% ]]; then
-    width="$((100 - ${main%\%}))%"
-  else
-    width=$(($(tmux display-message -p '#{window_width}') - main))
-  fi
-  tmux split-window -h -l "$width" -c "$path" claude
+  # Launch via a login fish so mise-managed runtimes are on claude's PATH.
+  tmux split-window -h -l 35% -c "$path" "fish -lc 'exec claude'"
 fi
