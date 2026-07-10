@@ -10,7 +10,7 @@
   "permissions": {
     "defaultMode": "auto"
   },
-  "model": "claude-fable-5[1m]",
+  "model": "fable",
   "hooks": {
     "Notification": [
       {
@@ -87,10 +87,10 @@
   },
   "spinnerTipsEnabled": false,
   "effortLevel": "high",
+  "awaySummaryEnabled": false,
   "tui": "fullscreen",
   "theme": "custom:rose-pine",
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
-  "skipAutoPermissionPrompt": true,
-  "awaySummaryEnabled": false
+  "skipAutoPermissionPrompt": true
 }

@@ -43,10 +43,6 @@ abbr -a gbd git branch -d
 # Lazygit
 type -q lazygit; and abbr -a lg lazygit
 
-# python
-abbr -a py python
-abbr -a --set-cursor tsb tensorboard --logdir=%
-
 # uv
 if type -q uv
     abbr -a uvi uv init
@@ -56,11 +52,6 @@ if type -q uv
     abbr -a uvr uv run
     abbr -a av source .venv/bin/activate.fish
     abbr -a da deactivate
-end
-
-# pi
-if type -q pi
-    abbr -a p pi
 end
 
 # claude-code
