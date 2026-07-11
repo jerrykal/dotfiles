@@ -2,10 +2,17 @@ git:
   pagers:
     - colorArg: always
       pager: delta --paging=never
+os:
+  editPreset: nvim
+update:
+  method: never
+promptToReturnFromSubprocess: false
 gui:
   nerdFontsVersion: "3"
   border: single
-  sidePanelWidth: 0.2
+  showDivergenceFromBaseBranch: arrowAndNumber
+  showNumstatInFilesView: true
+  expandFocusedSidePanel: true
   theme:
     activeBorderColor:
       - "#31748f"
