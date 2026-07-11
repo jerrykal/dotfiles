@@ -295,3 +295,8 @@ mise.*.local.toml
 mise.local.toml
 .mise/*.local.toml
 mise/*.local.toml
+
+# Playwright
+.playwright-cli/
+.playwright-mcp/
+.playwright/
