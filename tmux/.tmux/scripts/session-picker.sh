@@ -8,10 +8,13 @@ if [[ -n "${1:-}" ]]; then
   exit 0
 fi
 
+border_label=" Sessions "
+[[ -z "${TMUX:-}" ]] && border_label=" Sessions (${USER}@${HOSTNAME}) "
+
 mapfile -t selection < <(
   sesh list --icons | fzf --tmux=80%,70% \
     --multi \
-    --no-sort --ansi --border-label " Sessions (${USER}@${HOSTNAME}) " --prompt '> ' \
+    --no-sort --ansi --border-label "$border_label" --prompt '> ' \
     --expect=alt-enter \
     --accept-nth 2.. \
     --bind 'ctrl-x:execute-silent(bash -c '\''for target in "$@"; do tmux kill-session -t "=$target"; done'\'' _ {+2..})+reload(sesh list --icons)' \

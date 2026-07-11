@@ -4,9 +4,7 @@
 # active pane; split a new claude pane on the right if none exists.
 path="$1"
 
-# macOS reports claude's executable as its version number (e.g. "2.1.206").
-pattern='^claude$'
-[[ "$(uname)" == "Darwin" ]] && pattern='^(claude|[0-9]+\.[0-9]+\.[0-9]+)$'
+source "$(dirname "${BASH_SOURCE[0]}")/claude-pattern.sh"
 
 if [[ "$(tmux display-message -p '#{pane_current_command}')" =~ $pattern ]]; then
   tmux last-pane
