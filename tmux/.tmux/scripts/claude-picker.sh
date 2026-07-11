@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 # Pick a claude pane with fzf and jump to it. Tab toggles between panes of
-# the launching session (default) and all sessions.
+# the launching session (default) and all sessions. Ctrl-x kills the
+# selected pane.
 # Usage: claude-picker.sh [--all]  (start in all-sessions scope; default current)
 
 max_height=15
@@ -57,13 +58,23 @@ while :; do
     fzf --tmux="$width,$height" <<<"$entries" \
       --no-sort --ansi --border-label " Claude panes ($scope) " --prompt '> ' \
       --delimiter '\t' --with-nth 2.. --accept-nth 1 \
-      --expect=tab \
+      --expect=tab,ctrl-x \
       --bind 'focus:execute-silent(tmux switch-client -t {1})'
   )
 
   if [[ "${out[0]:-}" == tab ]]; then
     [[ "$scope" == current ]] && scope=all || scope=current
     entries=$(list_panes "$scope")
+    continue
+  fi
+
+  if [[ "${out[0]:-}" == ctrl-x ]]; then
+    [[ -n "${out[1]:-}" ]] && tmux kill-pane -t "${out[1]}"
+    entries=$(list_panes "$scope")
+    if [[ -z "$entries" ]]; then
+      tmux switch-client -t "$orig" 2>/dev/null
+      exit 0
+    fi
     continue
   fi
 

@@ -15,7 +15,7 @@ gui:
   expandFocusedSidePanel: true
   theme:
     activeBorderColor:
-      - "#c4a7e7"
+      - "#31748f"
       - bold
     inactiveBorderColor:
       - "#524f67"

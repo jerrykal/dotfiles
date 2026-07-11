@@ -18,5 +18,5 @@ if [[ -n "$match" ]]; then
   tmux select-pane -t "$match"
 else
   # Launch via a login fish so mise-managed runtimes are on claude's PATH.
-  tmux split-window -h -l 35% -c "$path" "fish -lc 'exec claude'"
+  tmux split-window -h -l 30% -c "$path" "fish -lc 'exec claude'"
 fi

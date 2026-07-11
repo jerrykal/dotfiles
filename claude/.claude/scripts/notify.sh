@@ -22,6 +22,13 @@ if [ -z "$TMUX" ]; then
   exit 0
 fi
 
+# Ring a bell inside the pane so tmux raises a bell alert on its window
+# (monitor-bell flag / bell-style). Writing to the hook's stdout wouldn't do —
+# hook output is captured by Claude Code, not the pane — so write straight to
+# the pane's pty, where tmux sees the BEL and flags the window.
+pane_tty=$(tmux display-message -pt "$TMUX_PANE" '#{pane_tty}' 2>/dev/null)
+[ -n "$pane_tty" ] && printf '\a' >"$pane_tty" 2>/dev/null
+
 # Window holding the pane that triggered this hook, plus a human-readable
 # "session:index name" tag so the notification says where it came from.
 my_window=$(tmux display-message -pt "$TMUX_PANE" '#{window_id}' 2>/dev/null)
