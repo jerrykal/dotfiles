@@ -26,6 +26,8 @@
 [delta]
 	navigate = true
 	line-numbers = true
+	dark = true
+	relative-paths = true
 	syntax-theme = rose-pine
 	features = rose-pine
 
@@ -41,6 +43,25 @@
   plus-empty-line-marker-style  = syntax "#2D323F"
   line-numbers-plus-style       = "#9ccfd8"
   line-numbers-zero-style       = "#6e6a86"
+  line-numbers-left-style       = "#403d52"
+  line-numbers-right-style      = "#403d52"
+  zero-style                    = syntax
+  file-style                    = bold "#6e6a86"
+  file-decoration-style         = "#6e6a86" ul
+  hunk-header-style             = file line-number syntax
+  hunk-header-decoration-style  = "#403d52" box
+  hunk-header-file-style        = "#6e6a86"
+  hunk-header-line-number-style = "#908caa"
+  commit-style                  = bold "#f6c177"
+  commit-decoration-style       = "#f6c177" box
+  whitespace-error-style        = reverse "#eb6f92"
+  blame-palette                 = "#191724 #1f1d2e #26233a"
+  merge-conflict-ours-diff-header-style   = bold "#f6c177"
+  merge-conflict-theirs-diff-header-style = bold "#ebbcba"
+  map-styles = bold purple => syntax "#2a273f", bold blue => syntax "#2a283e", bold cyan => syntax "#28324a", bold yellow => syntax "#26233a"
+
+[diff]
+	colorMoved = default
 
 [merge]
 	conflictStyle = zdiff3
