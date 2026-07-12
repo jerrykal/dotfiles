@@ -22,7 +22,7 @@ return {
 
   {
     "conform.nvim",
-    opt = {
+    opts = {
       formatters_by_ft = {
         sh = { "shfmt" },
       },

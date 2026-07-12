@@ -30,4 +30,19 @@ require("lazy").setup({
   install = {
     colorscheme = { "rose-pine" },
   },
+  rocks = {
+    enabled = false,
+  },
+  performance = {
+    rtp = {
+      disabled_plugins = {
+        "gzip",
+        "netrwPlugin",
+        "tarPlugin",
+        "tohtml",
+        "tutor",
+        "zipPlugin",
+      },
+    },
+  },
 })

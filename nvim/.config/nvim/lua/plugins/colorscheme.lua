@@ -22,9 +22,6 @@ return {
         WinBar = { link = "Normal" },
         WinBarNC = { link = "Normal" },
 
-        -- nvim-treesitter/nvim-treesitter-context
-        TreesitterContextLineNumber = { link = "LineNr" },
-
         -- folke/snacks.nvim
         SnacksIndent = { fg = "highlight_med" },
         SnacksIndentChunk = { fg = "highlight_med" },

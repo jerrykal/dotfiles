@@ -32,7 +32,15 @@ return {
             },
           },
         },
-        stylua = {},
+      },
+    },
+  },
+
+  {
+    "mason.nvim",
+    opts = {
+      ensure_installed = {
+        "stylua",
       },
     },
   },

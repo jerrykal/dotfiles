@@ -10,8 +10,6 @@ local enabled = {
   "mini.surround",
   "nvim-treesitter",
   "nvim-treesitter-textobjects",
-  "tabout.nvim",
-  "treesj",
   "yanky.nvim",
 }
 

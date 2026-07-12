@@ -103,7 +103,6 @@ return {
   {
     "folke/todo-comments.nvim",
     event = "LazyFile",
-    dependencies = { "nvim-lua/plenary.nvim" },
     opts = {},
     -- stylua: ignore
     keys = {
@@ -381,27 +380,77 @@ return {
     },
   },
 
-  -- Find and replace across multiple files with live preview
+  -- Lightweight session management
   {
-    "MagicDuck/grug-far.nvim",
-    opts = { headerMaxWidth = 80 },
-    cmd = { "GrugFar", "GrugFarWithin" },
+    "folke/persistence.nvim",
+    event = "BufReadPre",
+    opts = {},
+    config = function(_, opts)
+      require("persistence").setup(opts)
+
+      local function save_breakpoints()
+        -- requiring "dap.breakpoints" would lazy-load the whole DAP stack
+        -- (incl. mason + registry refresh) on every session save
+        if not package.loaded.dap then
+          return
+        end
+        local ok, breakpoints = pcall(require, "dap.breakpoints")
+        if not ok or not breakpoints then
+          return
+        end
+
+        local bps = {}
+        for bufnr, buf_bps in pairs(breakpoints.get()) do
+          local fname = vim.api.nvim_buf_get_name(bufnr)
+          bps[fname] = buf_bps
+        end
+        vim.g.BREAKPOINTS = bps
+      end
+
+      local function load_breakpoints()
+        if not vim.g.BREAKPOINTS or vim.tbl_isempty(vim.g.BREAKPOINTS) then
+          return
+        end
+        local ok, breakpoints = pcall(require, "dap.breakpoints")
+        if not ok or not breakpoints then
+          return
+        end
+
+        for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+          local fname = vim.api.nvim_buf_get_name(buf)
+          local buf_bps = vim.g.BREAKPOINTS[fname]
+          if buf_bps ~= nil then
+            for _, bp in pairs(buf_bps) do
+              local line = bp.line
+              local bp_opts = {
+                condition = bp.condition,
+                log_message = bp.logMessage,
+                hit_condition = bp.hitCondition,
+              }
+              breakpoints.set(bp_opts, vim.fn.bufnr(buf), line)
+            end
+          end
+        end
+      end
+
+      local augroup = vim.api.nvim_create_augroup("persist-breakpoints", { clear = true })
+      vim.api.nvim_create_autocmd("User", {
+        group = augroup,
+        pattern = "PersistenceSavePre",
+        callback = save_breakpoints,
+      })
+      vim.api.nvim_create_autocmd("User", {
+        group = augroup,
+        pattern = "PersistenceLoadPost",
+        callback = load_breakpoints,
+      })
+    end,
+    -- stylua: ignore
     keys = {
-      {
-        "<leader>sr",
-        function()
-          local grug = require("grug-far")
-          local ext = vim.bo.buftype == "" and vim.fn.expand("%:e")
-          grug.open({
-            transient = true,
-            prefills = {
-              filesFilter = ext and ext ~= "" and "*." .. ext or nil,
-            },
-          })
-        end,
-        mode = { "n", "x" },
-        desc = "Search and Replace",
-      },
+      { "<leader>qs", function() require("persistence").load() end, desc = "Restore Session" },
+      { "<leader>qS", function() require("persistence").select() end,desc = "Select Session" },
+      { "<leader>ql", function() require("persistence").load({ last = true }) end, desc = "Restore Last Session" },
+      { "<leader>qd", function() require("persistence").stop() end, desc = "Don't Save Current Session" },
     },
   },
 }

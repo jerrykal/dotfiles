@@ -7,11 +7,10 @@ return {
     lazy = false,
     build = ":TSUpdate",
     opts_extend = {
-      "indent",
+      "indent.disable",
       "highlight.disable",
       "folds.disable",
       "ensure_installed",
-      "ensure_installed.disable",
     },
     opts = {
       indent = {

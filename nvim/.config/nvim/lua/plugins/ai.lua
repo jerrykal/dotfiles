@@ -12,15 +12,15 @@ return {
       },
     },
     keys = {
-      { "<leader>a", "<cmd>ClaudeCodeAdd %<cr>", desc = "Add current buffer" },
+      { "<M-a>", "<cmd>ClaudeCodeAdd %<cr>", desc = "Add current buffer" },
       {
-        "<leader>a",
+        "<M-a>",
         "<cmd>ClaudeCodeTreeAdd<cr>",
         desc = "Add file",
         ft = { "NvimTree", "neo-tree", "oil", "minifiles", "netrw", "snacks_picker_list" },
       },
       {
-        "<leader>a",
+        "<M-a>",
         function()
           local s, e = vim.fn.line("v"), vim.fn.line(".")
           if s > e then

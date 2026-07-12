@@ -14,7 +14,6 @@ return {
   {
     "rachartier/tiny-inline-diagnostic.nvim",
     event = "LazyFile",
-    priority = 1000,
     opts = {
       preset = "powerline",
       options = {
@@ -38,7 +37,25 @@ return {
   -- LSP progress notifications in the corner of the editor
   {
     "j-hui/fidget.nvim",
-    lazy = false,
+    event = "LspAttach",
     opts = {},
+  },
+
+  -- Winbar breadcrumbs showing the current code context via LSP
+  {
+    "SmiteshP/nvim-navic",
+    event = "LspAttach",
+    opts = {
+      icons = require("util.kind_icons").get(true),
+      highlight = true,
+      separator = "  ",
+      lsp = {
+        auto_attach = true,
+      },
+    },
+    config = function(_, opts)
+      require("nvim-navic").setup(opts)
+      vim.o.winbar = "  %{%v:lua.require'nvim-navic'.get_location()%}"
+    end,
   },
 }

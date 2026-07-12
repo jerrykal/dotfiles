@@ -49,23 +49,29 @@ return {
         end
       end)
 
-      -- Truncate inlay_hints longer than 20 characters
+      -- Truncate inlay hints longer than 20 characters
       local orig = vim.lsp.handlers["textDocument/inlayHint"]
       vim.lsp.handlers["textDocument/inlayHint"] = function(err, result, ctx)
         if err or not result then
           return orig(err, result, ctx)
         end
 
+        local max_len = 20
         for _, hint in ipairs(result) do
-          if hint.label then
-            local max_len = 20
-            local label = type(hint.label) == "string" and hint.label or hint.label.value or ""
-            if #label > max_len then
-              if label:sub(-1) == "=" then
-                hint.label = label:sub(1, max_len - 3) .. "… ="
-              else
-                hint.label = label:sub(1, max_len - 2) .. "… "
-              end
+          local label = hint.label
+          -- label is string | InlayHintLabelPart[]
+          if type(label) ~= "string" then
+            local parts = {}
+            for _, part in ipairs(label or {}) do
+              parts[#parts + 1] = part.value or ""
+            end
+            label = table.concat(parts)
+          end
+          if #label > max_len then
+            if label:sub(-1) == "=" then
+              hint.label = label:sub(1, max_len - 3) .. "… ="
+            else
+              hint.label = label:sub(1, max_len - 2) .. "… "
             end
           end
         end
@@ -118,23 +124,6 @@ return {
       { "<leader>cr", mode = { "n", "x" }, vim.lsp.codelens.run , desc = "Run Codelens"},
       { "<leader>cR", mode = { "n", "x" }, vim.lsp.codelens.refresh , desc = "Refresh & Display Codelens"},
     },
-  },
-
-  {
-    "SmiteshP/nvim-navic",
-    dependencies = { "nvim-lspconfig" },
-    opts = {
-      icons = require("util.kind_icons").get(true),
-      highlight = true,
-      separator = "  ",
-      lsp = {
-        auto_attach = true,
-      },
-    },
-    config = function(_, opts)
-      require("nvim-navic").setup(opts)
-      vim.o.winbar = "  %{%v:lua.require'nvim-navic'.get_location()%}"
-    end,
   },
 
   -- Package manager for LSP servers, DAP adapters, linters and formatters

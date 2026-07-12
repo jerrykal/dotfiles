@@ -51,7 +51,6 @@ return {
   -- Yank history management with ring buffer and picker integration
   {
     "gbprod/yanky.nvim",
-    dependencies = { "snacks.nvim" },
     event = "LazyFile",
     opts = {
       ring = {
