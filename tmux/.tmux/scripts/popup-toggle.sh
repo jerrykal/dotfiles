@@ -7,10 +7,11 @@
 #                     [command...]
 #        popup-toggle.sh --gc
 #
-#   -s pane|window|session|cwd|global   scope (default: session). A scoped
-#      popup lives as long as its owner: when the owner pane/window/session
-#      closes, the popup session is killed by --gc (wired to hooks in
-#      tmux.conf). "cwd" popups are shared by all panes in the same working
+#   -s pane|window|session|server|cwd|global   scope (default: session). A
+#      scoped popup lives as long as its owner: when the owner pane/window/
+#      session closes, the popup session is killed by --gc (wired to hooks in
+#      tmux.conf). "server" popups are shared by every session and die with
+#      the server. "cwd" popups are shared by all panes in the same working
 #      directory and live while any pane still has that cwd. "global" popups
 #      are shared everywhere and never GC'd.
 #   -n name    popup name, allows several popups per scope (default: scratch)
@@ -27,8 +28,9 @@ pt() { tmux -L "$SOCKET" "$@"; }
 # Session names can't contain '.' or ':', so cwd owners are a hash of the path.
 hash_dir() { cksum <<<"$1" | cut -d' ' -f1; }
 
-# Popup session name wire format: <scope initial><owner>-<name>
-sname_encode() { printf '%s%s-%s' "${1:0:1}" "$2" "${3//[.:]/_}"; }
+# Popup session name wire format: <scope char><owner>-<name>. Chars are the
+# scope initials, except server is "v" since "s" is session's.
+sname_encode() { printf '%s%s-%s' "$1" "$2" "${3//[.:]/_}"; }
 sname_owner() {
   local o=${1:1}
   printf '%s' "${o%%-*}"
@@ -36,28 +38,45 @@ sname_owner() {
 
 # Live owner ids per scope initial, one per line; must produce the same
 # strings as the owner construction in main below. pane/window/session owners
-# embed the main server's pid: a restarted server reuses pane/window/session
-# ids, so popups from a dead server must never match the new owners. cwd
-# owners are pid-less path hashes — a directory's identity survives restarts.
+# embed the main server's pid (the server owner is the pid): a restarted
+# server reuses pane/window/session ids, so popups from a dead server must
+# never match the new owners. cwd owners are pid-less path hashes — a
+# directory's identity survives restarts. On a sessionless or dead main
+# server these fail; that means "no owners", not an error.
 alive_ids() {
   case $1 in
   p) tmux list-panes -a -F '#{pid}_#{pane_id}' ;;
   w) tmux list-windows -a -F '#{pid}_#{window_id}' ;;
   s) tmux list-sessions -F '#{pid}_#{session_id}' ;;
+  v) tmux list-sessions -F '#{pid}' ;;
   c) tmux list-panes -a -F '#{pane_current_path}' | sort -u |
     while IFS= read -r p; do hash_dir "$p"; done ;;
-  esac
+  esac 2>/dev/null || true
+}
+
+# cwd popups may only be swept while the main server is up, else they'd never
+# survive a restart. A sessionless server is ambiguous: closing the last
+# window leaves the server idling until this very hook job exits, while
+# kill-server takes it down despite us — wait a beat to tell them apart.
+main_alive() {
+  local out
+  out=$(tmux list-sessions -F x 2>/dev/null) || return 1
+  [[ -n $out ]] && return 0
+  sleep 0.5
+  tmux list-sessions &>/dev/null
 }
 
 gc() {
-  local sessions s prefix
+  local sessions s prefix sweep_cwd=1
   local -A alive=()
   sessions=$(pt list-sessions -F '#{session_name}' 2>/dev/null) || return 0
+  main_alive || sweep_cwd=0
   while IFS= read -r s; do
     case $s in
-    [pwsc][0-9]*) prefix=${s:0:1} ;;
+    [pwsvc][0-9]*) prefix=${s:0:1} ;;
     *) continue ;;
     esac
+    [[ $prefix == c && $sweep_cwd == 0 ]] && continue
     [[ -v alive[$prefix] ]] || alive[$prefix]=$(alive_ids "$prefix")
     grep -qxF "$(sname_owner "$s")" <<<"${alive[$prefix]}" ||
       pt kill-session -t "=$s" 2>/dev/null || true
@@ -85,7 +104,7 @@ while getopts :s:n:w:h:k: opt; do
   h) height=$OPTARG ;;
   k) key=$OPTARG ;;
   *)
-    echo "usage: popup-toggle.sh [-s pane|window|session|cwd|global] [-n name] [-w width] [-h height] [-k key] [command...]" >&2
+    echo "usage: popup-toggle.sh [-s pane|window|session|server|cwd|global] [-n name] [-w width] [-h height] [-k key] [command...]" >&2
     exit 1
     ;;
   esac
@@ -96,17 +115,18 @@ shift $((OPTIND - 1))
 IFS=' ' read -r srv sess win pane cwd \
   < <(tmux display-message -p '#{pid} #{session_id} #{window_id} #{pane_id} #{pane_current_path}')
 case $scope in
-pane) owner="${srv}_${pane}" ;;
-window) owner="${srv}_${win}" ;;
-session) owner="${srv}_${sess}" ;;
-cwd) owner=$(hash_dir "$cwd") ;;
-global) owner="" ;;
+pane) sc=p owner="${srv}_${pane}" ;;
+window) sc=w owner="${srv}_${win}" ;;
+session) sc=s owner="${srv}_${sess}" ;;
+server) sc=v owner="$srv" ;;
+cwd) sc=c owner=$(hash_dir "$cwd") ;;
+global) sc=g owner="" ;;
 *)
-  echo "popup-toggle.sh: bad scope '$scope' (pane|window|session|cwd|global)" >&2
+  echo "popup-toggle.sh: bad scope '$scope' (pane|window|session|server|cwd|global)" >&2
   exit 1
   ;;
 esac
-sname=$(sname_encode "$scope" "$owner" "$name")
+sname=$(sname_encode "$sc" "$owner" "$name")
 
 gc # sweep orphans on every toggle too, in case a hook was missed
 
@@ -117,5 +137,5 @@ if [[ -n "$key" ]]; then
   pt bind-key -n "$key" detach-client
 fi
 
-exec tmux display-popup -w "$width" -h "$height" -T " $name [$scope] " -E -- \
+exec tmux display-popup -w "$width" -h "$height" -T " $name " -E -- \
   tmux -L "$SOCKET" new-session -A -s "$sname" -c "$cwd" "$@"
