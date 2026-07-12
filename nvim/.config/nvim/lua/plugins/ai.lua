@@ -27,6 +27,7 @@ return {
             s, e = e, s
           end
           vim.cmd(("ClaudeCodeAdd %% %d %d"):format(s, e))
+          vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", false)
         end,
         mode = "v",
         desc = "Send selection to Claude",
