@@ -134,7 +134,7 @@ gc # sweep orphans on every toggle too, in case a hook was missed
 # exit-empty off so the server (and the binding below) outlives its sessions.
 pt -f "$POPUP_CONF" start-server
 if [[ -n "$key" ]]; then
-  pt bind-key -n "$key" detach-client
+  pt bind-key -n "$key" detach-client -s "=$sname"
 fi
 
 exec tmux display-popup -w "$width" -h "$height" -T " $name " -E -- \
