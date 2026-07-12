@@ -58,6 +58,9 @@ return {
         show_keymap_hints = false,
       },
       windows = {
+        size = function(pos)
+          return pos == "right" and 0.35 or 0.25
+        end,
         terminal = {
           position = "right",
         },
@@ -71,6 +74,17 @@ return {
     keys = {
       { "<leader>du", "<cmd>DapViewToggle!<cr>", desc = "Toggle Dap View" },
       { "<leader>dw", "<cmd>DapViewWatch<cr>", desc = "Add to Watch", mode = { "n", "x" } },
+      {
+        "<leader>dv",
+        function()
+          local windows = require("dap-view.setup").config.windows
+          windows.position = windows.position == "below" and "right" or "below"
+          if require("dap-view.util").is_win_valid(require("dap-view.state").winnr) then
+            require("dap-view").open(true)
+          end
+        end,
+        desc = "Toggle Dap View Position (Bottom/Right)",
+      },
     },
   },
 
@@ -84,6 +98,14 @@ return {
       handlers = {},
       ensure_installed = {},
     },
+  },
+
+  -- Syntax highlighting in the DAP REPL using treesitter
+  -- Must be set up before treesitter installs parsers, so dap_repl is registered
+  {
+    "nvim-treesitter",
+    dependencies = { { "LiadOz/nvim-dap-repl-highlights", opts = {} } },
+    opts = { ensure_installed = { "dap_repl" } },
   },
 
   -- Autocompletion source for DAP REPL using blink.cmp
