@@ -215,7 +215,6 @@ return {
       { "<leader>su", function() Snacks.picker.undo() end, desc = "Undo History" },
 
       -- Git
-      { "<leader>gg", function() Snacks.lazygit() end, desc = "Lazygit", },
       { "<leader>gB", function() Snacks.gitbrowse() end, desc = "Git Browse", mode = { "n", "v" } },
 
       -- Others
