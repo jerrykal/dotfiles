@@ -2,9 +2,11 @@
 _.file = ".env"
 
 [tools]
+"npm:@playwright/cli" = "latest"
+"npm:hunkdiff" = "latest"
 bun = "latest"
 go = "latest"
 node = "latest"
 npm = "latest"
-"npm:@playwright/cli" = "latest"
 rust = "latest"
+uv = "latest"

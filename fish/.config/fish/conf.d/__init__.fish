@@ -1,3 +1,12 @@
+# Activate mise here so mise-managed tools are on PATH before other conf.d
+# snippets run. Homebrew's vendor mise-activate.fish sorts too late (conf.d is
+# sourced in filename order), so its auto-activation is disabled to avoid a
+# redundant second run.
+if type -q mise
+    set -gx MISE_FISH_AUTO_ACTIVATE 0
+    mise activate fish | source
+end
+
 # Setup alternative install path for fisher plugins
 set -gx fisher_path $__fish_config_dir/fisher
 
