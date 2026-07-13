@@ -30,7 +30,7 @@ Run in order; each ✓ gate holds before moving on:
 1. **Stage** what belongs in this commit (see *What to commit*). ✓ `git diff --cached` shows exactly this change, nothing unrelated.
 2. **Inspect** the staged diff and `git log -20`. ✓ the message mirrors the scopes, casing, and vocabulary already in the log.
 3. **Draft** the message (see *Writing the message*).
-4. **Approve**: present the full proposed message through `AskUserQuestion` (options like "Commit as proposed" / "Edit" / "Cancel", full message in an option's `description` so the user sees exactly what they approve). ✓ the user chose to commit.
+4. **Approve** — only when the invoking skill or user asked for approval: present the full proposed message through `AskUserQuestion` (options like "Commit as proposed" / "Edit" / "Cancel", full message in an option's `description` so the user sees exactly what they approve). ✓ the user chose to commit. Invoked any other way (directly, or committing work you did), commit without asking.
 5. **Commit** with a HEREDOC (below) so multi-line messages survive, then **confirm** with `git status`.
 
 ```bash
