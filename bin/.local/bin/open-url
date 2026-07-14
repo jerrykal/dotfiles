@@ -1,0 +1,43 @@
+#!/bin/sh
+# open-url — open a URL in the browser of the machine you're sitting at.
+#
+# Local session: hands the URL to `open` (macOS) / `xdg-open` (Linux).
+# SSH session:   sends it to 127.0.0.1:$OPEN_URL_PORT, which ssh reverse-
+#                forwards (RemoteForward in ~/.ssh/config) back to the
+#                laptop's launchd listener (local.open-url).
+# --listen:      handler spawned by launchd per connection (inetd-style,
+#                stdin = socket); reads one URL and opens it if http(s).
+
+port="${OPEN_URL_PORT:-41999}"
+
+if [ "${1:-}" = "--listen" ]; then
+    IFS= read -r url || exit 0
+    case $url in
+    http://* | https://*) exec open "$url" ;;
+    *) printf 'open-url: ignoring non-http(s) input: %s\n' "$url" >&2 ;;
+    esac
+    exit 0
+fi
+
+if [ $# -ne 1 ]; then
+    echo "usage: open-url <url>" >&2
+    exit 1
+fi
+url=$1
+
+if [ -n "${SSH_CONNECTION:-}" ]; then
+    if command -v nc >/dev/null 2>&1; then
+        printf '%s\n' "$url" | nc -w 2 127.0.0.1 "$port" 2>/dev/null && exit 0
+    elif command -v bash >/dev/null 2>&1; then
+        bash -c 'printf "%s\n" "$1" > "/dev/tcp/127.0.0.1/$2"' _ "$url" "$port" 2>/dev/null && exit 0
+    fi
+    echo "open-url: no forwarded listener on 127.0.0.1:$port (RemoteForward missing?)" >&2
+fi
+
+if command -v open >/dev/null 2>&1; then
+    exec open "$url"
+elif command -v xdg-open >/dev/null 2>&1; then
+    exec xdg-open "$url"
+fi
+echo "open-url: no way to open '$url' here" >&2
+exit 1

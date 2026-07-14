@@ -19,10 +19,11 @@ home path with the leading package dir stripped:
 | `skills/.agents/skills/teach/SKILL.md` | `~/.agents/skills/teach/SKILL.md` |
 
 Packages: `atuin` `bat` `bin` `btop` `claude` `eza` `fish` `git` `hunk`
-`lazygit` `mise` `nvim` `ruff` `sesh` `shell` `skills` `tmux`.
+`launchd` (macOS-only) `lazygit` `mise` `nvim` `ruff` `sesh` `shell` `skills`
+`tmux`.
 
 Most packages **fold** (the Stow default — the whole dir becomes one symlink).
-The packages in `nofold` (`claude`, `bin`) are stowed with `--no-folding`
+The packages in `nofold` (`claude`, `bin`, `launchd`) are stowed with `--no-folding`
 so the dir stays real and the runtime/generated files those tools drop in (live
 `~/.claude` state) never leak back into the repo.
 
