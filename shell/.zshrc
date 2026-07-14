@@ -1,9 +1,11 @@
 # If not running interactively, don't do anything
 [[ -o interactive ]] || return
 
-# Ghostty quick terminal → global scratchpad (saves on focus lost)
+# Ghostty quick terminal → global scratchpad
 if [[ -n "$GHOSTTY_QUICK_TERMINAL" ]] && command -v nvim >/dev/null 2>&1; then
   exec nvim \
+    -c 'autocmd ColorScheme * hi Normal guibg=NONE | hi NormalNC guibg=NONE | hi EndOfBuffer guibg=NONE' \
+    -c 'doautocmd ColorScheme' \
     -c 'autocmd FocusLost * silent! update' \
     -c 'set laststatus=0 noruler' \
     ~/.scratchpad.md
