@@ -30,6 +30,8 @@ return {
         "c",
         "cpp",
         "diff",
+        "dockerfile",
+        "fish",
         "html",
         "javascript",
         "jsdoc",
@@ -43,6 +45,7 @@ return {
         "python",
         "query",
         "regex",
+        "tmux",
         "toml",
         "tsx",
         "typescript",
@@ -87,13 +90,15 @@ return {
 
           -- Folds
           if enabled("folds", "folds") then
-            vim.opt_local.foldmethod = "expr"
-            vim.opt_local.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+            -- Buffer-scoped window options so fold settings don't leak to
+            -- other buffers later shown in the same window
+            vim.wo[0][0].foldmethod = "expr"
+            vim.wo[0][0].foldexpr = "v:lua.vim.treesitter.foldexpr()"
           end
 
           -- Indent
           if enabled("indent", "indents") then
-            vim.opt_local.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+            vim.bo[ev.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
           end
         end,
       })
