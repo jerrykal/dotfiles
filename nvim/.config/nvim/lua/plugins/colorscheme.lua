@@ -26,7 +26,17 @@ return {
         SnacksIndent = { fg = "highlight_med" },
         SnacksIndentChunk = { fg = "highlight_med" },
         SnacksIndentScope = { fg = "muted" },
-        SnacksPickerBoxBorder = { fg = "surface", bg = "surface" },
+
+        SnacksPicker = { fg = "subtle", bg = "base" },
+        SnacksPickerBorder = { fg = "highlight_med", bg = "base" },
+        SnacksPickerTitle = { fg = "muted", bg = "base" },
+        SnacksPickerPrompt = { fg = "subtle" },
+        SnacksPickerMatch = { fg = "rose", bold = false },
+        SnacksPickerListCursorLine = { bg = "overlay" },
+        SnacksPickerPreviewCursorLine = { bg = "overlay" },
+        SnacksPickerTotals = { fg = "foam" },
+        SnacksPickerSpinner = { fg = "gold" },
+        SnacksPickerSelected = { fg = "love" },
 
         -- lewis6991/gitsigns
         GitSignsAddInline = { bg = "foam", blend = 40 },

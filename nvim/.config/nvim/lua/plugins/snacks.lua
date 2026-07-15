@@ -10,7 +10,28 @@ return {
         replace_netrw = false,
       },
       picker = {
-        prompt = " ",
+        prompt = "> ",
+        -- One outer border, prompt on top, list below, preview right
+        layouts = {
+          custom = {
+            layout = {
+              box = "horizontal",
+              backdrop = false,
+              width = 0.8,
+              height = 0.8,
+              border = "rounded",
+              title = "{title} {live} {flags}",
+              title_pos = "left",
+              {
+                box = "vertical",
+                { win = "input", height = 1, border = "bottom" },
+                { win = "list", border = "none" },
+              },
+              { win = "preview", title = "{preview}", border = "rounded", width = 0.5 },
+            },
+          },
+        },
+        layout = { preset = "custom" },
         sources = {
           directories = {
             title = "Directories",
