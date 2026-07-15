@@ -138,16 +138,6 @@
       "installedAt": "2026-07-11T03:39:38.257Z",
       "updatedAt": "2026-07-11T03:39:38.257Z"
     },
-    "wayfinder": {
-      "source": "mattpocock/skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/mattpocock/skills.git",
-      "skillPath": "skills/engineering/wayfinder/SKILL.md",
-      "skillFolderHash": "83a96a4454c069148d8648fd21ca62a58ac15db2",
-      "pluginName": "mattpocock-skills",
-      "installedAt": "2026-07-13T03:14:52.923Z",
-      "updatedAt": "2026-07-13T03:14:52.923Z"
-    },
     "research": {
       "source": "mattpocock/skills",
       "sourceType": "github",
