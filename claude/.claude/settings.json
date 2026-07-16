@@ -33,41 +33,6 @@
             "type": "command",
             "command": "~/.claude/scripts/notify-stop.sh",
             "async": true
-          },
-          {
-            "type": "command",
-            "command": "~/.claude/scripts/afk.sh hook"
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/scripts/afk.sh hook"
-          }
-        ]
-      }
-    ],
-    "SessionEnd": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/scripts/afk.sh hook"
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/scripts/afk.sh hook"
           }
         ]
       }
