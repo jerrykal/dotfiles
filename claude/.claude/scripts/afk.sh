@@ -148,7 +148,7 @@ No questions; log nontrivial decisions; irreversible steps are log-and-defer." \
           tp=$(jq -r '.transcript_path // empty' <<<"$input")
           if [ -n "$tp" ]; then
             osid=$(basename "$tp" .jsonl)
-            [ "$osid" != "$sid" ] && rm -f "$(flag_f "$osid")"
+            if [ "$osid" != "$sid" ]; then rm -f "$(flag_f "$osid")"; fi
           fi
           ;;
         startup)
@@ -183,6 +183,7 @@ No questions; log nontrivial decisions; irreversible steps are log-and-defer." \
         '{decision:"block",reason:$r}'
       ;;
   esac
+  return 0
 }
 
 case "${1:-}" in
