@@ -2,31 +2,35 @@
 # open-url — open a URL in the browser of the machine you're sitting at.
 #
 # Local session: hands the URL to `open` (macOS) / `xdg-open` (Linux).
-# SSH session:   sends it to $OPEN_URL_SOCK, a per-user Unix socket that ssh
-#                reverse-forwards (RemoteForward in ~/.ssh/config) back to the
-#                laptop's launchd listener (local.open-url). A socket (not a
-#                TCP port) lets multiple concurrent sessions coexist without
-#                the "remote port forwarding failed" warning.
+# SSH session:   sends it to 127.0.0.1:$OPEN_URL_PORT, which ssh reverse-
+#                forwards (RemoteForward in ~/.ssh/config) back to the
+#                laptop's launchd listener (local.open-url).
 # --listen:      handler spawned by launchd per connection (inetd-style,
 #                stdin = socket); reads one URL and opens it if http(s).
 #
 # Manual setup (~/.ssh/config is machine-local, NOT in the dotfiles repo — add
-# this by hand on each client machine you ssh *from*):
+# this by hand on each client machine you ssh *from*; servers need nothing
+# beyond this script):
 #
 #     Host *
 #         # open-url: remote `open-url <url>` opens in this machine's browser.
-#         # A per-user Unix socket (%r = remote user) lets a 2nd+ concurrent
-#         # session re-bind cleanly instead of failing "remote port forwarding
-#         # failed for listen port 41999"; StreamLocalBindUnlink hands the stale
-#         # socket to the newest session. All sessions target the same laptop
-#         # listener, so newest-wins is harmless. Keep the path in sync with
-#         # $OPEN_URL_SOCK below.
-#         RemoteForward /tmp/open-url-%r.sock 127.0.0.1:41999
-#         StreamLocalBindUnlink yes
+#         RemoteForward 41999 127.0.0.1:41999
+#         # Multiplex sessions per host: only the master connection binds the
+#         # forward, so extra concurrent sessions reuse it instead of failing
+#         # "remote port forwarding failed for listen port 41999".
+#         ControlMaster auto
+#         ControlPath ~/.ssh/cm-%C
+#         ControlPersist 4h
+#
+# Why a TCP port and not a Unix socket: sshd never unlinks a stale forwarded
+# socket file unless the *server* sets StreamLocalBindUnlink, so sockets break
+# after any dropped connection; a TCP port frees itself with the connection.
+# Known residual: two different users on the same host at once (e.g. gb200 +
+# gb200-root) still collide — first one wins, the other prints the warning.
 #
 # The laptop end is the launchd listener (local.open-url) on TCP 41999.
 
-sock="${OPEN_URL_SOCK:-/tmp/open-url-$(id -un).sock}"
+port="${OPEN_URL_PORT:-41999}"
 
 if [ "${1:-}" = "--listen" ]; then
     IFS= read -r url || exit 0
@@ -44,21 +48,12 @@ fi
 url=$1
 
 if [ -n "${SSH_CONNECTION:-}" ]; then
-    if [ -S "$sock" ]; then
-        if command -v nc >/dev/null 2>&1 &&
-            printf '%s\n' "$url" | nc -U -w 2 "$sock" 2>/dev/null; then
-            exit 0
-        elif command -v socat >/dev/null 2>&1 &&
-            printf '%s\n' "$url" | socat -t 2 - "UNIX-CONNECT:$sock" 2>/dev/null; then
-            exit 0
-        elif command -v python3 >/dev/null 2>&1 && printf '%s\n' "$url" |
-            python3 -c 'import socket,sys
-s=socket.socket(socket.AF_UNIX); s.connect(sys.argv[1])
-s.sendall(sys.stdin.buffer.read()); s.close()' "$sock" 2>/dev/null; then
-            exit 0
-        fi
+    if command -v nc >/dev/null 2>&1; then
+        printf '%s\n' "$url" | nc -w 2 127.0.0.1 "$port" 2>/dev/null && exit 0
+    elif command -v bash >/dev/null 2>&1; then
+        bash -c 'printf "%s\n" "$1" > "/dev/tcp/127.0.0.1/$2"' _ "$url" "$port" 2>/dev/null && exit 0
     fi
-    echo "open-url: no forwarded listener at $sock (RemoteForward missing?)" >&2
+    echo "open-url: no forwarded listener on 127.0.0.1:$port (RemoteForward missing?)" >&2
 fi
 
 if command -v open >/dev/null 2>&1; then
