@@ -57,6 +57,7 @@ end
 # claude-code
 if type -q claude
     abbr -a c claude
+    abbr -a cr claude -r
     abbr -a ca claude agents
 end
 
