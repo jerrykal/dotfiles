@@ -6,10 +6,12 @@
 #   pls            prompts for a description
 #
 # One headless Claude session per run: the first call converts your intent to
-# a single shell command; refinements resume that session. On accept the
-# command is typed onto your prompt (tmux send-keys) — you still press Enter
-# to run it, so it's editable and lands in shell history. Outside tmux it
-# falls back to the clipboard. Nothing is ever executed by this script.
+# a single shell command; [a]sk resumes that session for follow-ups — ask for
+# an explanation, ask questions, request changes — and each reply may revise
+# the command. On accept the command is typed onto your prompt (tmux
+# send-keys) — you still press Enter to run it, so it's editable and lands in
+# shell history. Outside tmux it falls back to the clipboard. Nothing is ever
+# executed by this script.
 
 set -euo pipefail
 
@@ -59,16 +61,19 @@ first_draft() { # sets $cmd
         --effort "$effort" --tools "" --disable-slash-commands) || die_claude
 }
 
-refine() { # $1 = feedback; sets $cmd
-  cmd=$(printf 'Revise the command per this feedback: %s. Same output rules: only the raw one-line command.' "$1" \
-        | claude -p --resume "$sid" --model "$model" --effort "$effort" \
-          --tools "" --disable-slash-commands) || die_claude
-}
-
-explain() { # prints an explanation of the current $cmd
-  printf 'Explain the command you proposed: what it does, each flag/part, and any caveats. Plain prose, a few short lines, no markdown.' \
-    | claude -p --resume "$sid" --model "$model" --effort "$effort" \
-      --tools "" --disable-slash-commands | sed 's/^/  /' || die_claude
+# ask — free-form follow-up in the same session: a question, a request to
+# explain, a refinement. The reply's prose is printed; its mandatory final
+# "CMD: ..." line becomes the (possibly unchanged) current command.
+ask() { # $1 = user's follow-up; may update $cmd
+  local reply
+  reply=$(printf 'Follow-up from the user: %s\n\nAnswer briefly in plain prose (no markdown). If the follow-up warrants changing the command, change it. Then end your reply with one final line in exactly this format, with the current one-line command (unchanged if no change was needed):\nCMD: <command>' "$1" \
+          | claude -p --resume "$sid" --model "$model" --effort "$effort" \
+            --tools "" --disable-slash-commands) || die_claude
+  local newcmd prose
+  newcmd=$(printf '%s\n' "$reply" | sed -n 's/^CMD: //p' | tail -1)
+  prose=$(printf '%s\n' "$reply" | sed '/^CMD: /d' | sed -e :a -e '/^\s*$/{$d;N;ba' -e '}')
+  [[ -n $prose ]] && { echo; printf '%s\n' "$prose" | sed 's/^/  /'; }
+  [[ -n $newcmd ]] && cmd=$newcmd
 }
 
 sanitize() { # defense against fences/multi-line despite the prompt
@@ -103,21 +108,17 @@ first_draft
 while :; do
   sanitize
   printf '\n  %s%s%s%s\n\n' "$bold" "$cyan" "$cmd" "$reset"
-  read -rsn1 -p "accept? [${green}y${reset}]es / [${yellow}r${reset}]efine / [${cyan}e${reset}]xplain / [${red}q${reset}]uit: " ans || exit 1
+  read -rsn1 -p "accept? [${green}y${reset}]es / [${yellow}a${reset}]sk / [${red}q${reset}]uit: " ans || exit 1
   printf '%s\n' "$ans"
   case $ans in
     y|Y) deliver; exit 0 ;;
-    r|R)
-      read -rp "feedback: " feedback
-      echo "${dim}refining...${reset}" >&2
-      refine "$feedback"
-      ;;
-    e|E)
-      echo "${dim}explaining...${reset}" >&2
-      echo
-      explain
+    a|A)
+      read -rp "ask: " question
+      [[ -n $question ]] || continue
+      echo "${dim}thinking...${reset}" >&2
+      ask "$question"
       ;;
     q|Q|n|N) exit 0 ;;
-    *) echo "y, r, e, or q" >&2 ;;
+    *) echo "y, a, or q" >&2 ;;
   esac
 done
