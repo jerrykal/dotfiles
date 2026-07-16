@@ -2,8 +2,8 @@
 
 # ccommit — headless-Claude conventional commit with shell-side approval.
 #
-#   ccommit      commit what's already staged (like /commit-staged)
-#   ccommit -a   git add -A first (like /commit-all)
+#   ccommit      commit what's already staged
+#   ccommit -a   git add -A first
 #
 # Claude only writes the message (no tools, diff passed in the prompt);
 # the commit itself is plain git after you approve. Nothing is persisted —

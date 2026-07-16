@@ -1,7 +1,6 @@
 ---
 name: commit-session-changes
 description: Commit only the files you changed this session, restoring any unrelated staged files byte-for-byte (partial stages included).
-disable-model-invocation: true
 ---
 
 # Commit session changes
@@ -22,7 +21,7 @@ It sets aside any unrelated staged hunks to a patch (NUL-safe, partial stages pr
 
 ## 2. Hand off to conventional-commit
 
-Invoke the `conventional-commit` skill to write the message and commit the staged set. **Approval is required:** you were invoked by name, so conventional-commit must present the full message via `AskUserQuestion` and commit only after the user picks the commit option — never commit before that. Don't `git add` anything beyond what step 1 staged.
+Invoke the `conventional-commit` skill to write the message and commit the staged set.
 
 ## 3. Restore the user's index
 
