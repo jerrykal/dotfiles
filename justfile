@@ -4,15 +4,13 @@
 # Stow runs from this dir, so its default target is the parent — exactly $HOME.
 
 # All packages, in link order. Add new package dirs here.
-# launchd (macOS-only) is appended below — Linux remotes have no launchd.
-base_packages := "atuin bat bin btop claude eza fish git hunk lazygit mise nvim ruff sesh shell skills tmux"
-packages := trim(base_packages + if os() == "macos" { " launchd" } else { "" })
+packages := "atuin bat bin btop claude eza fish git hunk lazygit mise nvim ruff sesh shell skills tmux"
 
 # Packages whose config dir also accumulates runtime/generated files — e.g.
 # live ~/.claude state. These are stowed with --no-folding so the directory
 # stays REAL and those files never land in the repo. Everything else folds
 # normally (one symlink per package).
-nofold := "claude bin launchd"
+nofold := "claude bin"
 
 _default:
     @just --list --unsorted

@@ -1,8 +1,6 @@
 # Disable greeting
 set -g fish_greeting
 
-# Open URLs on the machine I'm sitting at, even over ssh (see bin/open-url)
-set -gx BROWSER open-url
 
 status is-interactive; or return
 
