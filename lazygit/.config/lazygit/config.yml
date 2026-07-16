@@ -10,8 +10,8 @@ promptToReturnFromSubprocess: false
 customCommands:
   - key: C
     context: files
-    description: commit with Claude-written message (ccommit)
-    command: clear && ccommit
+    description: commit with Claude-written message (commit)
+    command: clear && commit
     output: terminal
 gui:
   nerdFontsVersion: "3"

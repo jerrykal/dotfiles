@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-# ccommit — headless-Claude conventional commit with shell-side approval.
+# commit — headless-Claude conventional commit with shell-side approval.
 #
-#   ccommit      commit what's already staged
-#   ccommit -a   git add -A first
+#   commit      commit what's already staged
+#   commit -a   git add -A first
 #
 # One headless Claude session per run: the first call drafts a message from the
 # staged diff (no tools); redrafts and split handling resume that session, so
@@ -22,7 +22,7 @@ else
   bold='' dim='' red='' green='' yellow='' blue='' cyan='' reset=''
 fi
 
-usage() { echo "usage: ccommit [-a]  (-a: git add -A first)" >&2; exit 2; }
+usage() { echo "usage: commit [-a]  (-a: git add -A first)" >&2; exit 2; }
 
 all=0
 while getopts "ah" opt; do
@@ -41,8 +41,8 @@ if git diff --cached --quiet; then
   exit 1
 fi
 
-model=${CCOMMIT_MODEL:-sonnet}
-effort=${CCOMMIT_EFFORT:-medium}
+model=${COMMIT_MODEL:-sonnet}
+effort=${COMMIT_EFFORT:-medium}
 sid=$(uuidgen | tr '[:upper:]' '[:lower:]')
 
 workdir=$(mktemp -d)
@@ -88,7 +88,7 @@ EOF
   fi
 } > "$workdir/prompt"
 
-die_claude() { echo "${red}ccommit: claude failed${reset}" >&2; exit 1; }
+die_claude() { echo "${red}commit: claude failed${reset}" >&2; exit 1; }
 
 # All calls share one session ($sid): the first creates it with the full diff
 # in context, follow-ups resume it with short prompts. Prompts go via stdin so
@@ -155,7 +155,7 @@ do_split() {
     subjects+=("$line")
   done <<< "$msg"
   local total=${#subjects[@]}
-  (( total >= 2 )) || { echo "${red}ccommit: unparseable split proposal${reset}" >&2; return 1; }
+  (( total >= 2 )) || { echo "${red}commit: unparseable split proposal${reset}" >&2; return 1; }
 
   printf '\n  %s%s%d separate commits proposed%s\n\n' "$bold" "$yellow" "$total" "$reset"
   local i

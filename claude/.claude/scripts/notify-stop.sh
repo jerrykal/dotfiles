@@ -10,7 +10,7 @@
 #   background_tasks — anything not "completed" will re-invoke the session
 # Fail open: if jq is missing or the fields aren't there, notify as before.
 #
-# Headless `claude -p` runs (ccommit drafts, scripted children) fire this hook
+# Headless `claude -p` runs (commit drafts, scripted children) fire this hook
 # too and each would ping "Task complete"; they set ENTRYPOINT to sdk-cli
 # (interactive sessions use "cli"), so skip those outright.
 
