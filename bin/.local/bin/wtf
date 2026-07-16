@@ -1,0 +1,165 @@
+#!/usr/bin/env bash
+
+# wtf — explain the last failed command; headless Claude proposes a fix.
+#
+#   wtf                 diagnose from tmux scrollback
+#   wtf 127             pass the exit code (alias wtf='command wtf $?'; fish: $status)
+#   wtf [code] why ...  optional focus question
+#   make 2>&1 | wtf     pipe output explicitly (works outside tmux)
+#
+# One headless Claude session per run: the first call reads the terminal
+# capture (tmux capture-pane, or piped stdin) and replies with a prose
+# explanation plus a proposed fixed command; [a]sk resumes that session for
+# follow-ups. Claude may inspect files and git state (read-only tools) but
+# never mutates anything. On accept the fix is typed onto your prompt (tmux
+# send-keys; TIOCSTI or clipboard outside tmux) — you still press Enter to
+# run it. Nothing is ever executed by this script.
+
+set -euo pipefail
+
+if [[ -t 1 && -z ${NO_COLOR:-} ]]; then
+  bold=$'\033[1m' dim=$'\033[2m' red=$'\033[31m' green=$'\033[32m'
+  yellow=$'\033[33m' cyan=$'\033[36m' reset=$'\033[0m'
+else
+  bold='' dim='' red='' green='' yellow='' cyan='' reset=''
+fi
+
+model=${WTF_MODEL:-sonnet}
+effort=${WTF_EFFORT:-medium}
+lines=${WTF_LINES:-200}
+max_capture_bytes=32768
+sid=$(uuidgen | tr '[:upper:]' '[:lower:]')
+
+exit_code=''
+if [[ $# -gt 0 && $1 =~ ^[0-9]+$ ]]; then
+  exit_code=$1
+  shift
+fi
+hint=$*
+
+# Piped stdin wins everywhere (explicit beats scrollback); tmux scrollback
+# otherwise; nothing else to read from.
+if [[ ! -t 0 ]]; then
+  capture=$(cat)
+  # stdin is spent — reopen it on the tty for the interactive loop
+  if (exec </dev/tty) 2>/dev/null; then
+    exec </dev/tty
+    interactive=1
+  else
+    interactive=0
+  fi
+elif [[ -n ${TMUX:-} ]]; then
+  capture=$(tmux capture-pane -t "$TMUX_PANE" -p -J -S "-$lines")
+  interactive=1
+else
+  echo "${red}wtf: no input — run inside tmux or pipe output (cmd 2>&1 | wtf)${reset}" >&2
+  exit 2
+fi
+capture=$(printf '%s' "$capture" | tail -c "$max_capture_bytes")
+[[ -n ${capture//[[:space:]]/} ]] || { echo "${red}wtf: capture is empty${reset}" >&2; exit 2; }
+
+# The shell that launched us decides the syntax Claude targets (login-shell
+# leading dash stripped); fish is this setup's interactive default.
+shell_name=$(ps -o comm= -p "$PPID" 2>/dev/null | sed 's/^-//; s#.*/##')
+case $shell_name in fish|zsh|bash) ;; *) shell_name=fish ;; esac
+
+die_claude() { echo "${red}wtf: claude failed${reset}" >&2; exit 1; }
+
+claude_call() { # $1 = "" for first call, session id to resume otherwise
+  local mode_args
+  if [[ -z $1 ]]; then mode_args=(--session-id "$sid"); else mode_args=(--resume "$sid"); fi
+  claude -p "${mode_args[@]}" --model "$model" --effort "$effort" \
+    --tools Bash,Read,Glob,Grep --disable-slash-commands \
+    --allowedTools 'Bash(git status:*)' 'Bash(git diff:*)' 'Bash(git log:*)' \
+      'Bash(git show:*)' Read Glob Grep || die_claude
+}
+
+build_prompt() {
+  cat <<EOF
+Diagnose the user's last failed shell command from the terminal capture below.
+
+Rules:
+- The capture ends with the \`wtf\` invocation itself and shell prompt lines —
+  ignore those; diagnose the last failed command before them.
+- Target shell: $shell_name on macOS (Darwin). Current directory: $PWD
+- If the capture alone isn't conclusive, you may inspect files and git state
+  with your read-only tools.
+- Reply briefly in plain prose (no markdown): what went wrong and why.
+- Then end your reply with one final line in exactly this format, containing a
+  corrected one-line command for the user to run ($shell_name syntax):
+CMD: <command>
+  If there is nothing useful to type, end with exactly: CMD: none
+EOF
+  [[ -n $exit_code ]] && printf '\nExit code of the failed command: %s\n' "$exit_code"
+  [[ -n $hint ]] && printf '\nThe user asks specifically: %s\n' "$hint"
+  printf '\n## Terminal capture (most recent last)\n%s\n' "$capture"
+}
+
+# parse_reply — prose is printed indented; the mandatory final "CMD: ..."
+# line becomes the (possibly unchanged) current command.
+parse_reply() { # $1 = full reply; may update $cmd
+  local newcmd prose
+  newcmd=$(printf '%s\n' "$1" | sed -n 's/^CMD: //p' | tail -1)
+  prose=$(printf '%s\n' "$1" | sed '/^CMD: /d' | sed -e :a -e '/^\s*$/{$d;N;ba' -e '}')
+  [[ -n $prose ]] && { echo; printf '%s\n' "$prose" | sed 's/^/  /'; }
+  [[ -n $newcmd ]] && cmd=$newcmd
+}
+
+sanitize() { # defense against fences/multi-line despite the prompt
+  cmd=$(printf '%s' "$cmd" | sed '/^```/d' | paste -sd ';' - | sed 's/;\{2,\}/;/g; s/^;//; s/;$//')
+}
+
+# Outside tmux, TIOCSTI injects the chars into our controlling terminal's
+# input buffer — the shell reads them at its next prompt, same effect as
+# send-keys. macOS still permits it on one's own tty.
+tiocsti() {
+  perl -e '
+    open(my $tty, "<", "/dev/tty") or exit 1;
+    for my $c (split //, $ARGV[0]) {
+      ioctl($tty, 0x80017472, $c) or exit 1;
+    }' "$1" 2>/dev/null
+}
+
+deliver() {
+  if [[ -n ${TMUX:-} ]]; then
+    tmux send-keys -t "$TMUX_PANE" -l -- "$cmd"
+  elif tiocsti "$cmd"; then
+    :
+  else
+    printf '%s' "$cmd" | pbcopy
+    echo "${yellow}no tty to type into — command copied to clipboard${reset}" >&2
+  fi
+}
+
+echo "${dim}diagnosing ($model)...${reset}" >&2
+cmd=''
+parse_reply "$(build_prompt | claude_call '')"
+
+if (( ! interactive )); then
+  [[ -n $cmd && $cmd != none ]] && { sanitize; printf '\n  %s%s%s%s\n' "$bold" "$cyan" "$cmd" "$reset"; }
+  exit 0
+fi
+
+while :; do
+  if [[ -n $cmd && $cmd != none ]]; then
+    sanitize
+    printf '\n  %s%s%s%s\n\n' "$bold" "$cyan" "$cmd" "$reset"
+    read -rsn1 -p "accept? [${green}y${reset}]es / [${yellow}a${reset}]sk / [${red}q${reset}]uit: " ans || exit 1
+  else
+    echo
+    read -rsn1 -p "[${yellow}a${reset}]sk / [${red}q${reset}]uit: " ans || exit 1
+  fi
+  printf '%s\n' "$ans"
+  case $ans in
+    y|Y) [[ -n $cmd && $cmd != none ]] || { echo "a or q" >&2; continue; }
+         deliver; exit 0 ;;
+    a|A)
+      read -rp "ask: " question
+      [[ -n $question ]] || continue
+      echo "${dim}thinking...${reset}" >&2
+      parse_reply "$(printf 'Follow-up from the user: %s\n\nAnswer briefly in plain prose (no markdown). If the follow-up warrants changing the command, change it. Then end your reply with one final line in exactly this format, with the current one-line command (unchanged if no change was needed, "none" if there is nothing to type):\nCMD: <command>' "$question" | claude_call resume)"
+      ;;
+    q|Q|n|N) exit 0 ;;
+    *) echo "y, a, or q" >&2 ;;
+  esac
+done
