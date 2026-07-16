@@ -42,6 +42,7 @@ if git diff --cached --quiet; then
 fi
 
 model=${CCOMMIT_MODEL:-sonnet}
+effort=${CCOMMIT_EFFORT:-medium}
 sid=$(uuidgen | tr '[:upper:]' '[:lower:]')
 
 workdir=$(mktemp -d)
@@ -94,18 +95,18 @@ die_claude() { echo "${red}ccommit: claude failed${reset}" >&2; exit 1; }
 # the script's stdin stays free for the interactive key-reads.
 
 first_draft() { # sets $msg
-  msg=$(claude -p --session-id "$sid" --model "$model" --tools "" \
-        --disable-slash-commands < "$workdir/prompt") || die_claude
+  msg=$(claude -p --session-id "$sid" --model "$model" --effort "$effort" \
+        --tools "" --disable-slash-commands < "$workdir/prompt") || die_claude
 }
 
 resume_msg() { # $1 = follow-up prompt, tool-less; sets $msg
   msg=$(printf '%s' "$1" | claude -p --resume "$sid" --model "$model" \
-        --tools "" --disable-slash-commands) || die_claude
+        --effort "$effort" --tools "" --disable-slash-commands) || die_claude
 }
 
 resume_stage() { # $1 = follow-up prompt, staging tools allowed; sets $msg
   msg=$(printf '%s' "$1" | claude -p --resume "$sid" --model "$model" \
-        --tools Bash,Read --disable-slash-commands \
+        --effort "$effort" --tools Bash,Read --disable-slash-commands \
         --allowedTools 'Bash(git add:*)' 'Bash(git restore --staged:*)' \
           'Bash(git apply:*)' 'Bash(git status:*)' 'Bash(git diff:*)' \
           'Bash(git log:*)' 'Bash(git show:*)' 'Read') || die_claude
