@@ -1,0 +1,123 @@
+#!/usr/bin/env bash
+
+# pls — describe the command you want; headless Claude drafts it.
+#
+#   pls list files changed in the last commit
+#   pls            prompts for a description
+#
+# One headless Claude session per run: the first call converts your intent to
+# a single shell command; refinements resume that session. On accept the
+# command is typed onto your prompt (tmux send-keys) — you still press Enter
+# to run it, so it's editable and lands in shell history. Outside tmux it
+# falls back to the clipboard. Nothing is ever executed by this script.
+
+set -euo pipefail
+
+if [[ -t 1 && -z ${NO_COLOR:-} ]]; then
+  bold=$'\033[1m' dim=$'\033[2m' red=$'\033[31m' green=$'\033[32m'
+  yellow=$'\033[33m' cyan=$'\033[36m' reset=$'\033[0m'
+else
+  bold='' dim='' red='' green='' yellow='' cyan='' reset=''
+fi
+
+model=${PLS_MODEL:-sonnet}
+effort=${PLS_EFFORT:-medium}
+sid=$(uuidgen | tr '[:upper:]' '[:lower:]')
+
+if [[ $# -gt 0 ]]; then
+  desc=$*
+else
+  read -rp "describe the command: " desc
+fi
+[[ -n $desc ]] || { echo "${red}pls: empty description${reset}" >&2; exit 2; }
+
+# The shell that launched us decides the syntax Claude targets (login-shell
+# leading dash stripped); fish is this setup's interactive default.
+shell_name=$(ps -o comm= -p "$PPID" 2>/dev/null | sed 's/^-//; s#.*/##')
+case $shell_name in fish|zsh|bash) ;; *) shell_name=fish ;; esac
+
+die_claude() { echo "${red}pls: claude failed${reset}" >&2; exit 1; }
+
+build_prompt() {
+  cat <<EOF
+Convert the user's description into a single shell command.
+Output ONLY the raw command — no code fences, no commentary, no leading \$.
+
+Rules:
+- Target shell: $shell_name on macOS (Darwin) — use syntax valid for it.
+- One line; chain steps with && or ; when needed.
+- Prefer standard macOS/Homebrew tools; prefer the non-destructive variant
+  when the intent is ambiguous.
+- Current directory: $PWD
+
+Description: $desc
+EOF
+}
+
+first_draft() { # sets $cmd
+  cmd=$(build_prompt | claude -p --session-id "$sid" --model "$model" \
+        --effort "$effort" --tools "" --disable-slash-commands) || die_claude
+}
+
+refine() { # $1 = feedback; sets $cmd
+  cmd=$(printf 'Revise the command per this feedback: %s. Same output rules: only the raw one-line command.' "$1" \
+        | claude -p --resume "$sid" --model "$model" --effort "$effort" \
+          --tools "" --disable-slash-commands) || die_claude
+}
+
+explain() { # prints an explanation of the current $cmd
+  printf 'Explain the command you proposed: what it does, each flag/part, and any caveats. Plain prose, a few short lines, no markdown.' \
+    | claude -p --resume "$sid" --model "$model" --effort "$effort" \
+      --tools "" --disable-slash-commands | sed 's/^/  /' || die_claude
+}
+
+sanitize() { # defense against fences/multi-line despite the prompt
+  cmd=$(printf '%s' "$cmd" | sed '/^```/d' | paste -sd ';' - | sed 's/;\{2,\}/;/g; s/^;//; s/;$//')
+}
+
+# Outside tmux, TIOCSTI injects the chars into our controlling terminal's
+# input buffer — the shell reads them at its next prompt, same effect as
+# send-keys. macOS still permits it on one's own tty.
+tiocsti() {
+  perl -e '
+    open(my $tty, "<", "/dev/tty") or exit 1;
+    for my $c (split //, $ARGV[0]) {
+      ioctl($tty, 0x80017472, $c) or exit 1;
+    }' "$1" 2>/dev/null
+}
+
+deliver() {
+  if [[ -n ${TMUX:-} ]]; then
+    tmux send-keys -t "$TMUX_PANE" -l -- "$cmd"
+  elif tiocsti "$cmd"; then
+    :
+  else
+    printf '%s' "$cmd" | pbcopy
+    echo "${yellow}no tty to type into — command copied to clipboard${reset}" >&2
+  fi
+}
+
+echo "${dim}drafting command ($model)...${reset}" >&2
+first_draft
+
+while :; do
+  sanitize
+  printf '\n  %s%s%s%s\n\n' "$bold" "$cyan" "$cmd" "$reset"
+  read -rsn1 -p "accept? [${green}y${reset}]es / [${yellow}r${reset}]efine / [${cyan}e${reset}]xplain / [${red}q${reset}]uit: " ans || exit 1
+  printf '%s\n' "$ans"
+  case $ans in
+    y|Y) deliver; exit 0 ;;
+    r|R)
+      read -rp "feedback: " feedback
+      echo "${dim}refining...${reset}" >&2
+      refine "$feedback"
+      ;;
+    e|E)
+      echo "${dim}explaining...${reset}" >&2
+      echo
+      explain
+      ;;
+    q|Q|n|N) exit 0 ;;
+    *) echo "y, r, e, or q" >&2 ;;
+  esac
+done
