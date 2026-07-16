@@ -5,9 +5,13 @@
 #   ccommit      commit what's already staged
 #   ccommit -a   git add -A first
 #
-# Claude only writes the message (no tools, diff passed in the prompt);
-# the commit itself is plain git after you approve. Nothing is persisted —
-# each run is a throwaway headless session.
+# One headless Claude session per run: the first call drafts a message from the
+# staged diff (no tools); redrafts and split handling resume that session, so
+# Claude keeps the diff and its own proposals in context. If the diff spans
+# unrelated concerns Claude proposes a split: accept and it stages each logical
+# group itself (git access limited to staging commands), every sub-commit
+# reviewed before it's made; decline and it all goes in one reviewed commit.
+# Commits are always made by this script after your approval, never by Claude.
 
 set -euo pipefail
 
@@ -29,11 +33,6 @@ while getopts "ah" opt; do
 done
 [[ $# -ge $OPTIND ]] && usage
 
-# Message rules come from the live conventional-commit skill — one source of
-# truth. Missing means a broken stow setup, same as any other missing link.
-skill_md="$HOME/.claude/skills/conventional-commit/SKILL.md"
-[[ -r $skill_md ]] || { echo "${red}ccommit: $skill_md missing (run 'just link skills')${reset}" >&2; exit 1; }
-
 git rev-parse --is-inside-work-tree >/dev/null
 
 (( all )) && git add -A
@@ -42,9 +41,8 @@ if git diff --cached --quiet; then
   exit 1
 fi
 
-# default model comes from the skill's frontmatter; CCOMMIT_MODEL overrides
-skill_model=$(awk 'NR > 1 && /^---$/ {exit} $1 == "model:" {print $2; exit}' "$skill_md")
-model=${CCOMMIT_MODEL:-${skill_model:-sonnet}}
+model=${CCOMMIT_MODEL:-sonnet}
+sid=$(uuidgen | tr '[:upper:]' '[:lower:]')
 
 workdir=$(mktemp -d)
 trap 'rm -rf "$workdir"' EXIT
@@ -55,18 +53,24 @@ max_diff_bytes=200000
 
 {
   cat <<'EOF'
-Write a Conventional Commits message for the staged diff below.
+Write a Conventional Commits message for the staged diff below. Output ONLY the
+raw message — no code fences, no commentary, no trailers.
 
-You are ONLY writing the message. Tools are disabled: do not run commands,
-stage, commit, or ask questions. From the skill below, apply only its
-message-writing rules — ignore its staging, approval, and commit steps.
-The staged diff and recent log it says to inspect are included below.
-Output ONLY the raw commit message — no code fences, no commentary.
+Rules:
+- Format `type(scope): subject`; type ∈ feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert, scope optional.
+- Subject: imperative mood, no trailing period, ≤72 chars. `!` before the colon marks a breaking change.
+- Match the scopes, casing, and vocabulary of the recent log below.
+- Add a body (blank line, ~72-char wrapped) only when *why* isn't obvious from the diff; never restate what the diff already shows.
 
-## Skill: conventional-commit
+If the staged diff spans unrelated concerns that belong in separate commits, do
+NOT write a message — output a proposal in exactly this format and nothing else:
+
+SPLIT
+<proposed subject line for commit 1>
+<proposed subject line for commit 2>
+
+Only when clearly warranted; one change touching several files is not a split.
 EOF
-  # strip YAML frontmatter
-  awk 'NR==1 && /^---$/ {fm=1; next} fm && /^---$/ {fm=0; next} !fm' "$skill_md"
   printf '\n## Recent log\n'
   git log --oneline -20 2>/dev/null || echo "(no commits yet)"
   printf '\n## Staged diff (stat)\n'
@@ -83,14 +87,29 @@ EOF
   fi
 } > "$workdir/prompt"
 
-run_claude() { # prompt on stdin; sets $msg
-  msg=$(claude -p --model "$model" --tools "" --disable-slash-commands \
-        --no-session-persistence) \
-    || { echo "${red}ccommit: claude failed${reset}" >&2; exit 1; }
+die_claude() { echo "${red}ccommit: claude failed${reset}" >&2; exit 1; }
+
+# All calls share one session ($sid): the first creates it with the full diff
+# in context, follow-ups resume it with short prompts. Prompts go via stdin so
+# the script's stdin stays free for the interactive key-reads.
+
+first_draft() { # sets $msg
+  msg=$(claude -p --session-id "$sid" --model "$model" --tools "" \
+        --disable-slash-commands < "$workdir/prompt") || die_claude
 }
 
-echo "${dim}drafting commit message ($model)...${reset}" >&2
-run_claude < "$workdir/prompt"
+resume_msg() { # $1 = follow-up prompt, tool-less; sets $msg
+  msg=$(printf '%s' "$1" | claude -p --resume "$sid" --model "$model" \
+        --tools "" --disable-slash-commands) || die_claude
+}
+
+resume_stage() { # $1 = follow-up prompt, staging tools allowed; sets $msg
+  msg=$(printf '%s' "$1" | claude -p --resume "$sid" --model "$model" \
+        --tools Bash,Read --disable-slash-commands \
+        --allowedTools 'Bash(git add:*)' 'Bash(git restore --staged:*)' \
+          'Bash(git apply:*)' 'Bash(git status:*)' 'Bash(git diff:*)' \
+          'Bash(git log:*)' 'Bash(git show:*)' 'Read') || die_claude
+}
 
 show_msg() { # subject bold cyan, body default, both indented
   local subject=${msg%%$'\n'*} body=''
@@ -100,31 +119,104 @@ show_msg() { # subject bold cyan, body default, both indented
   echo
 }
 
-while :; do
-  show_msg
-  read -rsn1 -p "commit? [${green}y${reset}]es / [${blue}e${reset}]dit / [${yellow}r${reset}]edraft / [${red}n${reset}]o: " ans
+# review_commit — y/e/r/n loop over the current $msg and staged index.
+# Returns 0 if a commit was made, 1 if the user declined (n).
+review_commit() {
+  while :; do
+    show_msg
+    read -rsn1 -p "commit? [${green}y${reset}]es / [${blue}e${reset}]dit / [${yellow}r${reset}]edraft / [${red}n${reset}]o: " ans || return 1
+    printf '%s\n' "$ans"
+    case $ans in
+      y|Y|e|E)
+        printf '%s\n' "$msg" > "$workdir/msg"
+        local editflag=''
+        [[ $ans == [eE] ]] && editflag=-e  # git -e opens core.editor seeded with the message
+        git commit $editflag -F "$workdir/msg"
+        return 0
+        ;;
+      r|R)
+        read -rp "feedback: " feedback
+        echo "${dim}redrafting...${reset}" >&2
+        resume_msg "Revise the commit message per this feedback: $feedback. Output only the raw commit message."
+        ;;
+      n|N) return 1 ;;
+      *) echo "y, e, r, or n" >&2 ;;
+    esac
+  done
+}
+
+# do_split — show the proposed sub-commits, then let Claude stage each group
+# in turn (resuming the session), reviewing every sub-commit before it's made.
+do_split() {
+  local subjects=() line
+  while IFS= read -r line; do
+    [[ -z $line || $line == SPLIT ]] && continue
+    subjects+=("$line")
+  done <<< "$msg"
+  local total=${#subjects[@]}
+  (( total >= 2 )) || { echo "${red}ccommit: unparseable split proposal${reset}" >&2; return 1; }
+
+  printf '\n  %s%s%d separate commits proposed%s\n\n' "$bold" "$yellow" "$total" "$reset"
+  local i
+  for i in "${!subjects[@]}"; do
+    printf '  %s%d.%s %s\n' "$green" "$((i + 1))" "$reset" "${subjects[i]}"
+  done
+  echo
+
+  local ans
+  read -rsn1 -p "[${green}s${reset}]plit into $total / commit as [${blue}o${reset}]ne / [${red}a${reset}]bort: " ans || ans=a
   printf '%s\n' "$ans"
   case $ans in
-    y|Y|e|E)
-      printf '%s\n' "$msg" > "$workdir/msg"
-      editflag=''
-      [[ $ans == [eE] ]] && editflag=-e  # git -e opens core.editor seeded with the message
-      git commit $editflag -F "$workdir/msg"
-      break
+    s|S) ;;
+    o|O)
+      resume_msg "The user chose to commit everything as one commit. Write a single Conventional Commits message for the full staged diff. Do not output SPLIT. Output only the raw commit message."
+      review_commit || echo "${yellow}aborted; nothing committed${reset}" >&2
+      return 0
       ;;
-    r|R)
-      read -rp "feedback: " feedback
-      echo "${dim}redrafting...${reset}" >&2
-      # sessions aren't persisted, so redraft by re-sending the full prompt
-      # plus the rejected draft and the feedback
-      printf '\n## Previous draft (rejected)\n%s\n\n## Feedback\n%s\nRevise the message per the feedback. Output only the raw commit message.\n' \
-        "$msg" "$feedback" >> "$workdir/prompt"
-      run_claude < "$workdir/prompt"
-      ;;
-    n|N)
-      echo "${yellow}aborted; nothing committed${reset}" >&2
-      break
-      ;;
-    *) echo "y, e, r, or n" >&2 ;;
+    *) echo "${yellow}aborted; nothing committed${reset}" >&2; return 0 ;;
   esac
-done
+
+  # Unstage everything, then let Claude stage group by group; each round is
+  # reviewed like a normal commit before the next begins.
+  local scope round=1 stopped=0
+  scope=$(git diff --cached --name-only)
+  git reset -q
+  while (( round <= total + 3 )); do   # slack over the proposal, but bounded
+    echo "${dim}staging next group ($model)...${reset}" >&2
+    resume_stage "The user accepted your split. Any previously staged group has been committed by the user; everything else is unstaged (new files untracked). Stage ONLY the next logical group from your proposal with git add (or git apply --cached for a hunk-level split). Do not commit; never touch files outside the original changeset. Then output ONLY that group's Conventional Commits message — no commentary. If every change from the original changeset is already committed, stage nothing and output exactly DONE."
+    [[ $msg == DONE* ]] && break
+    if git diff --cached --quiet; then
+      echo "${yellow}nothing staged this round; stopping${reset}" >&2
+      stopped=1; break
+    fi
+    printf '\n%s── commit %d (of ~%d proposed) ──%s\n' "$bold" "$round" "$total" "$reset"
+    git diff --cached --stat
+    if ! review_commit; then
+      git reset -q
+      stopped=1
+      echo "${yellow}split stopped; remaining changes left uncommitted${reset}" >&2
+      break
+    fi
+    round=$((round + 1))
+  done
+
+  # anything in scope still uncommitted?
+  local f leftover=''
+  while IFS= read -r f; do
+    [[ -n $f && -n $(git status --porcelain -- "$f") ]] && leftover+="  $f"$'\n'
+  done <<< "$scope"
+  if [[ -n $leftover ]]; then
+    (( stopped )) || echo "${yellow}some scope files remain uncommitted:${reset}" >&2
+    printf '%s' "$leftover" >&2
+  fi
+  return 0
+}
+
+echo "${dim}drafting commit message ($model)...${reset}" >&2
+first_draft
+
+if [[ $msg == SPLIT* ]]; then
+  do_split
+else
+  review_commit || echo "${yellow}aborted; nothing committed${reset}" >&2
+fi

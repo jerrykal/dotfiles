@@ -9,6 +9,12 @@
 #   session_crons    — pending scheduled wakeups; non-empty means auto-resume
 #   background_tasks — anything not "completed" will re-invoke the session
 # Fail open: if jq is missing or the fields aren't there, notify as before.
+#
+# Headless `claude -p` runs (ccommit drafts, scripted children) fire this hook
+# too and each would ping "Task complete"; they set ENTRYPOINT to sdk-cli
+# (interactive sessions use "cli"), so skip those outright.
+
+[ "${CLAUDE_CODE_ENTRYPOINT:-}" = "sdk-cli" ] && exit 0
 
 input=$(cat)
 
