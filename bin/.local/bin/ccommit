@@ -1,0 +1,130 @@
+#!/usr/bin/env bash
+
+# ccommit — headless-Claude conventional commit with shell-side approval.
+#
+#   ccommit      commit what's already staged (like /commit-staged)
+#   ccommit -a   git add -A first (like /commit-all)
+#
+# Claude only writes the message (no tools, diff passed in the prompt);
+# the commit itself is plain git after you approve. Nothing is persisted —
+# each run is a throwaway headless session.
+
+set -euo pipefail
+
+if [[ -t 1 && -z ${NO_COLOR:-} ]]; then
+  bold=$'\033[1m' dim=$'\033[2m' red=$'\033[31m' green=$'\033[32m'
+  yellow=$'\033[33m' blue=$'\033[34m' cyan=$'\033[36m' reset=$'\033[0m'
+else
+  bold='' dim='' red='' green='' yellow='' blue='' cyan='' reset=''
+fi
+
+usage() { echo "usage: ccommit [-a]  (-a: git add -A first)" >&2; exit 2; }
+
+all=0
+while getopts "ah" opt; do
+  case $opt in
+    a) all=1 ;;
+    *) usage ;;
+  esac
+done
+[[ $# -ge $OPTIND ]] && usage
+
+# Message rules come from the live conventional-commit skill — one source of
+# truth. Missing means a broken stow setup, same as any other missing link.
+skill_md="$HOME/.claude/skills/conventional-commit/SKILL.md"
+[[ -r $skill_md ]] || { echo "${red}ccommit: $skill_md missing (run 'just link skills')${reset}" >&2; exit 1; }
+
+git rev-parse --is-inside-work-tree >/dev/null
+
+(( all )) && git add -A
+if git diff --cached --quiet; then
+  echo "${yellow}nothing staged to commit${reset}" >&2
+  exit 1
+fi
+
+# default model comes from the skill's frontmatter; CCOMMIT_MODEL overrides
+skill_model=$(awk 'NR > 1 && /^---$/ {exit} $1 == "model:" {print $2; exit}' "$skill_md")
+model=${CCOMMIT_MODEL:-${skill_model:-sonnet}}
+
+workdir=$(mktemp -d)
+trap 'rm -rf "$workdir"' EXIT
+
+# Diffs beyond this are truncated in the prompt; the subject still comes
+# out fine from the stat + leading hunks.
+max_diff_bytes=200000
+
+{
+  cat <<'EOF'
+Write a Conventional Commits message for the staged diff below.
+
+You are ONLY writing the message. Tools are disabled: do not run commands,
+stage, commit, or ask questions. From the skill below, apply only its
+message-writing rules — ignore its staging, approval, and commit steps.
+The staged diff and recent log it says to inspect are included below.
+Output ONLY the raw commit message — no code fences, no commentary.
+
+## Skill: conventional-commit
+EOF
+  # strip YAML frontmatter
+  awk 'NR==1 && /^---$/ {fm=1; next} fm && /^---$/ {fm=0; next} !fm' "$skill_md"
+  printf '\n## Recent log\n'
+  git log --oneline -20 2>/dev/null || echo "(no commits yet)"
+  printf '\n## Staged diff (stat)\n'
+  git diff --cached --stat
+  printf '\n## Staged diff\n'
+  # stream instead of slurping into a variable; || true absorbs the SIGPIPE
+  # head sends once it has enough (pipefail would kill the script otherwise)
+  { git diff --cached || true; } | head -c "$((max_diff_bytes + 1))" > "$workdir/diff"
+  if (( $(wc -c < "$workdir/diff") > max_diff_bytes )); then
+    head -c "$max_diff_bytes" "$workdir/diff"
+    printf '\n\n[diff truncated at %d bytes]\n' "$max_diff_bytes"
+  else
+    cat "$workdir/diff"
+  fi
+} > "$workdir/prompt"
+
+run_claude() { # prompt on stdin; sets $msg
+  msg=$(claude -p --model "$model" --tools "" --disable-slash-commands \
+        --no-session-persistence) \
+    || { echo "${red}ccommit: claude failed${reset}" >&2; exit 1; }
+}
+
+echo "${dim}drafting commit message ($model)...${reset}" >&2
+run_claude < "$workdir/prompt"
+
+show_msg() { # subject bold cyan, body default, both indented
+  local subject=${msg%%$'\n'*} body=''
+  [[ $msg == *$'\n'* ]] && body=${msg#*$'\n'}
+  printf '\n  %s%s%s%s\n' "$bold" "$cyan" "$subject" "$reset"
+  [[ -n $body ]] && printf '%s\n' "$body" | sed 's/^/  /'
+  echo
+}
+
+while :; do
+  show_msg
+  read -rsn1 -p "commit? [${green}y${reset}]es / [${blue}e${reset}]dit / [${yellow}r${reset}]edraft / [${red}n${reset}]o: " ans
+  printf '%s\n' "$ans"
+  case $ans in
+    y|Y|e|E)
+      printf '%s\n' "$msg" > "$workdir/msg"
+      editflag=''
+      [[ $ans == [eE] ]] && editflag=-e  # git -e opens core.editor seeded with the message
+      git commit $editflag -F "$workdir/msg"
+      break
+      ;;
+    r|R)
+      read -rp "feedback: " feedback
+      echo "${dim}redrafting...${reset}" >&2
+      # sessions aren't persisted, so redraft by re-sending the full prompt
+      # plus the rejected draft and the feedback
+      printf '\n## Previous draft (rejected)\n%s\n\n## Feedback\n%s\nRevise the message per the feedback. Output only the raw commit message.\n' \
+        "$msg" "$feedback" >> "$workdir/prompt"
+      run_claude < "$workdir/prompt"
+      ;;
+    n|N)
+      echo "${yellow}aborted; nothing committed${reset}" >&2
+      break
+      ;;
+    *) echo "y, e, r, or n" >&2 ;;
+  esac
+done

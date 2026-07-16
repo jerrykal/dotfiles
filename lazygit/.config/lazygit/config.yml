@@ -7,6 +7,12 @@ os:
 update:
   method: never
 promptToReturnFromSubprocess: false
+customCommands:
+  - key: C
+    context: files
+    description: commit with Claude-written message (ccommit)
+    command: clear && ccommit
+    output: terminal
 gui:
   nerdFontsVersion: "3"
   border: single
