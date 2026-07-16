@@ -10,7 +10,6 @@
   "permissions": {
     "defaultMode": "auto"
   },
-  "model": "fable",
   "hooks": {
     "Notification": [
       {
@@ -103,7 +102,6 @@
     }
   },
   "spinnerTipsEnabled": false,
-  "effortLevel": "high",
   "awaySummaryEnabled": false,
   "tui": "fullscreen",
   "theme": "custom:rose-pine",
