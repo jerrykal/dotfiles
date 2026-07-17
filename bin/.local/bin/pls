@@ -10,8 +10,9 @@
 # an explanation, ask questions, request changes — and each reply may revise
 # the command. On accept the command is typed onto your prompt (tmux
 # send-keys) — you still press Enter to run it, so it's editable and lands in
-# shell history. Outside tmux it falls back to the clipboard. Nothing is ever
-# executed by this script.
+# shell history. Outside tmux it falls back to the clipboard. The drafted
+# command is never executed by this script; Claude may run read-only
+# commands (git status/log/diff, ls, …) to gather context.
 
 set -euo pipefail
 
@@ -25,6 +26,14 @@ fi
 model=${PLS_MODEL:-sonnet}
 effort=${PLS_EFFORT:-medium}
 sid=$(uuidgen | tr '[:upper:]' '[:lower:]')
+
+# Read-only context gathering: file tools plus an allowlist of safe commands.
+# Headless -p can't prompt, so any Bash call outside the allowlist is denied.
+claude_flags=(
+  --model "$model" --effort "$effort" --disable-slash-commands
+  --tools "Read,Glob,Grep,Bash"
+  --allowedTools "Read,Glob,Grep,Bash(git status:*),Bash(git log:*),Bash(git diff:*),Bash(git show:*),Bash(git branch:*),Bash(ls:*),Bash(which:*),Bash(head:*),Bash(wc:*)"
+)
 
 if [[ $# -gt 0 ]]; then
   desc=$*
@@ -51,14 +60,15 @@ Rules:
 - Prefer standard macOS/Homebrew tools; prefer the non-destructive variant
   when the intent is ambiguous.
 - Current directory: $PWD
+- You have read-only tools (file reads, grep, safe git/ls commands) — use
+  them briefly if the directory's contents would change the right command.
 
 Description: $desc
 EOF
 }
 
 first_draft() { # sets $cmd
-  cmd=$(build_prompt | claude -p --session-id "$sid" --model "$model" \
-        --effort "$effort" --tools "" --disable-slash-commands) || die_claude
+  cmd=$(build_prompt | claude -p --session-id "$sid" "${claude_flags[@]}") || die_claude
 }
 
 # ask — free-form follow-up in the same session: a question, a request to
@@ -67,8 +77,7 @@ first_draft() { # sets $cmd
 ask() { # $1 = user's follow-up; may update $cmd
   local reply
   reply=$(printf 'Follow-up from the user: %s\n\nAnswer briefly in plain prose (no markdown). If the follow-up warrants changing the command, change it. Then end your reply with one final line in exactly this format, with the current one-line command (unchanged if no change was needed):\nCMD: <command>' "$1" \
-          | claude -p --resume "$sid" --model "$model" --effort "$effort" \
-            --tools "" --disable-slash-commands) || die_claude
+          | claude -p --resume "$sid" "${claude_flags[@]}") || die_claude
   local newcmd prose
   newcmd=$(printf '%s\n' "$reply" | sed -n 's/^CMD: //p' | tail -1)
   prose=$(printf '%s\n' "$reply" | sed '/^CMD: /d' | sed -e :a -e '/^\s*$/{$d;N;ba' -e '}')
