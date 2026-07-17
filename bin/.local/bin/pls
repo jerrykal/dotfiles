@@ -86,7 +86,7 @@ ask() { # $1 = user's follow-up; may update $cmd
 }
 
 sanitize() { # defense against fences/multi-line despite the prompt
-  cmd=$(printf '%s' "$cmd" | sed '/^```/d' | paste -sd ';' - | sed 's/;\{2,\}/;/g; s/^;//; s/;$//')
+  cmd=$(printf '%s' "$cmd" | sed '/^```/d' | paste -sd ';' - | sed 's/;\{2,\}/;/g; s/^;//; s/;$//; s/^`\(.*\)`$/\1/')
 }
 
 # Outside tmux, TIOCSTI injects the chars into our controlling terminal's
