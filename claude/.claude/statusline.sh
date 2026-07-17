@@ -6,6 +6,7 @@ input=$(cat)
 
 used_pct=$(echo "$input" | jq -r '.context_window.used_percentage // 0')
 total_tokens=$(echo "$input" | jq -r '.context_window.total_input_tokens // 0')
+model=$(echo "$input" | jq -r '.model.display_name // ""')
 
 # ANSI codes
 RESET='\033[0m'
@@ -31,3 +32,6 @@ else
 fi
 
 printf "${BOLD}${COLOR}%s${RESET} ${DIM}(%d%%)${RESET}" "$tokens_fmt" "$used_pct"
+if [[ -n "$model" ]]; then
+  printf " ${DIM}·${RESET} ${DIM}%s${RESET}" "$model"
+fi
