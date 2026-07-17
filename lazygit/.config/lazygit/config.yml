@@ -7,6 +7,9 @@ os:
 update:
   method: never
 promptToReturnFromSubprocess: false
+keybinding:
+  files:
+    commitChangesWithEditor: <disabled>
 customCommands:
   - key: C
     context: files
@@ -19,6 +22,7 @@ gui:
   showDivergenceFromBaseBranch: arrowAndNumber
   showNumstatInFilesView: true
   expandFocusedSidePanel: true
+  skipDiscardChangeWarning: true
   theme:
     activeBorderColor:
       - "#31748f"
