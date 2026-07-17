@@ -18,15 +18,28 @@
 #   -k key     also bind <key> inside the popup server to close the popup,
 #              so the same key toggles both ways
 #   command    run in the popup session (default: your shell)
+#
+# Inside any popup, M-Enter (POPUP_TOGGLE_FS_KEY) toggles the popup between
+# its default size and full screen.
 set -euo pipefail
 
 SOCKET=${POPUP_TOGGLE_SOCKET:-popup}
+FS_KEY=${POPUP_TOGGLE_FS_KEY:-M-Enter}
+SELF=$(realpath "${BASH_SOURCE[0]}")
 POPUP_CONF="$HOME/.config/tmux/tmux.popup.conf"
 
 pt() { tmux -L "$SOCKET" "$@"; }
 
 # Session names can't contain '.' or ':', so cwd owners are a hash of the path.
 hash_dir() { cksum <<<"$1" | cut -d' ' -f1; }
+
+# Popup dimension spec ("90%" or cells) -> inner cells ($2 = client cells;
+# the border takes 2).
+cells() {
+  local d=$1
+  [[ $d == *% ]] && d=$(($2 * ${d%\%} / 100))
+  echo $((d - 2))
+}
 
 # Popup session name wire format: <scope char><owner>-<name>. Chars are the
 # scope initials, except server is "v" since "s" is session's.
@@ -88,6 +101,31 @@ if [[ "${1:-}" == "--gc" ]]; then
   exit 0
 fi
 
+# Invoked from the popup server's FS_KEY binding: a popup can't be resized in
+# place, so close it and reopen it at the other size on the client it came
+# from. Size/client state was stashed in the popup session's options by main.
+if [[ "${1:-}" == "--fs" ]]; then
+  s=$2
+  # "=$s:" not "=$s": these take a target-pane, which won't parse a bare "=name"
+  IFS=' ' read -r fs w h client \
+    < <(pt display-message -p -t "=$s:" '#{@popup_fs} #{@popup_w} #{@popup_h} #{@popup_client}')
+  [[ -n $client ]] || exit 0 # options missing: leave the popup alone
+  if [[ $fs == 1 ]]; then
+    pt set-option -t "=$s:" @popup_fs 0
+  else
+    pt set-option -t "=$s:" @popup_fs 1
+    w=100% h=100%
+  fi
+  pt detach-client -s "=$s"
+  for _ in {1..20}; do # the reopen silently no-ops until the old popup is gone
+    [[ -n $(pt list-clients -t "=$s" 2>/dev/null) ]] || break
+    sleep 0.05
+  done
+  sleep 0.05
+  exec env -u TMUX tmux display-popup -c "$client" -w "$w" -h "$h" -T " ${s#*-} " -E -- \
+    tmux -L "$SOCKET" new-session -A -s "$s"
+fi
+
 # Invoked from inside the popup server: toggling just closes the popup.
 sock=${TMUX:-}
 sock=${sock%%,*}
@@ -112,8 +150,8 @@ done
 shift $((OPTIND - 1))
 
 # One round trip for everything a scope may need; path last, it can have spaces.
-IFS=' ' read -r srv sess win pane cwd \
-  < <(tmux display-message -p '#{pid} #{session_id} #{window_id} #{pane_id} #{pane_current_path}')
+IFS=' ' read -r srv sess win pane ctty cw ch cwd \
+  < <(tmux display-message -p '#{pid} #{session_id} #{window_id} #{pane_id} #{client_tty} #{client_width} #{client_height} #{pane_current_path}')
 case $scope in
 pane) sc=p owner="${srv}_${pane}" ;;
 window) sc=w owner="${srv}_${win}" ;;
@@ -136,6 +174,19 @@ pt -f "$POPUP_CONF" start-server
 if [[ -n "$key" ]]; then
   pt bind-key -n "$key" detach-client -s "=$sname"
 fi
+pt bind-key -n "$FS_KEY" run-shell -b "'$SELF' --fs '#{session_name}'"
+
+# Pre-create the session (sized like the popup will be) so the fullscreen
+# toggle's per-popup state can live in its session options. Reopening always
+# starts at the default size.
+pt has-session -t "=$sname" 2>/dev/null ||
+  pt new-session -d -s "$sname" -c "$cwd" \
+    -x "$(cells "$width" "$cw")" -y "$(cells "$height" "$ch")" "$@"
+# set-option takes a target-pane, which won't parse a bare "=name" — hence ":"
+pt set-option -t "=$sname:" @popup_fs 0 \; \
+  set-option -t "=$sname:" @popup_w "$width" \; \
+  set-option -t "=$sname:" @popup_h "$height" \; \
+  set-option -t "=$sname:" @popup_client "$ctty"
 
 exec tmux display-popup -w "$width" -h "$height" -T " $name " -E -- \
   tmux -L "$SOCKET" new-session -A -s "$sname" -c "$cwd" "$@"
