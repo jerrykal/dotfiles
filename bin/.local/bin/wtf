@@ -109,6 +109,13 @@ sanitize() { # defense against fences/multi-line despite the prompt
   cmd=$(printf '%s' "$cmd" | sed '/^```/d' | paste -sd ';' - | sed 's/;\{2,\}/;/g; s/^;//; s/;$//')
 }
 
+render_cmd() { # $cmd syntax-highlighted via bat; bold cyan fallback
+  if [[ -n $reset ]] && command -v bat >/dev/null; then
+    printf '%s' "$cmd" | bat --color=always --plain -l "$shell_name" 2>/dev/null && return
+  fi
+  printf '%s%s%s%s' "$bold" "$cyan" "$cmd" "$reset"
+}
+
 # Outside tmux, TIOCSTI injects the chars into our controlling terminal's
 # input buffer — the shell reads them at its next prompt, same effect as
 # send-keys. macOS still permits it on one's own tty.
@@ -136,14 +143,14 @@ cmd=''
 parse_reply "$(build_prompt | claude_call '')"
 
 if (( ! interactive )); then
-  [[ -n $cmd && $cmd != none ]] && { sanitize; printf '\n  %s%s%s%s\n' "$bold" "$cyan" "$cmd" "$reset"; }
+  [[ -n $cmd && $cmd != none ]] && { sanitize; printf '\n  %s\n' "$(render_cmd)"; }
   exit 0
 fi
 
 while :; do
   if [[ -n $cmd && $cmd != none ]]; then
     sanitize
-    printf '\n  %s%s%s%s\n\n' "$bold" "$cyan" "$cmd" "$reset"
+    printf '\n  %s\n\n' "$(render_cmd)"
     read -rsn1 -p "accept? [${green}y${reset}]es / [${yellow}a${reset}]sk / [${red}q${reset}]uit: " ans || exit 1
   else
     echo

@@ -112,10 +112,24 @@ resume_stage() { # $1 = follow-up prompt, staging tools allowed; sets $msg
           'Bash(git log:*)' 'Bash(git show:*)' 'Read') || die_claude
 }
 
-show_msg() { # subject bold cyan, body default, both indented
+render_subject() { # colorize type(scope)!: markup; description stays default color
+  local s=$1 re='^([a-z]+)(\(([^)]+)\))?(!)?: (.*)$'
+  if [[ $s =~ $re ]]; then
+    local type=${BASH_REMATCH[1]} scope=${BASH_REMATCH[3]}
+    local bang=${BASH_REMATCH[4]} desc=${BASH_REMATCH[5]}
+    local out="${bold}${green}${type}${reset}"
+    [[ -n $scope ]] && out+="${dim}(${reset}${cyan}${scope}${reset}${dim})${reset}"
+    [[ -n $bang ]] && out+="${bold}${red}!${reset}"
+    printf '%s' "${out}${dim}:${reset} ${bold}${desc}${reset}"
+  else
+    printf '%s%s%s' "$bold" "$s" "$reset"
+  fi
+}
+
+show_msg() { # subject with colorized markup, body default, both indented
   local subject=${msg%%$'\n'*} body=''
   [[ $msg == *$'\n'* ]] && body=${msg#*$'\n'}
-  printf '\n  %s%s%s%s\n' "$bold" "$cyan" "$subject" "$reset"
+  printf '\n  %s\n' "$(render_subject "$subject")"
   [[ -n $body ]] && printf '%s\n' "$body" | sed 's/^/  /'
   echo
 }
@@ -160,7 +174,7 @@ do_split() {
   printf '\n  %s%s%d separate commits proposed%s\n\n' "$bold" "$yellow" "$total" "$reset"
   local i
   for i in "${!subjects[@]}"; do
-    printf '  %s%d.%s %s\n' "$green" "$((i + 1))" "$reset" "${subjects[i]}"
+    printf '  %s%d.%s %s\n' "$green" "$((i + 1))" "$reset" "$(render_subject "${subjects[i]}")"
   done
   echo
 
