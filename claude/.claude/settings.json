@@ -8,11 +8,13 @@
     "pr": ""
   },
   "permissions": {
-    "defaultMode": "auto",
     "deny": [
       "AskUserQuestion"
-    ]
+    ],
+    "defaultMode": "auto"
   },
+  "model": "fable",
+  "effortLevel": "high",
   "hooks": {
     "Notification": [
       {
