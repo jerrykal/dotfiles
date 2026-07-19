@@ -15,31 +15,32 @@ Scope: ML workloads only — training, benchmarks, sweeps, data preprocessing. Q
 1. **Target session** — the session you're attached to; else the first attached one (`tmux list-clients -F '#{session_name}'`); else create one.
 2. **Group or new window** — runs from the same sweep/config family share one window as panes, capped at 4; the 5th starts window `<name>-2`. Unrelated runs get their own window; when unsure, new window.
 3. **Name** — window names are coarse: lowercase, dash-separated, 2–3 tokens, ≤~20 chars (`train-resnet`, `sweep-lr`); `-2` on collision. Every pane gets a title carrying the detailed identity (`lr1e-3-seed0`) — solo runs too, so a later `join-pane` or grouping never leaves an unlabeled run. The run id — `<window>`, or `<window>--<pane-title>` when grouped — names the files in `~/.cache/exp-dispatch/`. The window name ends in a status suffix (no space) — `*` running, `!` at least one failure, bare name when all runs exit 0: dispatch sets `*`; the bundled `finish.sh` re-aggregates it and rings the terminal bell as each run exits.
-4. **Env** — create panes with `-c <project-dir>`; prefer self-contained runner commands (`uv run …`), else explicit venv activation inside the command. Verify the env story before dispatching. The wrapper below runs under POSIX `sh` (tmux's command shell).
-5. **Create the pane** — clear any stale status for a reused run id, wrap the command so the pane survives the run (exit epilogue via `finish.sh` — banner, status file, window symbol, bell — then a live interactive shell with full scrollback), and capture the pane ID. `-d` keeps the user's view where it is — never dispatch without it:
+4. **Env** — create panes with `-c <project-dir>`; prefer self-contained runner commands (`uv run …`), else explicit venv activation inside the command. Verify the env story before dispatching. The command line below is typed into the pane's interactive shell — phrase it in that shell's syntax (last exit status is `$?` in POSIX shells/zsh, `$status` in fish).
+5. **Create the pane** — clear any stale status for a reused run id, create the pane as a plain interactive shell (no command argument — the command is typed in via `send-keys` in step 6, so it sits in scrollback and the user can scroll up to see what ran), and capture the pane ID. `-d` keeps the user's view where it is — never dispatch without it:
 
    ```sh
    mkdir -p ~/.cache/exp-dispatch && rm -f ~/.cache/exp-dispatch/<run>.status
-   wrap='<cmd>; sh ~/.claude/skills/exp-dispatch/finish.sh <run> $?; exec "${SHELL:-sh}"'
-   pane=$(tmux new-window -d -t <session> -n '<name>*' -c <dir> -P -F '#{pane_id}' "$wrap")
+   pane=$(tmux new-window -d -t <session> -n '<name>*' -c <dir> -P -F '#{pane_id}')
    tmux set -w -t "$pane" pane-border-status top
    ```
 
    Grouped run — split the existing window instead, targeting it by a sibling run's pane ID (window names mutate as symbols flip — never target by name):
 
    ```sh
-   pane=$(tmux split-window -d -t "$sibling" -c <dir> -P -F '#{pane_id}' "$wrap")
+   pane=$(tmux split-window -d -t "$sibling" -c <dir> -P -F '#{pane_id}')
    tmux select-layout -t "$sibling" tiled
    tmux rename-window -t "$sibling" '<name>*'  # window may sit settled (bare/!); the new run flips it back
    ```
 
-6. **Log, tag, title, meta** — pipe-pane first, in the same Bash call as pane creation: output printed before it attaches never reaches the log (scrollback still has it):
+6. **Log, tag, title, meta — then launch** — all in the same Bash call as pane creation. Pipe-pane attaches before the command is sent, so the log captures the run from the typed command line onward. The command carries its exit epilogue via `finish.sh` (banner, status file, window symbol, bell); when it exits the pane drops back to the shell prompt, scrollback intact:
 
    ```sh
    tmux pipe-pane -o -t "$pane" 'cat >> ~/.cache/exp-dispatch/<run>.log'  # keeps the tty, so tqdm/rich render normally
    tmux set -p -t "$pane" @exp-dispatch <run>
    tmux select-pane -t "$pane" -T '<pane-title>'
    printf 'pane=%s\ncmd=%s\nstart=%s\n' "$pane" '<cmd>' "$(date -Iseconds)" > ~/.cache/exp-dispatch/<run>.meta
+   tmux send-keys -t "$pane" -l '<cmd>; sh ~/.claude/skills/exp-dispatch/finish.sh <run> $?'  # $status in fish
+   tmux send-keys -t "$pane" Enter
    ```
 
 7. **Watcher** — best-effort background completion watch via Bash `run_in_background`: `while [ ! -f ~/.cache/exp-dispatch/<run>.status ]; do sleep 60; done; cat <run>.status`. For multi-hour runs the session may end first; a later session resumes from status files + `capture-pane`.
