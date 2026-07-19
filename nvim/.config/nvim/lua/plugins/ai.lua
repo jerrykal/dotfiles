@@ -6,7 +6,6 @@ return {
     opts = {
       auto_start = true,
       log_level = "info",
-      track_selection = false,
       terminal = {
         -- Inside tmux, reuse the prefix-. claude pane (env-forwarded so claude
         -- auto-connects to this nvim); elsewhere no managed terminal.
