@@ -17,6 +17,10 @@ fi
 export PATH="$HOME/.cargo/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 
+# mise shims, so mise tools resolve in non-interactive shells
+# where fish's `mise activate` never runs
+export PATH="$HOME/.local/share/mise/shims:$PATH"
+
 # Environment Variables
 if command -v nvim >/dev/null 2>&1; then
   export EDITOR="$(command -v nvim)"
