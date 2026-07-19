@@ -6,6 +6,7 @@
 # Usage: claude-picker.sh [--all]  (start in all-sessions scope; default current)
 
 max_height=15
+max_title=40
 
 source "$(dirname "${BASH_SOURCE[0]}")/claude-pattern.sh"
 
@@ -18,8 +19,8 @@ IFS=' ' read -r orig session \
 list_panes() { # $1: current|all
   local flags=(-a)
   [[ "$1" == current ]] && flags=(-s -t "=$session")
-  tmux list-panes "${flags[@]}" -F '#{pane_current_command}	#{pane_id}	#{=1:pane_title}	#{session_name}	#{window_index}:#{pane_index}	#{window_activity}' |
-    while IFS=$'\t' read -r cmd id glyph session loc activity; do
+  tmux list-panes "${flags[@]}" -F '#{pane_current_command}	#{pane_id}	#{=1:pane_title}	#{session_name}	#{window_index}:#{pane_index}	#{window_activity}	#{pane_title}' |
+    while IFS=$'\t' read -r cmd id glyph session loc activity title; do
       [[ "$cmd" =~ $pattern ]] || continue
       case "$glyph" in
       [⠀-⣿]) rank=2 color=$'\033[33m' state=working ;;
@@ -27,8 +28,11 @@ list_panes() { # $1: current|all
       ✳) rank=1 color=$'\033[34m' state=done ;;
       *) rank=3 color=$'\033[32m' state=idle ;;
       esac
-      printf '%s\t%s\t%s\t%s%-7s\033[0m %s \033[2m%s\033[0m\n' \
-        "$rank" "$activity" "$id" "$color" "$state" "$session" "$loc"
+      # Drop the leading status glyph from the title; keep idle titles whole.
+      [[ "$state" != idle ]] && { title=${title:1}; title=${title# }; }
+      ((${#title} > max_title)) && title="${title:0:max_title-1}…"
+      printf '%s\t%s\t%s\t%s%-7s\033[0m %s \033[2m%s\033[0m  \033[2;3m%s\033[0m\n' \
+        "$rank" "$activity" "$id" "$color" "$state" "$session" "$loc" "$title"
     done |
     # needs-you first (blocked > done > working > idle), then most recent
     sort -t$'\t' -k1,1n -k2,2rn | cut -f3-
