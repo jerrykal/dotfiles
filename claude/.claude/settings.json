@@ -14,7 +14,6 @@
     "defaultMode": "auto"
   },
   "model": "fable",
-  "effortLevel": "high",
   "hooks": {
     "Notification": [
       {
@@ -72,6 +71,7 @@
     }
   },
   "spinnerTipsEnabled": false,
+  "effortLevel": "high",
   "awaySummaryEnabled": false,
   "tui": "fullscreen",
   "theme": "custom:rose-pine",

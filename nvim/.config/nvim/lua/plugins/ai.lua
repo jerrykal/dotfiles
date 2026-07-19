@@ -8,10 +8,22 @@ return {
       log_level = "info",
       track_selection = false,
       terminal = {
-        provider = "none",
+        -- Inside tmux, reuse the prefix-. claude pane (env-forwarded so claude
+        -- auto-connects to this nvim); elsewhere no managed terminal.
+        provider = vim.env.TMUX and "external" or "none",
+        provider_opts = {
+          external_terminal_cmd = function(_, env)
+            local argv = { vim.fn.expand("~/.tmux/scripts/claude-pane.sh"), vim.fn.getcwd() }
+            for k, v in pairs(env) do
+              table.insert(argv, ("%s=%s"):format(k, v))
+            end
+            return argv
+          end,
+        },
       },
     },
     keys = {
+      { "<M-c>", "<cmd>ClaudeCodeFocus<cr>", mode = { "n", "v" }, desc = "Focus/open Claude pane" },
       { "<M-a>", "<cmd>ClaudeCodeAdd %<cr>", desc = "Add current buffer" },
       {
         "<M-a>",
