@@ -16,6 +16,21 @@ customCommands:
     description: commit with Claude-written message (commit)
     command: clear && commit
     output: terminal
+  - key: H
+    context: files
+    description: review working tree in hunk
+    command: clear && hunk diff
+    output: terminal
+  - key: H
+    context: commits
+    description: review commit in hunk
+    command: clear && hunk show {{.SelectedLocalCommit.Sha}}
+    output: terminal
+  - key: H
+    context: stash
+    description: review stash in hunk
+    command: clear && hunk stash show {{.SelectedStashEntry.RefName}}
+    output: terminal
 gui:
   nerdFontsVersion: "3"
   border: single
