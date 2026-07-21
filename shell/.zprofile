@@ -1,7 +1,3 @@
 if [[ -f "$HOME/.profile" ]]; then
   source "$HOME/.profile"
 fi
-
-if [[ -f "$HOME/.zshrc" ]]; then
-  source "$HOME/.zshrc"
-fi
