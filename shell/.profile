@@ -1,3 +1,7 @@
+# Source once; rc files also source this so fish inherits it in non-login shells
+[ -n "$__PROFILE_SOURCED" ] && return
+export __PROFILE_SOURCED=1
+
 # Set XDG basedirs
 [ -z "$XDG_CONFIG_HOME" ] && export XDG_CONFIG_HOME="$HOME/.config"
 [ -z "$XDG_DATA_HOME" ] && export XDG_DATA_HOME="$HOME/.local/share"
@@ -20,6 +24,11 @@ export PATH="$HOME/.local/bin:$PATH"
 # mise shims, so mise tools resolve in non-interactive shells
 # where fish's `mise activate` never runs
 export PATH="$HOME/.local/share/mise/shims:$PATH"
+
+# CUDA
+if [ -d /usr/local/cuda/bin ]; then
+  export PATH=/usr/local/cuda/bin:$PATH
+fi
 
 # Environment Variables
 if command -v nvim >/dev/null 2>&1; then
@@ -57,15 +66,11 @@ if command -v fzf >/dev/null 2>&1; then
 
   export FZF_ALT_C_OPTS="--preview '$fzf_dir_preview'"
   export FZF_CTRL_T_OPTS="--preview 'if test -d {}; then $fzf_dir_preview; else $fzf_file_preview; fi'"
+  unset fzf_dir_preview fzf_file_preview
 fi
 
 # Claude
 export CLAUDE_CODE_TMUX_TRUECOLOR=true
-
-# CUDA
-if [ -d /usr/local/cuda/bin ]; then
-  export PATH=/usr/local/cuda/bin:$PATH
-fi
 
 # Machine-local config (untracked)
 [ -f "$HOME/.profile.local" ] && . "$HOME/.profile.local"
