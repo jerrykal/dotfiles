@@ -25,4 +25,4 @@ pending=$(jq -r '
 
 [ "${pending:-0}" -gt 0 ] 2>/dev/null && exit 0
 
-TITLE='Claude Code' BODY='Task complete' exec "$(dirname "$0")/notify.sh"
+exec "$HOME/.local/bin/notify" 'Claude Code' 'Task complete'

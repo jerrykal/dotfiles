@@ -20,7 +20,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "TITLE='Claude Code' BODY=$(jq -r '.message // \"Notification\"') ~/.claude/scripts/notify.sh",
+            "command": "~/.local/bin/notify 'Claude Code' \"$(jq -r '.message // \"Notification\"')\"",
             "async": true
           }
         ]
@@ -42,7 +42,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "TITLE='Claude Code' BODY='Task failed' ~/.claude/scripts/notify.sh",
+            "command": "~/.local/bin/notify 'Claude Code' 'Task failed'",
             "async": true
           }
         ]
