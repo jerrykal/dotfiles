@@ -1,47 +1,37 @@
-# Source once; rc files also source this so fish inherits it in non-login shells
-[ -n "$__PROFILE_SOURCED" ] && return
-export __PROFILE_SOURCED=1
+# One-time env setup (XDG, brew, EDITOR, fzf) is guarded against nested shells.
+# PATH is re-asserted on every shell (bottom): macOS path_helper reorders it on
+# each login, demoting our prepends below /etc/paths entries like /usr/local/bin.
 
-# Set XDG basedirs
-[ -z "$XDG_CONFIG_HOME" ] && export XDG_CONFIG_HOME="$HOME/.config"
-[ -z "$XDG_DATA_HOME" ] && export XDG_DATA_HOME="$HOME/.local/share"
-[ -z "$XDG_STATE_HOME" ] && export XDG_STATE_HOME="$HOME/.local/state"
-[ -z "$XDG_CACHE_HOME" ] && export XDG_CACHE_HOME="$HOME/.cache"
+if [ -z "$__PROFILE_SOURCED" ]; then
+  export __PROFILE_SOURCED=1
 
-# Homebrew
-if [ -x "/opt/homebrew/bin/brew" ]; then
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-elif [ -x "/usr/local/bin/brew" ]; then
-  eval "$(/usr/local/bin/brew shellenv)"
-elif [ -x "/home/linuxbrew/.linuxbrew/bin/brew" ]; then
-  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-fi
+  # XDG basedirs
+  [ -z "$XDG_CONFIG_HOME" ] && export XDG_CONFIG_HOME="$HOME/.config"
+  [ -z "$XDG_DATA_HOME" ] && export XDG_DATA_HOME="$HOME/.local/share"
+  [ -z "$XDG_STATE_HOME" ] && export XDG_STATE_HOME="$HOME/.local/state"
+  [ -z "$XDG_CACHE_HOME" ] && export XDG_CACHE_HOME="$HOME/.cache"
 
-# Paths
-export PATH="$HOME/.cargo/bin:$PATH"
-export PATH="$HOME/.local/bin:$PATH"
+  # Homebrew (PATH order re-asserted below)
+  if [ -x "/opt/homebrew/bin/brew" ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [ -x "/usr/local/bin/brew" ]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+  elif [ -x "/home/linuxbrew/.linuxbrew/bin/brew" ]; then
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+  fi
 
-# mise shims, so mise tools resolve in non-interactive shells
-# where fish's `mise activate` never runs
-export PATH="$HOME/.local/share/mise/shims:$PATH"
+  # Editor
+  if command -v nvim >/dev/null 2>&1; then
+    export EDITOR="$(command -v nvim)"
+    export MANPAGER="nvim +Man!"
+  fi
 
-# CUDA
-if [ -d /usr/local/cuda/bin ]; then
-  export PATH=/usr/local/cuda/bin:$PATH
-fi
+  export VISUAL="$EDITOR"
+  export SUDO_EDITOR="$EDITOR"
 
-# Environment Variables
-if command -v nvim >/dev/null 2>&1; then
-  export EDITOR="$(command -v nvim)"
-  export MANPAGER="nvim +Man!"
-fi
-
-export VISUAL="$EDITOR"
-export SUDO_EDITOR="$EDITOR"
-
-# fzf configs
-if command -v fzf >/dev/null 2>&1; then
-  export FZF_DEFAULT_OPTS="
+  # fzf
+  if command -v fzf >/dev/null 2>&1; then
+    export FZF_DEFAULT_OPTS="
 --tmux=80%,70%
 --layout reverse
 --border
@@ -52,25 +42,54 @@ if command -v fzf >/dev/null 2>&1; then
 --color=spinner:#f6c177,info:#9ccfd8,label:#6e6a86
 --color=pointer:#c4a7e7,marker:#eb6f92,prompt:#908caa"
 
-  if command -v eza >/dev/null 2>&1; then
-    fzf_dir_preview="eza -a1 --group-directories-first --color=always {}"
-  else
-    fzf_dir_preview="ls -a1 {}"
+    if command -v eza >/dev/null 2>&1; then
+      fzf_dir_preview="eza -a1 --group-directories-first --color=always {}"
+    else
+      fzf_dir_preview="ls -a1 {}"
+    fi
+
+    if command -v bat >/dev/null 2>&1; then
+      fzf_file_preview="bat -n --color=always {}"
+    else
+      fzf_file_preview="cat {}"
+    fi
+
+    export FZF_ALT_C_OPTS="--preview '$fzf_dir_preview'"
+    export FZF_CTRL_T_OPTS="--preview 'if test -d {}; then $fzf_dir_preview; else $fzf_file_preview; fi'"
+    unset fzf_dir_preview fzf_file_preview
   fi
 
-  if command -v bat >/dev/null 2>&1; then
-    fzf_file_preview="bat -n --color=always {}"
-  else
-    fzf_file_preview="cat {}"
-  fi
+  # Claude
+  export CLAUDE_CODE_TMUX_TRUECOLOR=true
 
-  export FZF_ALT_C_OPTS="--preview '$fzf_dir_preview'"
-  export FZF_CTRL_T_OPTS="--preview 'if test -d {}; then $fzf_dir_preview; else $fzf_file_preview; fi'"
-  unset fzf_dir_preview fzf_file_preview
+  # Machine-local config (untracked)
+  [ -f "$HOME/.profile.local" ] && . "$HOME/.profile.local"
 fi
 
-# Claude
-export CLAUDE_CODE_TMUX_TRUECOLOR=true
+# Paths — re-asserted on every shell (see header). Strips any existing occurrence
+# before prepending, so repeat sourcing can't demote or duplicate. Last call wins,
+# so higher priority goes lower here.
+_path_prepend() {
+  d=$1
+  [ -d "$d" ] || return
+  PATH=$(printf '%s' ":$PATH:" | sed "s|:$d:|:|g")
+  PATH=${PATH#:}
+  PATH=${PATH%:}
+  PATH="$d:$PATH"
+}
 
-# Machine-local config (untracked)
-[ -f "$HOME/.profile.local" ] && . "$HOME/.profile.local"
+# Keep Homebrew ahead of /usr/local/bin (path_helper demotes it each login)
+_path_prepend /opt/homebrew/sbin
+_path_prepend /opt/homebrew/bin
+
+_path_prepend "$HOME/.cargo/bin"
+_path_prepend "$HOME/.local/bin"
+
+# mise shims, so mise tools resolve where fish's `mise activate` never runs
+_path_prepend "$HOME/.local/share/mise/shims"
+
+# CUDA
+_path_prepend /usr/local/cuda/bin
+
+export PATH
+unset -f _path_prepend
