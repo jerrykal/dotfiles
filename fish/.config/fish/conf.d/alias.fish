@@ -3,8 +3,6 @@ type -q batcat; and alias cat="batcat"; and alias bat="batcat"
 
 type -q autossh; and alias ssh="autossh -M 0"
 
-type -q claude; and alias claude="claude --allow-dangerously-skip-permissions"
-
 alias mkdir="mkdir -p"
 
 alias t="~/.tmux/scripts/session-picker.sh"
