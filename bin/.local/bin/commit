@@ -8,10 +8,13 @@
 # One headless Claude session per run: the first call drafts a message from the
 # staged diff (no tools); redrafts and split handling resume that session, so
 # Claude keeps the diff and its own proposals in context. If the diff spans
-# unrelated concerns Claude proposes a split: accept and it stages each logical
-# group itself (git access limited to staging commands), every sub-commit
-# reviewed before it's made; decline and it all goes in one reviewed commit.
+# unrelated concerns Claude proposes a split: accept and it stages each group
+# in the proposed order (git access limited to staging commands), every
+# sub-commit reviewed before it's made; redraft the proposal with feedback, or
+# decline and it all goes in one reviewed commit.
 # Commits are always made by this script after your approval, never by Claude.
+# Aborting at any point (including mid-split) restores the original staged
+# state, hunk-precise, for whatever wasn't committed.
 
 set -euo pipefail
 
@@ -46,7 +49,13 @@ effort=${COMMIT_EFFORT:-medium}
 sid=$(uuidgen | tr '[:upper:]' '[:lower:]')
 
 workdir=$(mktemp -d)
-trap 'rm -rf "$workdir"' EXIT
+# Snapshot the exact staged state (index as a tree object — hunk-precise, not
+# file-level). Every exit path restores it: content already committed by then
+# matches the snapshot, so it diffs clean against the new HEAD and only the
+# uncommitted remainder comes back staged.
+orig_index=$(git write-tree)
+trap 'git read-tree "$orig_index" || :; rm -rf "$workdir"' EXIT
+trap 'exit 130' INT TERM
 
 # Diffs beyond this are truncated in the prompt; the subject still comes
 # out fine from the stat + leading hunks.
@@ -70,6 +79,7 @@ SPLIT
 <proposed subject line for commit 1>
 <proposed subject line for commit 2>
 
+List the subjects in the order the commits should be made (prerequisites first).
 Only when clearly warranted; one change touching several files is not a split.
 EOF
   printf '\n## Recent log\n'
@@ -160,36 +170,47 @@ review_commit() {
   done
 }
 
-# do_split — show the proposed sub-commits, then let Claude stage each group
-# in turn (resuming the session), reviewing every sub-commit before it's made.
+# do_split — show the proposed sub-commits (redraftable with feedback), then
+# let Claude stage each group in the proposed order (resuming the session),
+# reviewing every sub-commit before it's made.
 do_split() {
-  local subjects=() line
-  while IFS= read -r line; do
-    [[ -z $line || $line == SPLIT ]] && continue
-    subjects+=("$line")
-  done <<< "$msg"
-  local total=${#subjects[@]}
-  (( total >= 2 )) || { echo "${red}commit: unparseable split proposal${reset}" >&2; return 1; }
+  local subjects=() line total i ans feedback
+  while :; do
+    subjects=()
+    while IFS= read -r line; do
+      [[ -z $line || $line == SPLIT ]] && continue
+      subjects+=("$line")
+    done <<< "$msg"
+    total=${#subjects[@]}
+    (( total >= 2 )) || { echo "${red}commit: unparseable split proposal${reset}" >&2; return 1; }
 
-  printf '\n  %s%s%d separate commits proposed%s\n\n' "$bold" "$yellow" "$total" "$reset"
-  local i
-  for i in "${!subjects[@]}"; do
-    printf '  %s%d.%s %s\n' "$green" "$((i + 1))" "$reset" "$(render_subject "${subjects[i]}")"
+    printf '\n  %s%s%d separate commits proposed%s\n\n' "$bold" "$yellow" "$total" "$reset"
+    for i in "${!subjects[@]}"; do
+      printf '  %s%d.%s %s\n' "$green" "$((i + 1))" "$reset" "$(render_subject "${subjects[i]}")"
+    done
+    echo
+
+    read -rsn1 -p "[${green}s${reset}]plit into $total / commit as [${blue}o${reset}]ne / [${yellow}r${reset}]edraft split / [${red}a${reset}]bort: " ans || ans=a
+    printf '%s\n' "$ans"
+    case $ans in
+      s|S) break ;;
+      r|R)
+        read -rp "feedback: " feedback
+        echo "${dim}redrafting split...${reset}" >&2
+        resume_msg "Revise your split proposal per this feedback: $feedback. Output the revised proposal in the same format — the line SPLIT, then one proposed subject per commit, in the order the commits should be made. If the feedback implies a single commit instead, output only that raw commit message with no SPLIT line."
+        if [[ $msg != SPLIT* ]]; then
+          review_commit || echo "${yellow}aborted; nothing committed${reset}" >&2
+          return 0
+        fi
+        ;;
+      o|O)
+        resume_msg "The user chose to commit everything as one commit. Write a single Conventional Commits message for the full staged diff. Do not output SPLIT. Output only the raw commit message."
+        review_commit || echo "${yellow}aborted; nothing committed${reset}" >&2
+        return 0
+        ;;
+      *) echo "${yellow}aborted; nothing committed${reset}" >&2; return 0 ;;
+    esac
   done
-  echo
-
-  local ans
-  read -rsn1 -p "[${green}s${reset}]plit into $total / commit as [${blue}o${reset}]ne / [${red}a${reset}]bort: " ans || ans=a
-  printf '%s\n' "$ans"
-  case $ans in
-    s|S) ;;
-    o|O)
-      resume_msg "The user chose to commit everything as one commit. Write a single Conventional Commits message for the full staged diff. Do not output SPLIT. Output only the raw commit message."
-      review_commit || echo "${yellow}aborted; nothing committed${reset}" >&2
-      return 0
-      ;;
-    *) echo "${yellow}aborted; nothing committed${reset}" >&2; return 0 ;;
-  esac
 
   # Unstage everything, then let Claude stage group by group; each round is
   # reviewed like a normal commit before the next begins.
@@ -197,8 +218,8 @@ do_split() {
   scope=$(git diff --cached --name-only)
   git reset -q
   while (( round <= total + 3 )); do   # slack over the proposal, but bounded
-    echo "${dim}staging next group ($model)...${reset}" >&2
-    resume_stage "The user accepted your split. Any previously staged group has been committed by the user; everything else is unstaged (new files untracked). Stage ONLY the next logical group from your proposal with git add (or git apply --cached for a hunk-level split). Do not commit; never touch files outside the original changeset. Then output ONLY that group's Conventional Commits message — no commentary. If every change from the original changeset is already committed, stage nothing and output exactly DONE."
+    echo "${dim}staging group $round...${reset}" >&2
+    resume_stage "The user accepted your split. Any previously staged group has been committed by the user; everything else is unstaged (new files untracked). The commits MUST be made in the exact order of your proposal — stage ONLY the next uncommitted group in that order with git add (or git apply --cached for a hunk-level split); never skip ahead or reorder. Do not commit; never touch files outside the original changeset. Then output ONLY that group's Conventional Commits message — no commentary. If every change from the original changeset is already committed, stage nothing and output exactly DONE."
     [[ $msg == DONE* ]] && break
     if git diff --cached --quiet; then
       echo "${yellow}nothing staged this round; stopping${reset}" >&2
@@ -207,12 +228,17 @@ do_split() {
     printf '\n%s── commit %d (of ~%d proposed) ──%s\n' "$bold" "$round" "$total" "$reset"
     git diff --cached --stat
     if ! review_commit; then
-      git reset -q
       stopped=1
-      echo "${yellow}split stopped; remaining changes left uncommitted${reset}" >&2
+      echo "${yellow}split stopped; original staging restored for uncommitted changes${reset}" >&2
       break
     fi
     round=$((round + 1))
+    # every scope change committed? done — skip the extra DONE round
+    local f all_done=1
+    while IFS= read -r f; do
+      [[ -n $f && -n $(git status --porcelain -- "$f") ]] && { all_done=0; break; }
+    done <<< "$scope"
+    (( all_done )) && break
   done
 
   # anything in scope still uncommitted?
@@ -227,7 +253,7 @@ do_split() {
   return 0
 }
 
-echo "${dim}drafting commit message ($model)...${reset}" >&2
+echo "${dim}drafting commit message...${reset}" >&2
 first_draft
 
 if [[ $msg == SPLIT* ]]; then
