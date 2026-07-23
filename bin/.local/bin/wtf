@@ -138,7 +138,7 @@ deliver() {
   fi
 }
 
-echo "${dim}diagnosing ($model)...${reset}" >&2
+echo "${dim}diagnosing...${reset}" >&2
 cmd=''
 parse_reply "$(build_prompt | claude_call '')"
 

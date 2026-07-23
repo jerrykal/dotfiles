@@ -118,7 +118,7 @@ deliver() {
   fi
 }
 
-echo "${dim}drafting command ($model)...${reset}" >&2
+echo "${dim}drafting command...${reset}" >&2
 first_draft
 
 while :; do
