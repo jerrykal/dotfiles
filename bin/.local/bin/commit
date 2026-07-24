@@ -107,6 +107,7 @@ die_claude() { echo "${red}commit: claude failed${reset}" >&2; exit 1; }
 first_draft() { # sets $msg
   msg=$(claude -p --session-id "$sid" --model "$model" --effort "$effort" \
         --tools "" --disable-slash-commands < "$workdir/prompt") || die_claude
+  ensure_format msg-or-split
 }
 
 resume_msg() { # $1 = follow-up prompt, tool-less; sets $msg
@@ -120,6 +121,44 @@ resume_stage() { # $1 = follow-up prompt, staging tools allowed; sets $msg
         --allowedTools 'Bash(git add:*)' 'Bash(git restore --staged:*)' \
           'Bash(git apply:*)' 'Bash(git status:*)' 'Bash(git diff:*)' \
           'Bash(git log:*)' 'Bash(git show:*)' 'Read') || die_claude
+}
+
+valid_msg() { # $msg is a raw Conventional Commits message
+  local subject=${msg%%$'\n'*}
+  local re='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([^)]+\))?!?: .+'
+  [[ $msg != *'```'* ]] && [[ $subject =~ $re ]]
+}
+
+valid_split() { # $msg is a SPLIT proposal with at least two subjects
+  [[ $msg == SPLIT* ]] || return 1
+  (( $(printf '%s\n' "$msg" | sed '/^SPLIT$/d; /^[[:space:]]*$/d' | wc -l) >= 2 ))
+}
+
+format_ok() { # $1 = msg | msg-or-split | stage
+  case $1 in
+    msg) valid_msg ;;
+    msg-or-split) valid_msg || valid_split ;;
+    stage) [[ $msg == DONE* ]] || valid_msg ;;
+  esac
+}
+
+# ensure_format — when $msg doesn't fit what the call site expects, bounce it
+# back to the session (tool-less) for reformatting; die if it stays malformed.
+ensure_format() { # $1 = msg | msg-or-split | stage
+  local mode=$1 tries=0 want
+  case $mode in
+    msg) want='ONLY the raw Conventional Commits message — subject `type(scope): subject`, optional body — no code fences, no commentary, no SPLIT line' ;;
+    msg-or-split) want='either ONLY the raw Conventional Commits message (no code fences, no commentary), or the line SPLIT followed by one proposed subject line per commit (at least two)' ;;
+    stage) want='ONLY the staged group'\''s raw Conventional Commits message (no code fences, no commentary), or exactly DONE if every change is already committed' ;;
+  esac
+  while ! format_ok "$mode" && (( tries++ < 2 )); do
+    echo "${dim}malformed reply; asking for a fix...${reset}" >&2
+    resume_msg "Your previous reply did not match the expected format. Resend it as $want."
+  done
+  if ! format_ok "$mode"; then
+    echo "${red}commit: claude kept replying in the wrong format${reset}" >&2
+    exit 1
+  fi
 }
 
 render_subject() { # colorize type(scope)!: markup; description stays default color
@@ -163,6 +202,7 @@ review_commit() {
         read -rp "feedback: " feedback
         echo "${dim}redrafting...${reset}" >&2
         resume_msg "Revise the commit message per this feedback: $feedback. Output only the raw commit message."
+        ensure_format msg
         ;;
       n|N) return 1 ;;
       *) echo "y, e, r, or n" >&2 ;;
@@ -198,6 +238,7 @@ do_split() {
         read -rp "feedback: " feedback
         echo "${dim}redrafting split...${reset}" >&2
         resume_msg "Revise your split proposal per this feedback: $feedback. Output the revised proposal in the same format — the line SPLIT, then one proposed subject per commit, in the order the commits should be made. If the feedback implies a single commit instead, output only that raw commit message with no SPLIT line."
+        ensure_format msg-or-split
         if [[ $msg != SPLIT* ]]; then
           review_commit || echo "${yellow}aborted; nothing committed${reset}" >&2
           return 0
@@ -205,6 +246,7 @@ do_split() {
         ;;
       o|O)
         resume_msg "The user chose to commit everything as one commit. Write a single Conventional Commits message for the full staged diff. Do not output SPLIT. Output only the raw commit message."
+        ensure_format msg
         review_commit || echo "${yellow}aborted; nothing committed${reset}" >&2
         return 0
         ;;
@@ -220,6 +262,7 @@ do_split() {
   while (( round <= total + 3 )); do   # slack over the proposal, but bounded
     echo "${dim}staging group $round...${reset}" >&2
     resume_stage "The user accepted your split. Any previously staged group has been committed by the user; everything else is unstaged (new files untracked). The commits MUST be made in the exact order of your proposal — stage ONLY the next uncommitted group in that order with git add (or git apply --cached for a hunk-level split); never skip ahead or reorder. Do not commit; never touch files outside the original changeset. Then output ONLY that group's Conventional Commits message — no commentary. If every change from the original changeset is already committed, stage nothing and output exactly DONE."
+    ensure_format stage
     [[ $msg == DONE* ]] && break
     if git diff --cached --quiet; then
       echo "${yellow}nothing staged this round; stopping${reset}" >&2

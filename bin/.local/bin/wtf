@@ -96,13 +96,24 @@ EOF
 }
 
 # parse_reply — prose is printed indented; the mandatory final "CMD: ..."
-# line becomes the (possibly unchanged) current command.
+# line becomes the (possibly unchanged) current command. A reply without a
+# CMD line is bounced back to the session for reformatting before giving up.
 parse_reply() { # $1 = full reply; may update $cmd
-  local newcmd prose
-  newcmd=$(printf '%s\n' "$1" | sed -n 's/^CMD: //p' | tail -1)
-  prose=$(printf '%s\n' "$1" | sed '/^CMD: /d' | sed -e :a -e '/^\s*$/{$d;N;ba' -e '}')
+  local reply=$1 newcmd prose tries=0
+  newcmd=$(printf '%s\n' "$reply" | sed -n 's/^CMD: //p' | tail -1)
+  while [[ -z $newcmd ]] && (( tries++ < 2 )); do
+    echo "${dim}reply missing its CMD line; asking for a fix...${reset}" >&2
+    reply=$(printf 'Your previous reply did not match the expected format. Resend it: brief plain prose, then one final line in exactly this format ("none" if there is nothing to type):\nCMD: <command>' \
+            | claude_call resume) || die_claude
+    newcmd=$(printf '%s\n' "$reply" | sed -n 's/^CMD: //p' | tail -1)
+  done
+  prose=$(printf '%s\n' "$reply" | sed '/^CMD: /d' | sed -e :a -e '/^\s*$/{$d;N;ba' -e '}')
   [[ -n $prose ]] && { echo; printf '%s\n' "$prose" | sed 's/^/  /'; }
-  [[ -n $newcmd ]] && cmd=$newcmd
+  if [[ -n $newcmd ]]; then
+    cmd=$newcmd
+  else
+    echo "${yellow}reply had no CMD line; no command to offer${reset}" >&2
+  fi
 }
 
 sanitize() { # defense against fences/multi-line despite the prompt

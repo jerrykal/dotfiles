@@ -67,22 +67,47 @@ Description: $desc
 EOF
 }
 
-first_draft() { # sets $cmd
+malformed() { # anything but a single non-empty command line (fence lines aside)
+  local body
+  body=$(printf '%s\n' "$cmd" | sed '/^[[:space:]]*```/d; /^[[:space:]]*$/d')
+  [[ -z $body || $body == *$'\n'* ]]
+}
+
+first_draft() { # sets $cmd; bounces malformed replies back to the session
+  local tries=0
   cmd=$(build_prompt | claude -p --session-id "$sid" "${claude_flags[@]}") || die_claude
+  while malformed && (( tries++ < 2 )); do
+    echo "${dim}malformed reply; asking for a fix...${reset}" >&2
+    cmd=$(printf 'Your previous reply was not in the expected format. Output ONLY the raw one-line command — no code fences, no commentary, no leading $.' \
+          | claude -p --resume "$sid" "${claude_flags[@]}") || die_claude
+  done
+  if malformed; then
+    echo "${red}pls: claude kept replying in the wrong format${reset}" >&2
+    exit 1
+  fi
 }
 
 # ask — free-form follow-up in the same session: a question, a request to
 # explain, a refinement. The reply's prose is printed; its mandatory final
 # "CMD: ..." line becomes the (possibly unchanged) current command.
 ask() { # $1 = user's follow-up; may update $cmd
-  local reply
+  local reply newcmd prose tries=0
   reply=$(printf 'Follow-up from the user: %s\n\nAnswer briefly in plain prose (no markdown). If the follow-up warrants changing the command, change it. Then end your reply with one final line in exactly this format, with the current one-line command (unchanged if no change was needed):\nCMD: <command>' "$1" \
           | claude -p --resume "$sid" "${claude_flags[@]}") || die_claude
-  local newcmd prose
   newcmd=$(printf '%s\n' "$reply" | sed -n 's/^CMD: //p' | tail -1)
+  while [[ -z $newcmd ]] && (( tries++ < 2 )); do
+    echo "${dim}reply missing its CMD line; asking for a fix...${reset}" >&2
+    reply=$(printf 'Your previous reply did not match the expected format. Resend it: brief plain prose, then one final line in exactly this format, with the current one-line command:\nCMD: <command>' \
+            | claude -p --resume "$sid" "${claude_flags[@]}") || die_claude
+    newcmd=$(printf '%s\n' "$reply" | sed -n 's/^CMD: //p' | tail -1)
+  done
   prose=$(printf '%s\n' "$reply" | sed '/^CMD: /d' | sed -e :a -e '/^\s*$/{$d;N;ba' -e '}')
   [[ -n $prose ]] && { echo; printf '%s\n' "$prose" | sed 's/^/  /'; }
-  [[ -n $newcmd ]] && cmd=$newcmd
+  if [[ -n $newcmd ]]; then
+    cmd=$newcmd
+  else
+    echo "${yellow}reply had no CMD line; keeping previous command${reset}" >&2
+  fi
 }
 
 sanitize() { # defense against fences/multi-line despite the prompt
