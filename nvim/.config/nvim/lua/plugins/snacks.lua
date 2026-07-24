@@ -201,6 +201,7 @@ return {
       { "<leader>fg", function() Snacks.picker.git_files() end, desc = "Find Git Files" },
       { "<leader>fp", function() Snacks.picker.projects() end, desc = "Projects" },
       { "<leader>fr", function() Snacks.picker.recent() end, desc = "Recent" },
+      { "<C-t>", function() require("util.insert_path").pick() end, mode = { "n", "i" }, desc = "Insert File Path" },
 
       -- Git
       { "<leader>gb", function() Snacks.picker.git_branches() end, desc = "Git Branches" },
