@@ -42,8 +42,7 @@ map("n", "N", "'nN'[v:searchforward].'zv'", { expr = true })
 map("x", "N", "'nN'[v:searchforward]", { expr = true })
 map("o", "N", "'nN'[v:searchforward]", { expr = true })
 
-map("n", "<C-u>", "<C-u>zz")
-map("n", "<C-d>", "<C-d>zz")
+-- Delete char to black-hole register so it doesn't clobber the last yank
 map("n", "x", '"_x')
 
 -- Diagnostic

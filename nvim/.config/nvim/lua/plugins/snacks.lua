@@ -11,6 +11,9 @@ return {
       },
       picker = {
         prompt = "> ",
+        matcher = {
+          frecency = true,
+        },
         -- One outer border, prompt on top, list below, preview right
         layouts = {
           custom = {
@@ -156,6 +159,11 @@ return {
       },
       notifier = {},
       scope = {},
+      scroll = {
+        animate = {
+          duration = { step = 10, total = 100 },
+        },
+      },
       statuscolumn = {
         left = { "sign", "mark" },
       },
@@ -244,8 +252,6 @@ return {
       { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
       { "]]", function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
       { "[[", function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
-      { "<a-n>", function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
-      { "<a-p>", function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
       { "<leader>z",  function() Snacks.zen.zoom() end, desc = "Toggle Zoom" },
       { "<leader>.", function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },
       { "<leader>S", function() Snacks.scratch.select() end, desc = "Select Scratch Buffer" },
