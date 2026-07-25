@@ -59,8 +59,7 @@
     "command": "bash ~/.claude/statusline.sh"
   },
   "enabledPlugins": {
-    "astral@astral-sh": true,
-    "frontend-design@claude-plugins-official": true
+    "astral@astral-sh": true
   },
   "extraKnownMarketplaces": {
     "astral-sh": {
@@ -78,5 +77,8 @@
   "theme": "custom:rose-pine",
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
+  "skillOverrides": {
+    "hunk-review": "user-invocable-only"
+  }
 }
