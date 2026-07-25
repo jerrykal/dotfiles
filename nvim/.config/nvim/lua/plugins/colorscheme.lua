@@ -51,10 +51,10 @@ return {
         DapStoppedLine = { bg = "gold", blend = 20 },
 
         -- Bekaboo/dropbar.nvim
-        DropBarMenuNormalFloat = { fg = "subtle", bg = "base" },
-        DropBarMenuFloatBorder = { fg = "highlight_med", bg = "base" },
-        DropBarMenuCurrentContext = { bg = "overlay" },
-        DropBarMenuHoverEntry = { bg = "overlay" },
+        DropBarMenuNormalFloat = { fg = "subtle", bg = "surface" },
+        DropBarMenuFloatBorder = { fg = "highlight_med", bg = "surface" },
+        DropBarMenuCurrentContext = { fg = "text", bg = "highlight_high" },
+        DropBarMenuHoverEntry = { fg = "text", bg = "overlay" },
         DropBarMenuHoverIcon = { bg = "overlay" },
         DropBarMenuHoverSymbol = { bg = "overlay", bold = true },
         DropBarCurrentContext = { bg = "overlay" },
@@ -62,6 +62,7 @@ return {
         DropBarPreview = { bg = "highlight_med" },
         DropBarFzfMatch = { fg = "rose" },
         DropBarIconUISeparator = { fg = "muted" },
+        DropBarIconUISeparatorNC = { fg = "highlight_med" },
       },
     },
     config = function(_, opts)

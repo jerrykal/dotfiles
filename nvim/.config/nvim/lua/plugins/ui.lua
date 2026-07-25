@@ -67,6 +67,14 @@ return {
         kinds = {
           symbols = require("util.kind_icons").get(true),
         },
+        ui = {
+          bar = {
+            separator = " ",
+          },
+          menu = {
+            indicator = "",
+          },
+        },
       },
     },
     keys = {
