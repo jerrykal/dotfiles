@@ -159,11 +159,6 @@ return {
       },
       notifier = {},
       scope = {},
-      scroll = {
-        animate = {
-          duration = { step = 10, total = 100 },
-        },
-      },
       statuscolumn = {
         left = { "sign", "mark" },
       },

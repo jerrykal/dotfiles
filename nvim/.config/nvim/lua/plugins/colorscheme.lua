@@ -19,8 +19,8 @@ return {
         ["@markup.italic"] = { italic = true },
         htmlItalic = { italic = true },
 
-        WinBar = { link = "Normal" },
-        WinBarNC = { link = "Normal" },
+        WinBar = { fg = "subtle", bg = "base" },
+        WinBarNC = { fg = "muted", bg = "base" },
 
         -- folke/snacks.nvim
         SnacksIndent = { fg = "highlight_med" },
@@ -38,6 +38,10 @@ return {
         SnacksPickerSpinner = { fg = "gold" },
         SnacksPickerSelected = { fg = "love" },
 
+        -- folke/trouble.nvim
+        TroubleNormal = { bg = "base" },
+        TroubleNormalNC = { bg = "base" },
+
         -- lewis6991/gitsigns
         GitSignsAddInline = { bg = "foam", blend = 40 },
         GitSignsDeleteInline = { bg = "love", blend = 40 },
@@ -45,6 +49,19 @@ return {
 
         -- mfussenegger/nvim-dap
         DapStoppedLine = { bg = "gold", blend = 20 },
+
+        -- Bekaboo/dropbar.nvim
+        DropBarMenuNormalFloat = { fg = "subtle", bg = "base" },
+        DropBarMenuFloatBorder = { fg = "highlight_med", bg = "base" },
+        DropBarMenuCurrentContext = { bg = "overlay" },
+        DropBarMenuHoverEntry = { bg = "overlay" },
+        DropBarMenuHoverIcon = { bg = "overlay" },
+        DropBarMenuHoverSymbol = { bg = "overlay", bold = true },
+        DropBarCurrentContext = { bg = "overlay" },
+        DropBarHover = { bg = "overlay" },
+        DropBarPreview = { bg = "highlight_med" },
+        DropBarFzfMatch = { fg = "rose" },
+        DropBarIconUISeparator = { fg = "muted" },
       },
     },
     config = function(_, opts)

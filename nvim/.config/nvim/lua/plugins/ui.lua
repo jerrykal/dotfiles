@@ -41,21 +41,56 @@ return {
     opts = {},
   },
 
-  -- Winbar breadcrumbs showing the current code context via LSP
+  -- Winbar breadcrumbs showing path and code context, with clickable menus
   {
-    "SmiteshP/nvim-navic",
-    event = "LspAttach",
+    "Bekaboo/dropbar.nvim",
+    lazy = false, -- handles its own lazy-loading via plugin/dropbar.lua
+    dependencies = {
+      { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+    },
     opts = {
-      icons = require("util.kind_icons").get(true),
-      highlight = true,
-      separator = "  ",
-      lsp = {
-        auto_attach = true,
+      bar = {
+        -- default sources minus path: symbols only
+        sources = function(buf, _)
+          local sources = require("dropbar.sources")
+          local utils = require("dropbar.utils")
+          if vim.bo[buf].ft == "markdown" then
+            return { sources.markdown }
+          end
+          if vim.bo[buf].buftype == "terminal" then
+            return { sources.terminal }
+          end
+          return { utils.source.fallback({ sources.lsp }) }
+        end,
+      },
+      icons = {
+        kinds = {
+          symbols = require("util.kind_icons").get(true),
+        },
       },
     },
-    config = function(_, opts)
-      require("nvim-navic").setup(opts)
-      vim.o.winbar = "  %{%v:lua.require'nvim-navic'.get_location()%}"
-    end,
+    keys = {
+      {
+        "<leader>;",
+        function()
+          require("dropbar.api").pick()
+        end,
+        desc = "Pick symbols in winbar",
+      },
+      {
+        "[;",
+        function()
+          require("dropbar.api").goto_context_start()
+        end,
+        desc = "Go to start of current context",
+      },
+      {
+        "];",
+        function()
+          require("dropbar.api").select_next_context()
+        end,
+        desc = "Select next context",
+      },
+    },
   },
 }
