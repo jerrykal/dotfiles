@@ -30,6 +30,16 @@ map("i", ";", ";<c-g>u")
 map("v", "<", "<gv")
 map("v", ">", ">gv")
 
+-- Tab in leading whitespace reindents the line via 'indentexpr' (i_CTRL-F);
+-- blink.cmp's super-tab preset reaches this through its fallback
+map("i", "<Tab>", function()
+  local col = vim.api.nvim_win_get_cursor(0)[2]
+  if vim.api.nvim_get_current_line():sub(1, col):match("^%s*$") then
+    return "<C-f>"
+  end
+  return "<Tab>"
+end, { expr = true, desc = "Reindent Line or Tab" })
+
 -- Commenting
 map("n", "gco", "o<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add Comment Below" })
 map("n", "gcO", "O<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add Comment Above" })

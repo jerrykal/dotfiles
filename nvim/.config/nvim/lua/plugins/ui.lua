@@ -60,7 +60,7 @@ return {
           if vim.bo[buf].buftype == "terminal" then
             return { sources.terminal }
           end
-          return { utils.source.fallback({ sources.lsp }) }
+          return { sources.lsp }
         end,
       },
       icons = {
@@ -77,28 +77,11 @@ return {
         },
       },
     },
+    -- stylua: ignore
     keys = {
-      {
-        "<leader>;",
-        function()
-          require("dropbar.api").pick()
-        end,
-        desc = "Pick symbols in winbar",
-      },
-      {
-        "[;",
-        function()
-          require("dropbar.api").goto_context_start()
-        end,
-        desc = "Go to start of current context",
-      },
-      {
-        "];",
-        function()
-          require("dropbar.api").select_next_context()
-        end,
-        desc = "Select next context",
-      },
+      { "<leader>;", function() require("dropbar.api").pick() end, desc = "Pick symbols in winbar", },
+      { "[;", function() require("dropbar.api").goto_context_start() end, desc = "Go to start of current context", },
+      { "];", function() require("dropbar.api").select_next_context() end, desc = "Select next context", },
     },
   },
 }
