@@ -13,7 +13,10 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "fable",
+  "model": "opus",
+  "skillOverrides": {
+    "hunk-review": "user-invocable-only"
+  },
   "hooks": {
     "Notification": [
       {
@@ -78,8 +81,5 @@
   "theme": "custom:rose-pine",
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
-  "skipAutoPermissionPrompt": true,
-  "skillOverrides": {
-    "hunk-review": "user-invocable-only"
-  }
+  "skipAutoPermissionPrompt": true
 }
