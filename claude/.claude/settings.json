@@ -70,6 +70,7 @@
       "autoUpdate": true
     }
   },
+  "showThinkingSummaries": true,
   "spinnerTipsEnabled": false,
   "awaySummaryEnabled": false,
   "tui": "fullscreen",
