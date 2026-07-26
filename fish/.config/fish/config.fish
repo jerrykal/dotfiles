@@ -1,7 +1,6 @@
 # Disable greeting
 set -g fish_greeting
 
-
 status is-interactive; or return
 
 # Cursor shapes
@@ -22,3 +21,6 @@ type -q zoxide; and zoxide init fish | source
 
 # Machine-local config, gitignored
 test -f $__fish_config_dir/local.fish; and source $__fish_config_dir/local.fish
+
+# conda is lazy-loaded from conf.d/conda.fish — never let `conda init` add its
+# block here, it is sourced later and would undo the lazy stubs.
