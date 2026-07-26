@@ -2,8 +2,6 @@
 name: conventional-commit
 description: Create a Conventional Commits-formatted git commit. Use whenever you make a commit — whether the user asked for one or you're committing work you did as part of a task.
 user-invocable: false
-model: opus
-effort: medium
 ---
 
 # Conventional commit
