@@ -379,6 +379,19 @@ return {
     },
   },
 
+  -- Break bad habits, master Vim motions
+  {
+    "m4xshen/hardtime.nvim",
+    lazy = false,
+    dependencies = { "MunifTanjim/nui.nvim" },
+    opts = {
+      disable_mouse = false,
+    },
+    keys = {
+      { "<leader>uH", "<cmd>Hardtime toggle<cr>", desc = "Toggle Hardtime" },
+    },
+  },
+
   -- Lightweight session management
   {
     "folke/persistence.nvim",
