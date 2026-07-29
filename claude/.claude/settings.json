@@ -73,10 +73,10 @@
       "autoUpdate": true
     }
   },
-  "showThinkingSummaries": true,
   "spinnerTipsEnabled": false,
   "awaySummaryEnabled": false,
   "tui": "fullscreen",
+  "showThinkingSummaries": true,
   "skipDangerousModePermissionPrompt": true,
   "theme": "custom:rose-pine",
   "inputNeededNotifEnabled": true,

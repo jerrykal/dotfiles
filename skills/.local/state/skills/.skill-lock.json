@@ -55,15 +55,6 @@
       "installedAt": "2026-06-19T05:55:48.990Z",
       "updatedAt": "2026-07-16T16:05:05.294Z"
     },
-    "teach": {
-      "source": "mattpocock/skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/mattpocock/skills.git",
-      "skillPath": "skills/productivity/teach/SKILL.md",
-      "skillFolderHash": "15f8c86d39ef834e643d092733ca899b59049067",
-      "installedAt": "2026-06-19T05:55:48.991Z",
-      "updatedAt": "2026-07-16T16:05:07.067Z"
-    },
     "writing-great-skills": {
       "source": "mattpocock/skills",
       "sourceType": "github",
@@ -78,9 +69,9 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/modem-dev/hunk.git",
       "skillPath": "skills/hunk-review/SKILL.md",
-      "skillFolderHash": "f955a7b7c2808b57cb72c5facd3fa9579af1ca1c",
+      "skillFolderHash": "dd9938367f3e6c6bce3a3873059106041cd7a005",
       "installedAt": "2026-06-29T03:53:39.303Z",
-      "updatedAt": "2026-07-16T16:05:13.186Z"
+      "updatedAt": "2026-07-29T11:03:33.598Z"
     },
     "playwright-cli": {
       "source": "microsoft/playwright-cli",
