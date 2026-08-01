@@ -13,7 +13,6 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "fable",
   "skillOverrides": {
     "hunk-review": "user-invocable-only"
   },
