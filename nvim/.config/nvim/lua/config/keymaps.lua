@@ -15,6 +15,10 @@ map(
   { expr = true, silent = true }
 )
 
+-- Horizontal scrolling ('wrap' is off); replaces the screen top/bottom motions
+map({ "n", "x" }, "H", "zH", { desc = "Scroll Half Screen Left" })
+map({ "n", "x" }, "L", "zL", { desc = "Scroll Half Screen Right" })
+
 -- Use ESC to turn off search highlighting
 map("n", "<esc>", "<cmd>noh<cr>")
 
