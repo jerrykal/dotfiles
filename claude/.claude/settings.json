@@ -75,6 +75,7 @@
   "spinnerTipsEnabled": false,
   "awaySummaryEnabled": false,
   "tui": "fullscreen",
+  "autoMemoryEnabled": false,
   "showThinkingSummaries": true,
   "skipDangerousModePermissionPrompt": true,
   "theme": "custom:rose-pine",
