@@ -16,8 +16,8 @@ map(
 )
 
 -- Horizontal scrolling ('wrap' is off); replaces the screen top/bottom motions
-map({ "n", "x" }, "H", "zH", { desc = "Scroll Half Screen Left" })
-map({ "n", "x" }, "L", "zL", { desc = "Scroll Half Screen Right" })
+map({ "n", "x" }, "H", "5zh", { desc = "Scroll Screen Left by 5 columns" })
+map({ "n", "x" }, "L", "5zl", { desc = "Scroll Screen Right by 5 columns" })
 
 -- Use ESC to turn off search highlighting
 map("n", "<esc>", "<cmd>noh<cr>")
