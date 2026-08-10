@@ -72,6 +72,9 @@ return {
       explorer = {
         focus_on_select = true,
       },
+      diff = {
+        layout = "inline",
+      },
     },
     keys = {
       { "<leader>cd", "<cmd>CodeDiff<cr>", desc = "Open Code Diff View" },
