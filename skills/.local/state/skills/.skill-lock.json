@@ -1,15 +1,6 @@
 {
   "version": 3,
   "skills": {
-    "domain-modeling": {
-      "source": "mattpocock/skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/mattpocock/skills.git",
-      "skillPath": "skills/engineering/domain-modeling/SKILL.md",
-      "skillFolderHash": "05c3244ec75b7548bbc2b635b0624bb9f70369c3",
-      "installedAt": "2026-06-19T05:55:48.988Z",
-      "updatedAt": "2026-08-13T17:05:54.630Z"
-    },
     "grill-me": {
       "source": "mattpocock/skills",
       "sourceType": "github",
@@ -18,15 +9,6 @@
       "skillFolderHash": "c817f6f36acd483294144694a935a76d3e3eb101",
       "installedAt": "2026-06-19T05:55:48.988Z",
       "updatedAt": "2026-07-16T16:04:57.199Z"
-    },
-    "grill-with-docs": {
-      "source": "mattpocock/skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/mattpocock/skills.git",
-      "skillPath": "skills/engineering/grill-with-docs/SKILL.md",
-      "skillFolderHash": "5fdcdeedf2d0c73b3ecb1da0a464dd885590f8d6",
-      "installedAt": "2026-06-19T05:55:48.989Z",
-      "updatedAt": "2026-07-16T16:04:58.672Z"
     },
     "grilling": {
       "source": "mattpocock/skills",
