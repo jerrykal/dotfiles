@@ -72,6 +72,7 @@
       "autoUpdate": true
     }
   },
+  "outputStyle": "Concise",
   "spinnerTipsEnabled": false,
   "awaySummaryEnabled": false,
   "tui": "fullscreen",
