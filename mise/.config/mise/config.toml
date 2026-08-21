@@ -3,7 +3,7 @@ _.file = ".env"
 
 [tools]
 "npm:@playwright/cli" = "latest"
-"npm:hunkdiff" = "latest"
+"npm:hunkdiff" = { version = "latest", trust_policy_excludes = ["@pierre/theme@2.0.0"] }
 bun = "latest"
 go = "latest"
 node = "latest"
