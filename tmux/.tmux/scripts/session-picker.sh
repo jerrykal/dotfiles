@@ -21,10 +21,12 @@ list_targets() {
     done
 }
 
-# tmux forbids '.' and ':' in session names; a leading '.' becomes '_'
-# (matches the names sesh used to create, so existing sessions still match).
+# tmux forbids '.' and ':' in session names; a leading '.' is dropped so
+# dotdirs get a bare name.
 session_name_for() {
-  basename "${1/#\~/$HOME}" | tr '.:' '__'
+  local name
+  name=$(basename "${1/#\~/$HOME}")
+  printf '%s\n' "${name#.}" | tr '.:' '__'
 }
 
 # First unused "<base>_<num>" name, counting from 2.
