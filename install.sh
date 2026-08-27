@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 #
-# Bootstrap a fresh machine: install Homebrew + Brewfile deps, then link the
-# dotfiles with `just`. For day-to-day linking use `just link` directly.
+# Bootstrap a fresh machine: install Homebrew + Brewfile deps, mise, and
+# Claude Code, then link the dotfiles with `just`. For day-to-day linking use
+# `just link` directly.
 #
 # Usage: ./install.sh [--skip-deps]   # --skip-deps: link only (deps assumed present)
 #
@@ -23,6 +24,11 @@ if [[ "${1:-}" != "--skip-deps" ]]; then
 
   log "Installing Brewfile packages..."
   brew bundle install || log "warning: some Homebrew packages failed; continuing."
+
+  # mise's official installer (https://mise.jdx.dev/installing-mise.html)
+  # drops the binary in ~/.local/bin; shell/.profile puts that on PATH.
+  log "Installing mise..."
+  command -v mise &>/dev/null || [[ -x "$HOME/.local/bin/mise" ]] || curl -fsSL https://mise.run | sh
 
   log "Installing Claude Code..."
   command -v claude &>/dev/null || curl -fsSL https://claude.ai/install.sh | bash

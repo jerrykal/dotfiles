@@ -10,7 +10,7 @@ Stow runs from the repo root, so its target is the parent (`$HOME`). Most packag
 
 ## Commands
 
-`just` lists all recipes (`link`, `relink`, `unlink`, `check`, `prune`, `adopt`, `deps`, `install`, `sync-id`) — `justfile` documents each. `./install.sh` bootstraps a fresh machine (Homebrew + Brewfile + Claude Code, then `just link`); `--skip-deps` links only. No test/lint/build at the repo level.
+`just` lists all recipes (`link`, `relink`, `unlink`, `check`, `prune`, `adopt`, `deps`, `install`, `sync-id`) — `justfile` documents each. `./install.sh` bootstraps a fresh machine (Homebrew + Brewfile + mise + Claude Code, then `just link`); `--skip-deps` links only. No test/lint/build at the repo level.
 
 ## Conventions
 

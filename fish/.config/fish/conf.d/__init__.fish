@@ -1,7 +1,7 @@
 # Activate mise here so mise-managed tools are on PATH before other conf.d
-# snippets run. Homebrew's vendor mise-activate.fish sorts too late (conf.d is
-# sourced in filename order), so its auto-activation is disabled to avoid a
-# redundant second run.
+# snippets run. mise lives in ~/.local/bin (official installer), which
+# shell/.profile puts on PATH; MISE_FISH_AUTO_ACTIVATE is off so any vendor
+# activate snippet does not run a redundant second activation.
 if type -q mise
     set -gx MISE_FISH_AUTO_ACTIVATE 0
     mise activate fish | source
