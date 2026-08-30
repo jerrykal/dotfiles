@@ -22,13 +22,13 @@ opt.relativenumber = true
 opt.scrolloff = 5
 opt.sessionoptions = "blank,buffers,curdir,folds,globals,help,localoptions,skiprtp,tabpages,terminal,winpos,winsize"
 opt.shortmess:append("I")
+opt.showmode = false
 opt.sidescroll = 1
 opt.sidescrolloff = 8
 opt.signcolumn = "yes:1"
 opt.splitbelow = true
 opt.splitkeep = "screen"
 opt.splitright = true
-opt.statusline = [[%!v:lua.require("util.statusline").statusline()]]
 opt.termguicolors = true
 opt.timeoutlen = 300
 opt.undofile = true

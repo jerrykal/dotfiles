@@ -10,6 +10,26 @@ return {
     end,
   },
 
+  -- Statusline: git branch and diff, file path, diagnostics, encoding, position
+  {
+    "nvim-lualine/lualine.nvim",
+    event = "VeryLazy",
+    dependencies = { "nvim-mini/mini.icons" },
+    opts = function()
+      -- rose-pine's lualine theme, with the normal and visual mode colors swapped
+      local theme = vim.deepcopy(require("lualine.themes.rose-pine"))
+      theme.normal, theme.visual = theme.visual, theme.normal
+
+      return {
+        options = {
+          theme = theme,
+          globalstatus = true,
+        },
+        extensions = { "lazy", "trouble", "quickfix", "oil" },
+      }
+    end,
+  },
+
   -- Display LSP diagnostics inline at end of line instead of virtual text
   {
     "rachartier/tiny-inline-diagnostic.nvim",
