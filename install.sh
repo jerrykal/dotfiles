@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 #
-# Bootstrap a fresh machine: install Homebrew + Brewfile deps, mise, and
-# Claude Code, then link the dotfiles with `just`. For day-to-day linking use
-# `just link` directly.
+# Bootstrap a fresh machine: install Homebrew + Brewfile deps and mise, then
+# link the dotfiles with `just`. For day-to-day linking use `just link`
+# directly. CLI tools like Claude Code arrive as mise tool stubs in the `bin`
+# package — installed lazily on first run.
 #
 # Usage: ./install.sh [--skip-deps]   # --skip-deps: link only (deps assumed present)
 #
@@ -29,9 +30,6 @@ if [[ "${1:-}" != "--skip-deps" ]]; then
   # drops the binary in ~/.local/bin; shell/.profile puts that on PATH.
   log "Installing mise..."
   command -v mise &>/dev/null || [[ -x "$HOME/.local/bin/mise" ]] || curl -fsSL https://mise.run | sh
-
-  log "Installing Claude Code..."
-  command -v claude &>/dev/null || curl -fsSL https://claude.ai/install.sh | bash
 fi
 
 if ! command -v just &>/dev/null; then

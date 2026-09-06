@@ -29,7 +29,7 @@ so the dir stays real and the runtime/generated files those tools drop in (live
 ## Installation
 
 ```bash
-./install.sh              # Homebrew + Brewfile + mise + Claude Code, then `just link`
+./install.sh              # Homebrew + Brewfile + mise, then `just link`
 ./install.sh --skip-deps  # link only (deps assumed present)
 ```
 

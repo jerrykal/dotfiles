@@ -1,0 +1,4 @@
+#!/usr/bin/env -S MISE_MINIMUM_RELEASE_AGE=0 mise tool-stub
+tool = "npm:playwright"
+version = "latest"
+bin = "playwright"
