@@ -1,14 +1,16 @@
-[env]
-_.file = ".env"
-
 [settings]
 auto_update = true
 auto_update_check_duration = "1d"
+idiomatic_version_file_enable_tools = ["node", "python"]
+pin = true
+
+[settings.python]
+uv_venv_auto = true
 
 [tools]
 bun = "latest"
 go = "latest"
-node = "latest"
+node = "lts"
 npm = "latest"
 rust = "latest"
 uv = "latest"
