@@ -37,23 +37,14 @@
       "installedAt": "2026-06-19T05:55:48.990Z",
       "updatedAt": "2026-08-21T13:44:25.298Z"
     },
-    "hunk-review": {
-      "source": "modem-dev/hunk",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/modem-dev/hunk.git",
-      "skillPath": "skills/hunk-review/SKILL.md",
-      "skillFolderHash": "8c78e66fe408c6a9ca156be8d4b109668e1fe690",
-      "installedAt": "2026-06-29T03:53:39.303Z",
-      "updatedAt": "2026-08-21T13:44:30.031Z"
-    },
     "playwright-cli": {
       "source": "microsoft/playwright-cli",
       "sourceType": "github",
       "sourceUrl": "https://github.com/microsoft/playwright-cli.git",
       "skillPath": "skills/playwright-cli/SKILL.md",
-      "skillFolderHash": "ef9a12fdadfb2ad4b67d512a10e840979f162c3a",
+      "skillFolderHash": "fe74b7fb02fe5d0697d1e1359cb44e1f48d1fc54",
       "installedAt": "2026-07-11T03:39:38.257Z",
-      "updatedAt": "2026-07-11T03:39:38.257Z"
+      "updatedAt": "2026-09-06T08:48:31.308Z"
     },
     "writing-for-agents": {
       "source": "mattpocock/skills",
