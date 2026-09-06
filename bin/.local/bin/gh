@@ -1,4 +1,0 @@
-#!/usr/bin/env -S MISE_MINIMUM_RELEASE_AGE=0 mise tool-stub
-tool = "gh"
-version = "latest"
-bin = "gh"

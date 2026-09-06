@@ -2,8 +2,8 @@
 #
 # Bootstrap a fresh machine: install Homebrew + Brewfile deps and mise, then
 # link the dotfiles with `just`. For day-to-day linking use `just link`
-# directly. CLI tools like Claude Code arrive as mise tool stubs in the `bin`
-# package — installed lazily on first run.
+# directly. CLI tools like Claude Code are managed globally by mise (see the
+# `mise` package) and installed by `mise install`.
 #
 # Usage: ./install.sh [--skip-deps]   # --skip-deps: link only (deps assumed present)
 #
