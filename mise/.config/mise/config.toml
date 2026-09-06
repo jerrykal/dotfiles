@@ -1,10 +1,8 @@
 [settings]
 auto_update = true
 auto_update_check_duration = "1d"
+not_found_auto_install = true
 idiomatic_version_file_enable_tools = ["node", "python"]
-
-[settings.python]
-uv_venv_auto = true
 
 [tools]
 atuin = "latest"
@@ -20,7 +18,7 @@ hunk = "latest"
 just = "latest"
 lazygit = "latest"
 neovim = "latest"
-node = "lts"
+node = "latest"
 npm = "latest"
 "npm:playwright" = "latest"
 ripgrep = "latest"
