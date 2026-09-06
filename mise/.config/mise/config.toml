@@ -1,6 +1,10 @@
 [env]
 _.file = ".env"
 
+[settings]
+auto_update = true
+auto_update_check_duration = "1d"
+
 [tools]
 bun = "latest"
 go = "latest"
