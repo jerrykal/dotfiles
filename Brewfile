@@ -1,8 +1,0 @@
-brew "bash"
-brew "btop"
-brew "fish"
-brew "nvtop"
-brew "rsync"
-brew "stow"
-brew "tmux"
-brew "wget"

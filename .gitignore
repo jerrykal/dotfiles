@@ -1,14 +1,13 @@
 # OS cruft
 .DS_Store
 
-# Runtime/generated artifacts. With the per-package layout these regenerate at
-# their real ~ locations and normally never appear in the repo; listed here as
-# defense-in-depth so they can never be committed by accident.
-btop/.config/btop/btop.log
-hunk/.config/hunk/state.json
-fish/.config/fish/fisher/
-fish/.config/fish/fish_variables
-fish/.config/fish/local.fish
-tmux/.config/tmux/plugins/
+# Runtime/generated artifacts written by tools next to their config. Config
+# dirs are whole-directory symlinks into this repo, so these land here.
+btop/btop.log
+hunk/state.json
+fish/fisher/
+fish/fish_variables
+fish/local.fish
+tmux/plugins/
 nvim/plugin/
 nvim/spell/
