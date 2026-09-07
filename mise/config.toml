@@ -1,0 +1,28 @@
+[settings]
+auto_update = true
+auto_update_check_duration = "1d"
+not_found_auto_install = true
+idiomatic_version_file_enable_tools = ["node", "python"]
+
+[tools]
+atuin = "latest"
+bat = "latest"
+claude = "latest"
+delta = "latest"
+eza = "latest"
+fd = "latest"
+fzf = "latest"
+gh = "latest"
+go = "latest"
+hunk = "latest"
+just = "latest"
+lazygit = "latest"
+neovim = "latest"
+node = "latest"
+npm = "latest"
+"npm:playwright" = "latest"
+ripgrep = "latest"
+rust = "latest"
+tree-sitter = "latest"
+uv = "latest"
+zoxide = "latest"
