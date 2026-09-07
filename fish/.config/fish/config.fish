@@ -10,6 +10,9 @@ set -g fish_cursor_insert line blink
 set -g fish_cursor_replace_one underscore blink
 set -g fish_cursor_visual block
 
+# Activate mise
+type -q mise; and mise activate fish | source
+
 # Initialize fzf
 type -q fzf; and fzf --fish | source
 

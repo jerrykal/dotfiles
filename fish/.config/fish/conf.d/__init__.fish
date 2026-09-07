@@ -1,12 +1,3 @@
-# Activate mise here so mise-managed tools are on PATH before other conf.d
-# snippets run. mise lives in ~/.local/bin (official installer), which
-# shell/.profile puts on PATH; MISE_FISH_AUTO_ACTIVATE is off so any vendor
-# activate snippet does not run a redundant second activation.
-if type -q mise
-    set -gx MISE_FISH_AUTO_ACTIVATE 0
-    mise activate fish | source
-end
-
 # Setup alternative install path for fisher plugins
 set -gx fisher_path $__fish_config_dir/fisher
 
