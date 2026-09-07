@@ -1,8 +1,8 @@
 [settings]
 auto_update = true
 auto_update_check_duration = "1d"
-not_found_auto_install = true
 idiomatic_version_file_enable_tools = ["node", "python"]
+minimum_release_age_excludes = ["claude"]
 
 [tools]
 atuin = "latest"
@@ -29,3 +29,57 @@ tmux = "latest"
 tree-sitter = "latest"
 uv = "latest"
 zoxide = "latest"
+
+[tasks."update:system"]
+description = "Update Homebrew packages."
+run = """
+  command -v brew >/dev/null 2>&1 || { echo "no brew, skipping"; exit 0; }
+  brew update && brew upgrade
+"""
+
+[tasks."update:tools"]
+description = "Update mise, its plugins, managed tools, and uv tools."
+run = """
+  echo "==> mise"
+  # self-update only applies to the standalone installer, not a brew install
+  case "$(command -v mise)" in */homebrew/*) ;; *) mise self-update --yes ;; esac
+  mise plugins update
+  mise upgrade
+
+  echo "==> uv"
+  command -v uv >/dev/null 2>&1 && uv tool upgrade --all
+"""
+
+[tasks."update:plugins"]
+description = "Update Neovim, fish, and tmux plugins."
+run = """
+  echo "==> neovim"
+  nvim --headless '+Lazy! sync' +qa
+
+  echo "==> fish"
+  fish -c 'fisher update'
+
+  echo "==> tmux"
+  ~/.config/tmux/plugins/tpm/bin/update_plugins all
+"""
+
+[tasks."update:dotfiles"]
+description = "Fast-forward ~/.dotfiles when on main, then converge it."
+dir = "~/.dotfiles"
+run = """
+  if [ "$(git symbolic-ref --short HEAD)" = "main" ]; then
+    git pull --ff-only origin main
+  else
+    echo "not on main, skipping pull"
+  fi
+  mise bootstrap --yes
+"""
+
+[tasks."update:all"]
+description = "Update system packages, tools, plugins, and ~/.dotfiles."
+run = [
+  { task = "update:system" },
+  { task = "update:tools" },
+  { task = "update:plugins" },
+  { task = "update:dotfiles" },
+]
