@@ -1,10 +1,6 @@
 # OS cruft
 .DS_Store
 
-# Syncthing runtime markers (created inside the synced folder; never commit)
-.stfolder/
-.stversions/
-
 # Runtime/generated artifacts. With the per-package layout these regenerate at
 # their real ~ locations and normally never appear in the repo; listed here as
 # defense-in-depth so they can never be committed by accident.

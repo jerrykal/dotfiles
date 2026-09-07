@@ -45,10 +45,6 @@ prune dir='':
 prune-check dir='':
     @just _prune "--no" "{{dir}}"
 
-# Print this machine's Syncthing device ID (for pairing remotes)
-sync-id:
-    @syncthing device-id 2>/dev/null || echo "syncthing not installed/configured yet"
-
 # Sync Homebrew packages from Brewfile
 deps:
     brew bundle install
