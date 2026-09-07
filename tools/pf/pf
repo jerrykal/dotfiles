@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# pf — self-building shim. The Go source lives next to this file; the binary
+# is cached under $XDG_CACHE_HOME/pf and rebuilt whenever a source file is
+# newer than it. Fish completions are regenerated on every rebuild.
+set -euo pipefail
+
+src=$(cd "$(dirname "$(readlink -f "$0")")" && pwd)
+bin="${XDG_CACHE_HOME:-$HOME/.cache}/pf/pf"
+
+stale() {
+  [[ ! -x $bin ]] ||
+    [[ -n $(find "$src" -type f \( -name '*.go' -o -name 'go.mod' -o -name 'go.sum' \) -newer "$bin" -print -quit) ]]
+}
+
+if stale; then
+  go=(go)
+  command -v go >/dev/null || go=(mise x go -- go)
+  mkdir -p "${bin%/*}"
+  echo "pf: building..." >&2
+  (cd "$src" && "${go[@]}" build -trimpath -ldflags='-s -w' -o "$bin" .)
+  comp=${XDG_DATA_HOME:-$HOME/.local/share}/fish/vendor_completions.d
+  mkdir -p "$comp"
+  "$bin" completion fish >"$comp/pf.fish"
+fi
+
+exec "$bin" "$@"

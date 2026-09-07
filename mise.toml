@@ -23,6 +23,10 @@
 "~/.local/bin" = { source = "bin", mode = "symlink-each", manifest = "git" }
 "~/.claude" = { source = "claude", mode = "symlink-each", manifest = "git" }
 
+# Go tools under tools/: each links a self-building shim that compiles the
+# module beside it into $XDG_CACHE_HOME on first run and whenever sources change.
+"~/.local/bin/pf" = "tools/pf/pf"
+
 # Agent skills
 "~/.agents/skills" = "skills/agents"
 "~/.claude/skills" = "skills/claude"
