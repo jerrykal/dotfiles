@@ -1,7 +1,3 @@
-# ~/.dotfiles/mise.toml — bootstrap manifest. Run `mise bootstrap` from this
-# dir (or `mise bootstrap --from <git url>` on a fresh machine). Tools and
-# settings live in mise/config.toml, which becomes the global config once linked.
-
 [dotfiles]
 # mise global config + tools
 "~/.config/mise/config.toml" = "mise/config.toml"
@@ -9,35 +5,35 @@
 # Whole-directory symlinks. Runtime files these tools write next to their
 # config (fisher/, fish_variables, tmux/plugins/, hunk state.json, btop.log,
 # nvim/plugin/) land in the repo checkout and are gitignored.
-"~/.config/atuin"   = "atuin"
-"~/.config/bat"     = "bat"
-"~/.config/btop"    = "btop"
-"~/.config/eza"     = "eza"
-"~/.config/fish"    = "fish"
-"~/.config/git"     = "git"
-"~/.config/hunk"    = "hunk"
+"~/.config/atuin" = "atuin"
+"~/.config/bat" = "bat"
+"~/.config/btop" = "btop"
+"~/.config/eza" = "eza"
+"~/.config/fish" = "fish"
+"~/.config/git" = "git"
+"~/.config/hunk" = "hunk"
 "~/.config/lazygit" = "lazygit"
-"~/.config/nvim"    = "nvim"
-"~/.config/ruff"    = "ruff"
-"~/.config/tmux"    = "tmux"
+"~/.config/nvim" = "nvim"
+"~/.config/ruff" = "ruff"
+"~/.config/tmux" = "tmux"
 
-# Per-file links into directories that also hold unmanaged/runtime files
-# (equivalent of stow --no-folding). manifest = "git" links only tracked files.
-"~"            = { source = "shell",  mode = "symlink-each", manifest = "git" }
-"~/.local/bin" = { source = "bin",    mode = "symlink-each", manifest = "git" }
-"~/.claude"    = { source = "claude", mode = "symlink-each", manifest = "git" }
+# Per-file links into directories that also hold unmanaged/runtime files.
+# manifest = "git" links only tracked files.
+"~" = { source = "shell", mode = "symlink-each", manifest = "git" }
+"~/.local/bin" = { source = "bin", mode = "symlink-each", manifest = "git" }
+"~/.claude" = { source = "claude", mode = "symlink-each", manifest = "git" }
 
 # Agent skills
 "~/.agents/skills" = "skills/agents"
 "~/.claude/skills" = "skills/claude"
 "~/.local/state/skills/.skill-lock.json" = "skills/.skill-lock.json"
 
-# System packages not managed by mise tools (replaces Brewfile; stow dropped)
+# System packages not managed by mise tools
 [bootstrap.packages]
-"brew:bash"  = "latest"
-"brew:btop"  = "latest"
-"brew:fish"  = "latest"
+"brew:bash" = "latest"
+"brew:btop" = "latest"
+"brew:fish" = "latest"
 "brew:nvtop" = "latest"
 "brew:rsync" = "latest"
-"brew:tmux"  = "latest"
-"brew:wget"  = "latest"
+"brew:tmux" = "latest"
+"brew:wget" = "latest"
