@@ -1,0 +1,115 @@
+# Font
+font-family = "JetBrainsMono Nerd Font"
+font-size = 16
+font-thicken = true
+
+# Theme
+theme = Rose Pine
+
+# Window
+maximize = true
+window-decoration = false
+window-padding-y = 0
+window-padding-balance = true
+
+# macOS
+macos-option-as-alt = true
+macos-window-shadow = false
+
+# Clipboard
+copy-on-select = clipboard
+clipboard-read = deny
+clipboard-write = allow
+
+# Miscellaneous
+shell-integration-features = cursor,sudo,no-title,ssh-env,ssh-terminfo
+mouse-hide-while-typing = true
+window-inherit-working-directory = false
+
+# Quick terminal
+quick-terminal-position = center
+quick-terminal-size = 60%,80%
+quick-terminal-animation-duration = 0
+quick-terminal-autohide = false
+
+# Keybinds
+keybind = clear
+keybind = global:cmd+option+ctrl+space=toggle_quick_terminal
+
+# Ghostty
+keybind = cmd+q=quit
+keybind = cmd+n=new_window
+keybind = cmd+shift+w=close_window
+keybind = cmd+shift+,=reload_config
+keybind = cmd+v=paste_from_clipboard
+keybind = cmd+plus=increase_font_size:1
+keybind = cmd+minus=decrease_font_size:1
+keybind = cmd+zero=reset_font_size
+
+# Tmux: windows (prefix = Ctrl+Space, sent as \x00)
+# prefix c — new window in current path
+keybind = cmd+t=text:\x00c
+# prefix n — next window
+keybind = cmd+shift+]=text:\x00n
+# prefix p — previous window
+keybind = cmd+shift+[=text:\x00p
+# prefix 1-9 — select window by number
+keybind = cmd+1=text:\x001
+keybind = cmd+2=text:\x002
+keybind = cmd+3=text:\x003
+keybind = cmd+4=text:\x004
+keybind = cmd+5=text:\x005
+keybind = cmd+6=text:\x006
+keybind = cmd+7=text:\x007
+keybind = cmd+8=text:\x008
+keybind = cmd+9=text:\x009
+# prefix l — last active window
+keybind = cmd+l=text:\x00l
+# prefix w — window/pane tree picker (choose-tree)
+keybind = cmd+p=text:\x00w
+
+# Tmux: panes
+# prefix v — split pane right
+keybind = cmd+d=text:\x00v
+# prefix s — split pane down
+keybind = cmd+shift+d=text:\x00s
+# prefix x — kill pane
+keybind = cmd+w=text:\x00x
+# Alt+enter — toggle pane/popup zoom
+keybind = cmd+enter=text:\x1b\r
+# prefix ' — last active pane
+keybind = cmd+'=text:\x00'
+# prefix ; — last active pane in current window
+keybind = cmd+;=text:\x00;
+# prefix b — break pane out into its own window
+keybind = cmd+b=text:\x00b
+# prefix J — join next window into this one as a pane
+keybind = cmd+shift+j=text:\x00J
+# prefix Ctrl+h/j/k/l — send literal Ctrl+h/j/k/l to the app
+# (bypasses smart-splits pane navigation)
+keybind = cmd+ctrl+h=text:\x00\x08
+keybind = cmd+ctrl+j=text:\x00\x0a
+keybind = cmd+ctrl+k=text:\x00\x0b
+keybind = cmd+ctrl+l=text:\x00\x0c
+
+# Tmux: sessions
+# prefix o — fzf session picker (session-picker.sh)
+keybind = cmd+o=text:\x00o
+# prefix L — last session
+keybind = cmd+shift+l=text:\x00L
+
+# Tmux: other
+# Alt+g — toggle lazygit popup (popup-toggle.sh)
+keybind = cmd+g=text:\x1bg
+# prefix [ — enter copy mode
+keybind = cmd+[=text:\x00[
+# prefix : — tmux command prompt
+keybind = cmd+shift+;=text:\x00:
+# prefix . — open Claude pane in current path (claude-pane.sh)
+keybind = cmd+.=text:\x00.
+# prefix > — new window running claude
+keybind = cmd+shift+.=text:\x00>
+# prefix / — Claude pane picker across current sessions (claude-picker.sh --current)
+keybind = cmd+/=text:\x00/
+# prefix ? — Claude pane picker across all sessions (claude-picker.sh --all)
+keybind = cmd+shift+/=text:\x00?

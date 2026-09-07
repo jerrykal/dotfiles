@@ -1,0 +1,2 @@
+# Auto-load mise.<os>.toml (e.g. mise.macos.toml) alongside mise.toml.
+auto_env = true
