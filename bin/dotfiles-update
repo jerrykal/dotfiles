@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# dotfiles-update — update everything mise manages from ~/.dotfiles.
+#
+#   dotfiles-update          run every step
+#   dotfiles-update -n       dry run: print what each step would do
+#
+# Steps, in order:
+#   1. mise self-update                    mise itself (+ its plugins)
+#   2. mise plugins update                 tool-backend plugins
+#   3. mise bootstrap packages upgrade     [bootstrap.packages] (brew, casks, …)
+#   4. mise upgrade                        [tools] in mise/config.toml
+#   5. mise bootstrap                      converge anything newly declared
+#                                          (packages, dotfiles links, tools)
+# A failing step is reported and the rest still run; exit status is non-zero
+# if any step failed.
+
+set -uo pipefail
+
+DIR="${DOTFILES:-$HOME/.dotfiles}"
+DRY=()
+case "${1:-}" in
+  -n | --dry-run) DRY=(--dry-run) ;;
+  -h | --help) sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+  '') ;;
+  *) echo "dotfiles-update: unknown option '$1'" >&2; exit 2 ;;
+esac
+
+[[ -d $DIR ]] || { echo "dotfiles-update: $DIR not found" >&2; exit 1; }
+command -v mise >/dev/null || { echo "dotfiles-update: mise not on PATH" >&2; exit 1; }
+
+failed=()
+step() {
+  local name=$1; shift
+  printf '\n\033[1;34m==> %s\033[0m\n' "$name"
+  if ((${#DRY[@]})); then printf '   $ %s\n' "$*"; fi
+  "$@" || { echo "dotfiles-update: '$name' failed" >&2; failed+=("$name"); }
+}
+
+if ((${#DRY[@]})); then
+  step "mise self-update"    echo "(skipped: no dry-run mode)"
+  step "mise plugins update" echo "(skipped: no dry-run mode)"
+else
+  step "mise self-update"    mise self-update --yes
+  step "mise plugins update" mise plugins update
+fi
+step "system packages"    mise -C "$DIR" bootstrap packages upgrade --yes "${DRY[@]}"
+step "mise tools"         mise -C "$DIR" upgrade "${DRY[@]}"
+step "mise bootstrap"     mise -C "$DIR" bootstrap --yes "${DRY[@]}"
+
+echo
+if ((${#failed[@]})); then
+  echo "dotfiles-update: ${#failed[@]} step(s) failed: ${failed[*]}" >&2
+  exit 1
+fi
+echo "dotfiles-update: all up to date"
