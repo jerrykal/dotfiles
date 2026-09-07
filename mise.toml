@@ -40,3 +40,4 @@
 "brew:nvtop" = "latest"
 "brew:rsync" = "latest"
 "brew:wget" = "latest"
+"brew:zsh" = "latest"
