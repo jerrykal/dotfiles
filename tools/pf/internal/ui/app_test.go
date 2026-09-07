@@ -22,6 +22,7 @@ func fixture(t *testing.T) model {
 		{ID: 1, Host: "devbox", LocalPort: 5432, RemotePort: 5432, State: tunnel.StateConnected, Since: now.Add(-2 * time.Hour), Created: now},
 		{ID: 2, Host: "a-very-long-hostname-that-needs-truncating.example.com", LocalPort: 8080, RemotePort: 3000, State: tunnel.StateReconnecting, Reconnects: 3, Error: "ssh: connect to host 10.0.0.1 port 22: Connection refused", Since: now, Created: now},
 		{ID: 3, Host: "staging", LocalPort: 6379, RemotePort: 6379, State: tunnel.StateConnecting, Since: now, Created: now},
+		{ID: 4, Host: "badhost", LocalPort: 9000, RemotePort: 9000, State: tunnel.StateFailed, Error: "ssh: Could not resolve hostname badhost: Name or service not known", Since: now, Created: now},
 	}
 	m.logs = []string{"14:02:10 pf: connecting to devbox", "14:02:11 pf: connected: 127.0.0.1:5432 -> devbox:5432", "14:02:12 debug1: some ssh noise"}
 	m.applyFilter()
@@ -50,7 +51,7 @@ func TestViewShapes(t *testing.T) {
 		for _, mode := range []mode{modeList, modeForm, modeConfirm, modeLogs, modeHelp} {
 			m.mode = mode
 			if mode == modeForm {
-				m.form = newForm()
+				m.form = editForm(m.tunnels[0])
 			}
 			if mode == modeLogs {
 				m.logView.SetContent(strings.Join(m.logs, "\n"))
@@ -84,7 +85,7 @@ func TestKeysDoNotPanic(t *testing.T) {
 	m.width, m.height = 120, 30
 	m.layout()
 	var cur tea.Model = m
-	for _, k := range []string{"j", "k", "G", "g", "n", "esc", "x", "n", "/", "d", "esc", "?", "q", "enter", "esc", "r", "y"} {
+	for _, k := range []string{"j", "k", "G", "g", "n", "esc", "e", "esc", "x", "n", "/", "d", "esc", "?", "q", "enter", "esc", "r", "y"} {
 		var key tea.KeyMsg
 		switch k {
 		case "esc":

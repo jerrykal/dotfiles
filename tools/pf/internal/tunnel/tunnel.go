@@ -16,7 +16,7 @@ const (
 	StateConnecting   State = "connecting"   // first attempt in progress
 	StateConnected    State = "connected"    // control socket answered
 	StateReconnecting State = "reconnecting" // ssh exited after a successful connection; retrying
-	StateFailed       State = "failed"       // first attempt failed; supervisor exited
+	StateFailed       State = "failed"       // first attempt failed; kept for inspection until closed, retried or edited
 	StateStopped      State = "stopped"      // supervisor is gone; entry is stale
 )
 

@@ -41,7 +41,11 @@ func New() *cobra.Command {
 
   pf                       open the TUI
   pf devbox 5432           forward localhost:5432 -> devbox:5432
-  pf devbox 8080 3000      forward localhost:8080 -> devbox:3000`,
+  pf devbox 8080 3000      forward localhost:8080 -> devbox:3000
+  pf edit 2 --local 8081   move tunnel 2 to localhost:8081
+
+A tunnel whose first connection fails is kept as "failed" so its log can be
+read with pf logs; pf restart retries it and pf close drops it.`,
 		Args:          cobra.MaximumNArgs(3),
 		SilenceUsage:  true,
 		SilenceErrors: true,
@@ -72,7 +76,7 @@ func New() *cobra.Command {
 			t, err := store.Start(context.Background(), args[0], local, remote)
 			stop()
 			if err != nil {
-				return err
+				return keptFailure(t, err)
 			}
 			fmt.Println(out.Success(fmt.Sprintf("Created tunnel %s  %s", out.Bold(strconv.Itoa(t.ID)), route(t))))
 			return nil
@@ -120,13 +124,27 @@ func New() *cobra.Command {
 		},
 		&cobra.Command{
 			Use:               "restart <id>",
-			Short:             "Drop and re-establish a tunnel's ssh session",
+			Short:             "Drop and re-establish a tunnel's ssh session, or retry a failed one",
 			Args:              cobra.ExactArgs(1),
 			ValidArgsFunction: completeIDs(&store),
 			RunE: func(cmd *cobra.Command, args []string) error {
 				id, err := strconv.Atoi(args[0])
 				if err != nil {
 					return fmt.Errorf("invalid id %q", args[0])
+				}
+				cur, err := store.Load(id)
+				if err != nil {
+					return err
+				}
+				if cur.State == tunnel.StateFailed {
+					stop := spin("connecting to " + cur.Host)
+					t, err := store.Retry(context.Background(), id)
+					stop()
+					if err != nil {
+						return keptFailure(t, err)
+					}
+					fmt.Println(out.Success(fmt.Sprintf("Connected tunnel %s  %s", out.Bold(strconv.Itoa(t.ID)), route(t))))
+					return nil
 				}
 				if err := store.Restart(id); err != nil {
 					return err
@@ -135,6 +153,7 @@ func New() *cobra.Command {
 				return nil
 			},
 		},
+		editCmd(&store),
 		logsCmd(&store),
 		&cobra.Command{
 			Use:    "_supervise <id>",
@@ -145,11 +164,81 @@ func New() *cobra.Command {
 				if err != nil {
 					return err
 				}
-				return store.Supervise(id)
+				// A failed first attempt is recorded in the state file and
+				// log by Supervise itself; printing it again would only
+				// litter the log (stderr is the log file).
+				_ = store.Supervise(id)
+				return nil
 			},
 		},
 	)
 	return root
+}
+
+func editCmd(store **tunnel.Store) *cobra.Command {
+	var (
+		host          string
+		local, remote int
+	)
+	c := &cobra.Command{
+		Use:   "edit <id>",
+		Short: "Change a tunnel's host or ports (re-establishes its ssh session)",
+		Long: `edit tears down the tunnel's ssh session and brings it back up under the same
+id with the new settings. Unspecified values are kept. If the new settings
+fail to connect, the previous ones are restored.`,
+		Args:              cobra.ExactArgs(1),
+		ValidArgsFunction: completeIDs(store),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			id, err := strconv.Atoi(args[0])
+			if err != nil {
+				return fmt.Errorf("invalid id %q", args[0])
+			}
+			cur, err := (*store).Load(id)
+			if err != nil {
+				return err
+			}
+			f := cmd.Flags()
+			if !f.Changed("host") && !f.Changed("local") && !f.Changed("remote") {
+				return errors.New("nothing to change: pass --host, --local and/or --remote")
+			}
+			if !f.Changed("host") {
+				host = cur.Host
+			}
+			if !f.Changed("local") {
+				local = cur.LocalPort
+			}
+			if !f.Changed("remote") {
+				remote = cur.RemotePort
+			}
+			stop := spin("reconnecting to " + host)
+			t, err := (*store).Edit(context.Background(), id, host, local, remote)
+			stop()
+			if errors.Is(err, tunnel.ErrUnchanged) {
+				fmt.Println(out.Notice(fmt.Sprintf("Tunnel %s unchanged  %s", out.Bold(strconv.Itoa(id)), route(t))))
+				return nil
+			}
+			if err != nil {
+				return keptFailure(t, err)
+			}
+			fmt.Println(out.Success(fmt.Sprintf("Updated tunnel %s  %s", out.Bold(strconv.Itoa(t.ID)), route(t))))
+			return nil
+		},
+	}
+	c.Flags().StringVar(&host, "host", "", "new ssh host or alias")
+	c.Flags().IntVarP(&local, "local", "l", 0, "new local port")
+	c.Flags().IntVarP(&remote, "remote", "r", 0, "new remote port")
+	_ = c.RegisterFlagCompletionFunc("host", func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
+		return tunnel.SSHHosts(), cobra.ShellCompDirectiveNoFileComp
+	})
+	return c
+}
+
+// keptFailure wraps a launch error with where the failed entry can be found.
+func keptFailure(t tunnel.Tunnel, err error) error {
+	if t.State != tunnel.StateFailed {
+		return err
+	}
+	return fmt.Errorf("%w; kept as failed tunnel %d (pf logs %d · pf restart %d · pf close %d)", err, t.ID, t.ID, t.ID, t.ID)
 }
 
 func logsCmd(store **tunnel.Store) *cobra.Command {
@@ -234,6 +323,8 @@ func printList(store *tunnel.Store) error {
 				e += " · " + t.Error
 			}
 			info = out.Subtle(ansi.Truncate(e, infoW, "…"))
+		case tunnel.StateFailed:
+			info = out.State(t.State, ansi.Truncate(t.Error, infoW, "…"))
 		default:
 			info = out.Muted("…")
 		}

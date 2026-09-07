@@ -21,9 +21,10 @@ const (
 
 // Supervise is the body of `pf _supervise <id>`. It runs ssh for the tunnel,
 // marks it connected once the control socket answers, and reconnects with
-// exponential backoff after a drop. SIGTERM stops it and removes the entry;
-// SIGHUP forces an immediate reconnect. It returns once the tunnel is torn
-// down, or with an error if the very first attempt fails.
+// exponential backoff after a drop. SIGTERM stops it (the caller removes the
+// entry); SIGHUP forces an immediate reconnect. It returns once the tunnel
+// is torn down, or with an error if the very first attempt fails, in which
+// case the entry is left behind in StateFailed for the user to inspect.
 func (s *Store) Supervise(id int) error {
 	t, err := s.Load(id)
 	if err != nil {
@@ -68,7 +69,7 @@ func (s *Store) Supervise(id int) error {
 			return err
 		}
 		if err := cmd.Start(); err != nil {
-			t.State, t.Error = StateFailed, err.Error()
+			t.State, t.Error, t.PID = StateFailed, err.Error(), 0
 			_ = s.Save(t)
 			return err
 		}
@@ -99,7 +100,6 @@ func (s *Store) Supervise(id int) error {
 				}
 				log.printf("stopping")
 				s.controlExit(t)
-				s.Remove(id)
 				return nil
 			case <-check.C:
 				if !connected && s.controlOK(t) {
@@ -131,7 +131,7 @@ func (s *Store) Supervise(id int) error {
 			if reason == "" {
 				reason = "ssh exited before the tunnel came up"
 			}
-			t.State, t.Error = StateFailed, reason
+			t.State, t.Error, t.PID, t.SSHPID = StateFailed, reason, 0, 0
 			_ = s.Save(t)
 			log.printf("failed: %s", reason)
 			return errors.New(reason)
@@ -146,7 +146,6 @@ func (s *Store) Supervise(id int) error {
 		case sig := <-sigs:
 			if sig != syscall.SIGHUP {
 				log.printf("stopping")
-				s.Remove(id)
 				return nil
 			}
 			backoff = backoffMin

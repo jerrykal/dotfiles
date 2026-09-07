@@ -1,9 +1,10 @@
 // Package ui is the Bubble Tea front end: a list of tunnels with a detail and
-// log pane, an inline form for new tunnels, and single-key actions.
+// log pane, an inline form for new and edited tunnels, and single-key actions.
 package ui
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -43,8 +44,9 @@ type (
 		forID   int
 	}
 	startedMsg struct {
-		t   tunnel.Tunnel
-		err error
+		t    tunnel.Tunnel
+		err  error
+		verb string // "Created", "Updated", "Connected"
 	}
 	actionMsg struct {
 		text string
@@ -59,6 +61,7 @@ type model struct {
 	visible []int // indices into tunnels after filtering
 	cursor  int   // index into visible
 	selID   int
+	pending int // id of a tunnel being started in the background; selected once it appears
 	logs    []string
 
 	width, height int
@@ -196,6 +199,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case refreshMsg:
 		m.tunnels = msg.tunnels
+		if m.pending != 0 {
+			for _, t := range m.tunnels {
+				if t.ID == m.pending {
+					m.selID, m.pending = t.ID, 0
+					break
+				}
+			}
+		}
 		m.applyFilter()
 		if msg.forID == m.selID {
 			m.logs = msg.logs
@@ -215,14 +226,17 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, cmd
 
 	case startedMsg:
-		m.form.busy = false
-		if msg.err != nil {
-			m.form.err = msg.err.Error()
-			return m, nil
+		m.pending = 0
+		if msg.t.ID != 0 {
+			m.selID = msg.t.ID
 		}
-		m.mode = modeList
-		m.selID = msg.t.ID
-		return m, tea.Batch(m.refresh(), m.setFlash(fmt.Sprintf("Created tunnel %d: %s → %s", msg.t.ID, msg.t.LocalAddr(), msg.t.RemoteAddr()), false))
+		switch {
+		case errors.Is(msg.err, tunnel.ErrUnchanged):
+			return m, nil
+		case msg.err != nil:
+			return m, tea.Batch(m.refresh(), m.setFlash(msg.err.Error(), true))
+		}
+		return m, tea.Batch(m.refresh(), m.setFlash(fmt.Sprintf("%s tunnel %d: %s → %s", msg.verb, msg.t.ID, msg.t.LocalAddr(), msg.t.RemoteAddr()), false))
 
 	case actionMsg:
 		if msg.err != nil {
@@ -259,12 +273,25 @@ func (m model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 				m.form.err = err.Error()
 				return m, nil
 			}
-			m.form.busy, m.form.err = true, ""
-			store := m.store
-			return m, func() tea.Msg {
-				t, err := store.Start(context.Background(), host, local, remote)
-				return startedMsg{t: t, err: err}
+			// Connect in the background: the list shows the tunnel as
+			// "connecting" meanwhile and the outcome arrives as a flash.
+			m.mode = modeList
+			store, editID := m.store, m.form.editID
+			var start tea.Cmd
+			if editID != 0 {
+				m.pending = editID
+				start = func() tea.Msg {
+					t, err := store.Edit(context.Background(), editID, host, local, remote)
+					return startedMsg{t: t, err: err, verb: "Updated"}
+				}
+			} else {
+				m.pending = store.NextID()
+				start = func() tea.Msg {
+					t, err := store.Start(context.Background(), host, local, remote)
+					return startedMsg{t: t, err: err, verb: "Created"}
+				}
 			}
+			return m, tea.Batch(start, m.refresh(), m.setFlash("Connecting to "+host+"…", false))
 		}
 		return m, cmd
 
@@ -336,6 +363,13 @@ func (m model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		m.form = newForm()
 		m.mode = modeForm
 		return m, textinput.Blink
+	case "e":
+		if t, ok := m.selected(); ok {
+			m.form = editForm(t)
+			m.mode = modeForm
+			return m, textinput.Blink
+		}
+		return m, nil
 	case "x", "d", "delete", "backspace":
 		if t, ok := m.selected(); ok {
 			m.confirmID = t.ID
@@ -345,6 +379,13 @@ func (m model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "r":
 		if t, ok := m.selected(); ok {
 			id, store := t.ID, m.store
+			if t.State == tunnel.StateFailed {
+				m.pending = id
+				return m, tea.Batch(func() tea.Msg {
+					t, err := store.Retry(context.Background(), id)
+					return startedMsg{t: t, err: err, verb: "Connected"}
+				}, m.refresh(), m.setFlash("Connecting to "+t.Host+"…", false))
+			}
 			return m, func() tea.Msg {
 				if err := store.Restart(id); err != nil {
 					return actionMsg{err: err}
@@ -400,7 +441,7 @@ func (m model) View() string {
 	case !m.wide():
 		switch m.mode {
 		case modeForm:
-			body = pane("new tunnel", m.form.view(m.spinner.View(), m.width-2), m.width, bodyH, true)
+			body = pane(m.form.title(), m.form.view(m.width-2), m.width, bodyH, true)
 		case modeLogs:
 			body = pane(m.detailTitle(), m.logView.View(), m.width, bodyH, true)
 		default:
@@ -413,7 +454,7 @@ func (m model) View() string {
 		var right string
 		switch m.mode {
 		case modeForm:
-			right = pane("new tunnel", m.form.view(m.spinner.View(), dw-2), dw, bodyH, true)
+			right = pane(m.form.title(), m.form.view(dw-2), dw, bodyH, true)
 		case modeLogs:
 			right = pane(m.detailTitle()+" · log", m.logView.View(), dw, bodyH, true)
 		default:
@@ -425,11 +466,14 @@ func (m model) View() string {
 }
 
 func (m model) headerView() string {
-	var up, down int
+	var up, down, failed int
 	for _, t := range m.tunnels {
-		if t.State == tunnel.StateConnected {
+		switch t.State {
+		case tunnel.StateConnected:
 			up++
-		} else {
+		case tunnel.StateFailed:
+			failed++
+		default:
 			down++
 		}
 	}
@@ -440,6 +484,9 @@ func (m model) headerView() string {
 	}
 	if down > 0 {
 		parts = append(parts, sWarn.Render(fmt.Sprintf("◐ %d down", down)))
+	}
+	if failed > 0 {
+		parts = append(parts, sBad.Render(fmt.Sprintf("○ %d failed", failed)))
 	}
 	if len(parts) == 0 {
 		parts = append(parts, sMuted.Render("no tunnels"))
@@ -469,12 +516,16 @@ func (m model) footerView() string {
 			s = sFlash.Render("✓ " + m.flash)
 		}
 	case m.mode == modeForm:
-		s = strings.Join([]string{hint("tab", "next"), hint("ctrl+s", "create"), hint("esc", "cancel")}, "  ")
+		verb := "create"
+		if m.form.editID != 0 {
+			verb = "save"
+		}
+		s = strings.Join([]string{hint("tab", "next"), hint("ctrl+s", verb), hint("esc", "cancel")}, "  ")
 	case m.mode == modeLogs:
 		s = strings.Join([]string{hint("j/k", "scroll"), hint("g/G", "top/bottom"), hint("esc", "back")}, "  ")
 	default:
 		s = strings.Join([]string{
-			hint("n", "new"), hint("x", "close"), hint("r", "restart"), hint("↵", "log"),
+			hint("n", "new"), hint("e", "edit"), hint("x", "close"), hint("r", "restart"), hint("↵", "log"),
 			hint("y", "copy"), hint("/", "filter"), hint("?", "help"), hint("q", "quit"),
 		}, "  ")
 		if m.filter.Value() != "" {
@@ -557,6 +608,8 @@ func (m model) listView(w, h int) string {
 				e += " · " + t.Error
 			}
 			extra = bg(sWarn).Render(fit(e, extraW))
+		case tunnel.StateFailed:
+			extra = bg(sBad).Render(fit(t.Error, extraW))
 		default:
 			extra = bg(sMuted).Render(fit("…", extraW))
 		}
@@ -589,6 +642,8 @@ func (m model) detailView(w, h int) string {
 		stateLine += sMuted.Render("  for " + Duration(t.Age()))
 	case tunnel.StateReconnecting:
 		stateLine += sMuted.Render("  since " + Duration(t.Age()) + " ago")
+	case tunnel.StateFailed:
+		stateLine += sMuted.Render("  ") + sKey.Render("r") + sMuted.Render(" retry · ") + sKey.Render("e") + sMuted.Render(" edit · ") + sKey.Render("x") + sMuted.Render(" close")
 	}
 	lines := []string{
 		" " + sBold.Render(t.Host),
@@ -602,12 +657,14 @@ func (m model) detailView(w, h int) string {
 	if t.Error != "" {
 		lines = append(lines, kv("last error", sWarn.Render(t.Error)))
 	}
-	pid := sText.Render(fmt.Sprintf("%d", t.PID))
-	if t.SSHPID != 0 {
-		pid += sMuted.Render(fmt.Sprintf("  ssh %d", t.SSHPID))
+	if t.PID != 0 {
+		pid := sText.Render(fmt.Sprintf("%d", t.PID))
+		if t.SSHPID != 0 {
+			pid += sMuted.Render(fmt.Sprintf("  ssh %d", t.SSHPID))
+		}
+		lines = append(lines, kv("pid", pid))
 	}
 	lines = append(lines,
-		kv("pid", pid),
 		kv("created", sText.Render(t.Created.Format("2006-01-02 15:04"))),
 		"",
 		" "+sMuted.Render("log ")+sMuted.Render(strings.Repeat("─", max(0, w-6))),
@@ -640,8 +697,9 @@ func (m model) helpView() string {
 		{"j / k, ↑ / ↓", "move selection"},
 		{"g / G", "first / last tunnel"},
 		{"n", "new tunnel"},
+		{"e", "edit selected tunnel's host or ports (reconnects)"},
 		{"x / d", "close selected tunnel (asks first)"},
-		{"r", "restart selected tunnel's ssh session"},
+		{"r", "restart selected tunnel's ssh session, or retry a failed one"},
 		{"enter / l", "full-screen log for selected tunnel"},
 		{"y", "copy localhost:<port> to clipboard"},
 		{"/", "filter by host, port or state"},
@@ -655,6 +713,7 @@ func (m model) helpView() string {
 		b.WriteString(" " + sKey.Render(fit(r[0], 16)) + sText.Render(r[1]) + "\n")
 	}
 	b.WriteString("\n " + sMuted.Render("Tunnels are supervised by detached `pf _supervise` processes and survive quitting the TUI."))
+	b.WriteString("\n " + sMuted.Render("A tunnel whose first connection fails stays listed as failed, with its log, until closed, retried or edited."))
 	b.WriteString("\n " + sMuted.Render("State dir: "+m.store.Dir))
 	b.WriteString("\n\n " + sMuted.Render("press any key to go back"))
 	return b.String()

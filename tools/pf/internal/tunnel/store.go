@@ -90,7 +90,8 @@ func (s *Store) Remove(id int) {
 
 // List returns all tunnels sorted by id, with State resolved against the
 // live supervisor. Entries whose supervisor is gone are reported as stopped;
-// call Prune to drop them.
+// call Prune to drop them. Failed entries have no supervisor by design and
+// stay until closed, retried or edited.
 func (s *Store) List() ([]Tunnel, error) {
 	entries, err := os.ReadDir(s.Dir)
 	if err != nil {
@@ -110,7 +111,7 @@ func (s *Store) List() ([]Tunnel, error) {
 		if err != nil {
 			continue
 		}
-		if t.State == StateFailed || !t.Alive() {
+		if t.State != StateFailed && !t.Alive() {
 			t.State = StateStopped
 		}
 		out = append(out, t)
@@ -120,11 +121,13 @@ func (s *Store) List() ([]Tunnel, error) {
 }
 
 // Prune removes stopped entries, making sure any orphaned ssh master is told
-// to exit first.
+// to exit first. Entries whose first connection attempt is still being
+// watched by Start or Edit are left alone: those callers report the failure
+// and remove the entry themselves.
 func (s *Store) Prune(ts []Tunnel) []Tunnel {
 	live := ts[:0]
 	for _, t := range ts {
-		if t.State != StateStopped {
+		if t.State != StateStopped || s.starting(t.ID) {
 			live = append(live, t)
 			continue
 		}
@@ -132,6 +135,16 @@ func (s *Store) Prune(ts []Tunnel) []Tunnel {
 		s.Remove(t.ID)
 	}
 	return live
+}
+
+// starting reports whether a launcher may still be waiting on the entry's
+// first connection attempt (its supervisor may not have written its pid yet).
+func (s *Store) starting(id int) bool {
+	raw, err := s.Load(id)
+	if err != nil {
+		return false
+	}
+	return raw.State == StateConnecting && time.Since(raw.Since) < StartTimeout+5*time.Second
 }
 
 // NextID returns one more than the highest id in use.
@@ -147,7 +160,7 @@ func (s *Store) NextID() int {
 	return highest + 1
 }
 
-// Find returns the running tunnel matching host and ports, if any.
+// Find returns the running or failed tunnel matching host and ports, if any.
 func (s *Store) Find(host string, local, remote int) (Tunnel, bool) {
 	ts, _ := s.List()
 	for _, t := range ts {
@@ -177,6 +190,14 @@ func (s *Store) Close(id int) error {
 	if err != nil {
 		return err
 	}
+	s.stop(t)
+	s.Remove(id)
+	return nil
+}
+
+// stop terminates a tunnel's supervisor, waiting for it to exit, and tells
+// any ssh master it left behind to quit. It does not touch the state files.
+func (s *Store) stop(t Tunnel) {
 	if t.Alive() {
 		_ = syscall.Kill(t.PID, syscall.SIGTERM)
 		deadline := time.Now().Add(5 * time.Second)
@@ -188,11 +209,10 @@ func (s *Store) Close(id int) error {
 		}
 	}
 	s.controlExit(t)
-	s.Remove(id)
-	return nil
 }
 
-// Restart asks the supervisor to drop and re-establish the ssh session now.
+// Restart asks a running tunnel's supervisor to drop and re-establish the
+// ssh session now. Use Retry for a failed tunnel.
 func (s *Store) Restart(id int) error {
 	t, err := s.Load(id)
 	if err != nil {
@@ -202,6 +222,16 @@ func (s *Store) Restart(id int) error {
 		return fmt.Errorf("tunnel %d is not running", id)
 	}
 	return syscall.Kill(t.PID, syscall.SIGHUP)
+}
+
+// Logf appends one timestamped pf line to a tunnel's log.
+func (s *Store) Logf(id int, format string, args ...any) {
+	f, err := os.OpenFile(s.LogPath(id), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o644)
+	if err != nil {
+		return
+	}
+	defer f.Close()
+	fmt.Fprintf(f, "%s pf: %s\n", time.Now().Format("15:04:05"), fmt.Sprintf(format, args...))
 }
 
 // controlOK asks the ssh master on the control socket whether it is up.

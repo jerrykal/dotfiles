@@ -12,12 +12,13 @@ import (
 	"github.com/jerrykal/dotfiles/tools/pf/internal/tunnel"
 )
 
-// formModel is the "new tunnel" editor.
+// formModel is the tunnel editor, used both for new tunnels and for editing
+// an existing one (editID != 0).
 type formModel struct {
 	inputs [3]textinput.Model // host, local port, remote port
 	focus  int
 	err    string
-	busy   bool
+	editID int
 }
 
 const (
@@ -53,6 +54,25 @@ func newForm() formModel {
 	return f
 }
 
+// editForm returns a form pre-filled with t's current settings.
+func editForm(t tunnel.Tunnel) formModel {
+	f := newForm()
+	f.editID = t.ID
+	f.inputs[fHost].SetValue(t.Host)
+	f.inputs[fLocal].SetValue(strconv.Itoa(t.LocalPort))
+	f.inputs[fRemote].SetValue(strconv.Itoa(t.RemotePort))
+	f.inputs[fHost].CursorEnd()
+	return f
+}
+
+// title names the form for the pane border.
+func (f *formModel) title() string {
+	if f.editID != 0 {
+		return fmt.Sprintf("edit tunnel %d", f.editID)
+	}
+	return "new tunnel"
+}
+
 func (f *formModel) setFocus(i int) tea.Cmd {
 	f.focus = i
 	var cmd tea.Cmd
@@ -86,11 +106,8 @@ func (f *formModel) values() (string, int, int, error) {
 }
 
 // update handles a key while the form is open. submit is true when the user
-// asked to create the tunnel; cancel when they backed out.
+// asked to apply the form; cancel when they backed out.
 func (f *formModel) update(msg tea.Msg) (cmd tea.Cmd, submit, cancel bool) {
-	if f.busy {
-		return nil, false, false
-	}
 	if k, ok := msg.(tea.KeyMsg); ok {
 		switch k.String() {
 		case "esc":
@@ -123,7 +140,7 @@ func (f *formModel) update(msg tea.Msg) (cmd tea.Cmd, submit, cancel bool) {
 	return cmd, false, false
 }
 
-func (f *formModel) view(spin string, w int) string {
+func (f *formModel) view(w int) string {
 	label := func(i int, text string) string {
 		st := sLabel
 		if i == f.focus {
@@ -131,14 +148,16 @@ func (f *formModel) view(spin string, w int) string {
 		}
 		return st.Render(text)
 	}
+	heading, verb := "New tunnel", "create"
+	if f.editID != 0 {
+		heading, verb = fmt.Sprintf("Edit tunnel %d", f.editID), "save"
+	}
 	var b strings.Builder
-	b.WriteString(" " + sBold.Render("New tunnel") + "\n\n")
+	b.WriteString(" " + sBold.Render(heading) + "\n\n")
 	b.WriteString(" " + label(fHost, "host") + f.inputs[fHost].View() + "\n")
 	b.WriteString(" " + label(fLocal, "local port") + f.inputs[fLocal].View() + "\n")
 	b.WriteString(" " + label(fRemote, "remote port") + f.inputs[fRemote].View() + "\n\n")
 	switch {
-	case f.busy:
-		b.WriteString(" " + sWarn.Render(spin+" connecting to "+strings.TrimSpace(f.inputs[fHost].Value())+"…") + "\n")
 	case f.err != "":
 		b.WriteString(lipgloss.NewStyle().Foreground(cBad).PaddingLeft(1).Width(max(10, w-1)).Render(f.err) + "\n")
 	default:
@@ -148,6 +167,11 @@ func (f *formModel) view(spin string, w int) string {
 			b.WriteString("\n")
 		}
 	}
-	b.WriteString("\n " + sMuted.Render("enter/tab next · ctrl+s create · esc cancel"))
+	if f.editID != 0 {
+		b.WriteString(" " + sMuted.Render("saving reconnects the tunnel with the new settings") + "\n")
+	} else {
+		b.WriteString("\n")
+	}
+	b.WriteString("\n " + sMuted.Render("enter/tab next · ctrl+s "+verb+" · esc cancel"))
 	return b.String()
 }
