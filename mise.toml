@@ -39,5 +39,6 @@
 "brew:fish" = "latest"
 "brew:nvtop" = "latest"
 "brew:rsync" = "latest"
+"brew:tmux" = "latest"
 "brew:wget" = "latest"
 "brew:zsh" = "latest"
