@@ -6,6 +6,7 @@ My personal dotfiles, managed with [`mise bootstrap`](https://mise.jdx.dev/boots
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/jerrykal/dotfiles/main/install.sh | sh
+mise run setup:git "Your Name" you@example.com   # git identity -> ~/.gitconfig.local (prompts if omitted)
 ```
 
 ## Day to day

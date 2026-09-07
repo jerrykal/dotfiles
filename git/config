@@ -2,15 +2,10 @@
 [include]
 	path = ~/.gitconfig.local
 
-[user]
-	name = Kuei-An Lee
-	email = oojerryleeoo@gmail.com
-
 [init]
 	defaultBranch = main
 
 [core]
-	excludesfile = ~/.config/git/ignore
 	pager = delta
 	autocrlf = input
 

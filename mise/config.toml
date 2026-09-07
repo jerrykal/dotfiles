@@ -83,3 +83,32 @@ run = [
   { task = "update:plugins" },
   { task = "update:dotfiles" },
 ]
+
+[tasks."setup:git"]
+description = "Write git user.name and user.email to ~/.gitconfig.local."
+usage = '''
+arg "[name]" help="Git user.name (prompted if omitted)"
+arg "[email]" help="Git user.email (prompted if omitted)"
+'''
+run = """
+  name="${usage_name:-}"
+  email="${usage_email:-}"
+  cfg="$HOME/.gitconfig.local"
+  cur_name="$(git config --file "$cfg" user.name 2>/dev/null || true)"
+  cur_email="$(git config --file "$cfg" user.email 2>/dev/null || true)"
+
+  if [ -z "$name" ]; then
+    printf 'git user.name [%s]: ' "$cur_name"; read -r name
+    name="${name:-$cur_name}"
+  fi
+  if [ -z "$email" ]; then
+    printf 'git user.email [%s]: ' "$cur_email"; read -r email
+    email="${email:-$cur_email}"
+  fi
+  [ -n "$name" ] && [ -n "$email" ] || { echo "name and email are required" >&2; exit 1; }
+
+  git config --file "$cfg" user.name "$name"
+  git config --file "$cfg" user.email "$email"
+  echo "wrote $cfg:"
+  git config --file "$cfg" --list
+"""
