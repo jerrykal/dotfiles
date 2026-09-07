@@ -5,4 +5,4 @@ type -q autossh; and alias ssh="autossh -M 0"
 
 alias mkdir="mkdir -p"
 
-alias t="~/.tmux/scripts/session-picker.sh"
+alias t="~/.config/tmux/scripts/session-picker.sh"
