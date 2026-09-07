@@ -5,7 +5,7 @@ My personal dotfiles, managed with [`mise bootstrap`](https://mise.jdx.dev/boots
 ## Fresh machine
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/jerrykal/dotfiles/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jerrykal/dotfiles/main/install.sh | sh
 ```
 
 ## Day to day
