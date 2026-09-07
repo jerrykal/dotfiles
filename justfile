@@ -3,8 +3,10 @@
 # Each top-level dir is a Stow "package" whose tree mirrors into $HOME.
 # Stow runs from this dir, so its default target is the parent — exactly $HOME.
 
-# All packages, in link order. Add new package dirs here.
-packages := "atuin bat bin btop claude eza fish git hunk lazygit mise nvim ruff shell skills tmux"
+# All Stow packages, in link order. Add new package dirs here. Paths managed by
+# mise instead (see [dotfiles] in ./mise.toml, e.g. nvim and mise.toml itself)
+# are flat and NOT listed here.
+packages := "atuin bat bin btop claude eza fish git hunk lazygit ruff shell skills tmux"
 
 # Packages whose config dir also accumulates runtime/generated files — e.g.
 # live ~/.claude state. These are stowed with --no-folding so the directory

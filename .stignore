@@ -20,5 +20,5 @@
 /fish/.config/fish/fish_variables
 /fish/.config/fish/local.fish
 /tmux/.config/tmux/plugins
-/nvim/.config/nvim/plugin
-/nvim/.config/nvim/spell
+/nvim/plugin
+/nvim/spell

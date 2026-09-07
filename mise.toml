@@ -4,6 +4,10 @@ auto_update_check_duration = "1d"
 not_found_auto_install = true
 idiomatic_version_file_enable_tools = ["node", "python"]
 
+[dotfiles]
+"~/.config/mise/config.toml" = "~/.dotfiles/mise.toml"
+"~/.config/nvim" = "~/.dotfiles/nvim"
+
 [tools]
 atuin = "latest"
 bat = "latest"

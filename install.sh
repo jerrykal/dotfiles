@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 #
 # Bootstrap a fresh machine: install Homebrew + Brewfile deps and mise, then
-# link the dotfiles with `just`. For day-to-day linking use `just link`
-# directly. CLI tools like Claude Code are managed globally by mise (see the
-# `mise` package) and installed by `mise install`.
+# link the dotfiles with `just` (Stow) and `mise bootstrap dotfiles apply`
+# (paths declared under [dotfiles] in ./mise.toml: the mise global config
+# itself and nvim). For day-to-day linking use `just link` /
+# `mise bootstrap dotfiles apply` directly. CLI tools like Claude Code are
+# managed globally by mise (./mise.toml) and installed by `mise install`.
 #
 # Usage: ./install.sh [--skip-deps]   # --skip-deps: link only (deps assumed present)
 #
@@ -37,6 +39,18 @@ if ! command -v just &>/dev/null; then
   exit 1
 fi
 
-log "Linking dotfiles..."
+log "Linking dotfiles (stow)..."
 just link
+
+# We're in the repo, so mise reads ./mise.toml directly; applying it links
+# ~/.config/mise/config.toml to it, after which it is the global config too.
+# mise itself may still only be in ~/.local/bin on a fresh box.
+export PATH="$HOME/.local/bin:$PATH"
+if command -v mise &>/dev/null; then
+  log "Linking dotfiles (mise)..."
+  mise trust --quiet ./mise.toml
+  mise bootstrap dotfiles apply --yes
+else
+  log "warning: mise not found; run 'mise bootstrap dotfiles apply' after installing it."
+fi
 log "Done."
