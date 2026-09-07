@@ -16,7 +16,8 @@ mise bootstrap                        # converge packages, dotfiles, tools
 mise bootstrap dotfiles status        # what is linked / missing / drifted
 mise bootstrap dotfiles apply         # (re)link after adding tracked files
 mise bootstrap dotfiles unapply       # remove the links
-mise run update:all                   # brew, mise + tools, nvim/fish/tmux plugins, then pull + converge (-n = dry run, -c = keep going)
+mise run update:all                   # brew, mise + tools, nvim/fish/tmux plugins, skills, then pull + converge (-n = dry run, -c = keep going)
+mise run clean                        # prune brew/mise/uv/go caches and unused nvim plugins
 ```
 
 Each top-level dir is one tool's config; `mise.toml` maps it to its `$HOME`

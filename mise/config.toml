@@ -63,6 +63,11 @@ run = """
   ~/.config/tmux/plugins/tpm/bin/update_plugins all
 """
 
+[tasks."update:skills"]
+description = "Update agent skills tracked in ~/.local/state/skills/.skill-lock.json."
+dir = "~"
+run = "npx -y skills update --global --yes"
+
 [tasks."update:dotfiles"]
 description = "Fast-forward ~/.dotfiles when on main, then converge it."
 dir = "~/.dotfiles"
@@ -76,13 +81,34 @@ run = """
 """
 
 [tasks."update:all"]
-description = "Update system packages, tools, plugins, and ~/.dotfiles."
+description = "Update system packages, tools, plugins, skills, and ~/.dotfiles."
 run = [
   { task = "update:system" },
   { task = "update:tools" },
   { task = "update:plugins" },
+  { task = "update:skills" },
   { task = "update:dotfiles" },
 ]
+
+[tasks.clean]
+description = "Reclaim disk: prune brew, mise, uv, and Go caches and unused Neovim plugins."
+run = """
+  echo "==> brew"
+  if command -v brew >/dev/null 2>&1; then brew cleanup --prune=all; fi
+
+  echo "==> mise"
+  mise prune --yes
+  mise cache clear
+
+  echo "==> uv"
+  if command -v uv >/dev/null 2>&1; then uv cache prune; fi
+
+  echo "==> neovim"
+  nvim --headless '+Lazy! clean' +qa
+
+  echo "==> go"
+  if command -v go >/dev/null 2>&1; then go clean -cache; fi
+"""
 
 [tasks."setup:git"]
 description = "Write git user.name and user.email to ~/.gitconfig.local."
