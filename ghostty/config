@@ -22,7 +22,7 @@ clipboard-read = deny
 clipboard-write = allow
 
 # Miscellaneous
-shell-integration-features = cursor,sudo,no-title,ssh-env,ssh-terminfo
+shell-integration-features = no-cursor,sudo,no-title,ssh-env,ssh-terminfo
 mouse-hide-while-typing = true
 window-inherit-working-directory = false
 
