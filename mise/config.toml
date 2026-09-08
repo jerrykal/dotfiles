@@ -1,7 +1,6 @@
 [settings]
 auto_update = true
 auto_update_check_duration = "1d"
-idiomatic_version_file_enable_tools = ["node", "python"]
 minimum_release_age_excludes = ["claude"]
 
 [tools]
