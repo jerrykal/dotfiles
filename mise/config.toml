@@ -1,7 +1,7 @@
 [settings]
 auto_update = true
 auto_update_check_duration = "1d"
-minimum_release_age_excludes = ["claude"]
+minimum_release_age_excludes = ["claude", "herdr"]
 
 [tools]
 atuin = "latest"
@@ -13,6 +13,7 @@ fd = "latest"
 fzf = "latest"
 gh = "latest"
 go = "latest"
+herdr = "latest"
 hunk = "latest"
 jq = "latest"
 just = "latest"
