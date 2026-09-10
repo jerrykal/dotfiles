@@ -100,12 +100,14 @@ herdr_ctx() {
   hcwd=${HERDR_ACTIVE_PANE_CWD:-$PWD}
 }
 
-# A herdr server run is identified by its socket file (inode + birth time):
-# a restarted server makes a new one and reuses pane/tab/workspace ids, the
-# same problem the tmux pid solves. Empty when no server is up.
+# A herdr server run is identified by its socket file (inode + creation
+# time): a restarted server makes a new one and reuses pane/tab/workspace
+# ids, the same problem the tmux pid solves. Empty when no server is up.
+# GNU stat first: its -f means filesystem status and succeeds, while BSD
+# stat rejects -c.
 herdr_srv() {
   local s=${HERDR_SOCKET_PATH:-$HOME/.config/herdr/herdr.sock}
-  stat -f '%i_%B' "$s" 2>/dev/null || stat -c '%i_%Z' "$s" 2>/dev/null || true
+  stat -c '%i_%Z' "$s" 2>/dev/null || stat -f '%i_%B' "$s" 2>/dev/null || true
 }
 
 # Values of string key $1 in the JSON that `herdr $2 list` prints. Ids never
@@ -271,7 +273,7 @@ tmux_key() {
   printf '%s\t%s%s\n' "$table" "$mods" "$base"
 }
 
-conf_mtime() { stat -L -f %m "$HERDR_CONF" 2>/dev/null || stat -L -c %Y "$HERDR_CONF" 2>/dev/null || true; }
+conf_mtime() { stat -L -c %Y "$HERDR_CONF" 2>/dev/null || stat -L -f %m "$HERDR_CONF" 2>/dev/null || true; }
 
 # Copy the frontend's popup-toggle bindings onto the popup server, so every
 # popup key works inside every popup without having been pressed there first
