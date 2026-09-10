@@ -97,3 +97,38 @@ key = "prefix+ctrl+l"
 type = "shell"
 command = "\"$HERDR_BIN_PATH\" pane send-keys \"$HERDR_ACTIVE_PANE_ID\" ctrl+l"
 description = "send ctrl+l to pane"
+
+# Popups: toggleable, scoped, persistent (same script and keys as tmux.conf).
+# Opened through the local popup-toggle plugin, linked once per machine:
+#   herdr plugin link ~/.dotfiles/herdr-plugins/popup-toggle
+# Inside a popup: its own key closes it, another popup's key swaps to that
+# popup, alt+enter toggles full screen, prefix+x closes it.
+[[keys.command]]
+key = "alt+/"
+type = "shell"
+command = "~/.config/tmux/scripts/popup-toggle.sh -s workspace"
+description = "popup: shell"
+
+[[keys.command]]
+key = "alt+g"
+type = "shell"
+command = "~/.config/tmux/scripts/popup-toggle.sh -s cwd -n lazygit lazygit"
+description = "popup: lazygit"
+
+[[keys.command]]
+key = "alt+m"
+type = "shell"
+command = "~/.config/tmux/scripts/popup-toggle.sh -s server -n btop btop"
+description = "popup: btop"
+
+[[keys.command]]
+key = "alt+n"
+type = "shell"
+command = "~/.config/tmux/scripts/popup-toggle.sh -s server -n nvtop nvtop"
+description = "popup: nvtop"
+
+[[keys.command]]
+key = "alt+d"
+type = "shell"
+command = "~/.config/tmux/scripts/popup-toggle.sh -s cwd -n hunk hunk diff"
+description = "popup: hunk diff"

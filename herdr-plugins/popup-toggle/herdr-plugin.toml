@@ -1,0 +1,67 @@
+# Local herdr plugin: gives ~/.config/tmux/scripts/popup-toggle.sh a way to open
+# herdr popups (the pane entry) and to sweep popups whose owner closed (the
+# event hooks). Keys live in ~/.config/herdr/config.toml as type = "shell"
+# commands running that script. Register once per machine:
+#
+#   herdr plugin link ~/.dotfiles/herdr-plugins/popup-toggle
+id = "popup-toggle"
+name = "Popup toggle"
+version = "0.1.0"
+min_herdr_version = "0.9.0"
+description = "Toggleable, scoped popups backed by detached sessions on a tmux server"
+platforms = ["linux", "macos"]
+
+# The script opens a pane entry with --placement popup and per-popup
+# --width/--height, passing the tmux session to attach in POPUP_TOGGLE_ATTACH.
+# herdr shows the entry's title on the popup border and offers no way to set it
+# per open, so each popup name gets its own entry, titled like tmux's popup
+# (-T name). A name without an entry falls back to "popup", whose title is a
+# braille blank (U+2800): herdr insists on a non-empty title.
+[[panes]]
+id = "popup"
+title = "⠀"
+placement = "popup"
+command = ["bash", "popup-toggle", "--attach"]
+
+[[panes]]
+id = "scratch"
+title = "scratch"
+placement = "popup"
+command = ["bash", "popup-toggle", "--attach"]
+
+[[panes]]
+id = "lazygit"
+title = "lazygit"
+placement = "popup"
+command = ["bash", "popup-toggle", "--attach"]
+
+[[panes]]
+id = "btop"
+title = "btop"
+placement = "popup"
+command = ["bash", "popup-toggle", "--attach"]
+
+[[panes]]
+id = "nvtop"
+title = "nvtop"
+placement = "popup"
+command = ["bash", "popup-toggle", "--attach"]
+
+[[panes]]
+id = "hunk"
+title = "hunk"
+placement = "popup"
+command = ["bash", "popup-toggle", "--attach"]
+
+# Kill popup sessions whose owner pane/tab/workspace is gone.
+[[events]]
+on = "pane.closed"
+command = ["bash", "popup-toggle", "--gc"]
+
+[[events]]
+on = "tab.closed"
+command = ["bash", "popup-toggle", "--gc"]
+
+[[events]]
+on = "workspace.closed"
+command = ["bash", "popup-toggle", "--gc"]

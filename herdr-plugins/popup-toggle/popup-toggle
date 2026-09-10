@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Plugin entry point: the real script is shared with tmux. It picks the herdr
+# frontend from the HERDR_* environment herdr gives plugin commands.
+exec "$HOME/.config/tmux/scripts/popup-toggle.sh" "$@"
