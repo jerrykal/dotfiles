@@ -22,6 +22,11 @@ type -q atuin; and atuin init fish --disable-up-arrow | source
 # Initialize zoxide
 type -q zoxide; and zoxide init fish | source
 
+# herdr sessions inherit a generic TERM; restore Ghostty's so integration works.
+if set -q HERDR_ENV; and test "$TERM" = xterm-256color; and test "$TERM_PROGRAM" = ghostty
+    set -gx TERM xterm-ghostty
+end
+
 # Ghostty shell integration — Ghostty only auto-injects it into the shell it
 # spawns, but our setup launches fish via exec fish, so fish must source it itself.
 set -q GHOSTTY_RESOURCES_DIR; and source $GHOSTTY_RESOURCES_DIR/shell-integration/fish/vendor_conf.d/ghostty-shell-integration.fish

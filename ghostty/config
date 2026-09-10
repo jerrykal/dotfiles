@@ -72,7 +72,7 @@ keybind = cmd+p=text:\x00w
 # prefix v — split pane right
 keybind = cmd+d=text:\x00v
 # prefix s — split pane down
-keybind = cmd+shift+d=text:\x00s
+keybind = cmd+shift+d=text:\x00h
 # prefix x — kill pane
 keybind = cmd+w=text:\x00x
 # Alt+enter — toggle pane/popup zoom

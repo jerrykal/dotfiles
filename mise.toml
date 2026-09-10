@@ -20,8 +20,9 @@
 # Per-file links into directories that also hold unmanaged/runtime files.
 # manifest = "git" links only tracked files.
 "~" = { source = "shell", mode = "symlink-each", manifest = "git" }
-"~/.local/bin" = { source = "bin", mode = "symlink-each", manifest = "git" }
 "~/.claude" = { source = "claude", mode = "symlink-each", manifest = "git" }
+"~/.config/herdr" = { source = "herdr", mode = "symlink-each", manifest = "git" }
+"~/.local/bin" = { source = "bin", mode = "symlink-each", manifest = "git" }
 
 # Go tools under tools/: each links a self-building shim that compiles the
 # module beside it into $XDG_CACHE_HOME on first run and whenever sources change.
