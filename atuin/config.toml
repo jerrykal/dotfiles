@@ -22,4 +22,4 @@ enabled = true
 autostart = true
 
 [pty_proxy]
-enabled = true
+enabled = false
