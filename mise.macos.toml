@@ -16,7 +16,6 @@ mru_spaces = false
 show_recents = false
 
 [bootstrap.macos.finder]
-preferred_view_style = "list"
 show_all_files = true
 show_pathbar = true
 show_status_bar = true
