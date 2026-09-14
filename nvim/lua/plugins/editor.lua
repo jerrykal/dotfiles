@@ -358,7 +358,7 @@ return {
 
   -- Seamless navigation and resizing between Neovim and tmux splits
   {
-    "mrjones2014/smart-splits.nvim",
+    "smart-splits-nvim/smart-splits.nvim",
     event = "VeryLazy",
     opts = {
       disable_multiplexer_nav_when_zoomed = false,
