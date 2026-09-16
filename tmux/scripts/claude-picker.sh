@@ -14,22 +14,40 @@ source "$(dirname "${BASH_SOURCE[0]}")/claude-pattern.sh"
 IFS=' ' read -r orig session \
   < <(tmux display-message -p '#{pane_id} #{session_name}')
 
-# Claude writes a status glyph as the first char of the terminal title:
-# braille spinner = working, dot = blocked on input, ✳ = done.
+# Claude Code (>= 2.1.x) publishes each session's state in
+# ~/.claude/sessions/<pid>.json: status busy|waiting|idle plus a "tmux"
+# field "session:@win.%pane". Under tmux its terminal title glyph is
+# static (always ✳), so the title carries no state anymore.
+declare -A presence
+load_presence() {
+  local f tmux_loc pid status
+  shopt -s nullglob
+  for f in ~/.claude/sessions/*.json; do
+    IFS=$'\t' read -r tmux_loc pid status < <(
+      jq -r 'select(.tmux != null) | [.tmux, .pid, .status // "idle"] | @tsv' "$f" 2>/dev/null
+    )
+    [[ -n "$tmux_loc" ]] || continue
+    kill -0 "$pid" 2>/dev/null || continue # stale file from a dead session
+    presence["${tmux_loc##*.}"]=$status
+  done
+  shopt -u nullglob
+}
+
 list_panes() { # $1: current|all
   local flags=(-a)
   [[ "$1" == current ]] && flags=(-s -t "=$session")
-  tmux list-panes "${flags[@]}" -F '#{pane_current_command}	#{pane_id}	#{=1:pane_title}	#{session_name}	#{window_index}:#{pane_index}	#{window_activity}	#{pane_title}' |
-    while IFS=$'\t' read -r cmd id glyph session loc activity title; do
+  load_presence
+  tmux list-panes "${flags[@]}" -F '#{pane_current_command}	#{pane_id}	#{session_name}	#{window_index}:#{pane_index}	#{window_activity}	#{pane_title}' |
+    while IFS=$'\t' read -r cmd id session loc activity title; do
       [[ "$cmd" =~ $pattern ]] || continue
-      case "$glyph" in
-      [⠀-⣿]) rank=2 color=$'\033[33m' state=working ;;
-      ·) rank=0 color=$'\033[31m' state=blocked ;;
-      ✳) rank=1 color=$'\033[34m' state=done ;;
-      *) rank=3 color=$'\033[32m' state=idle ;;
+      case "${presence[$id]:-}" in
+      busy) rank=2 color=$'\033[33m' state=working ;;
+      waiting) rank=0 color=$'\033[31m' state=blocked ;;
+      idle) rank=1 color=$'\033[34m' state=done ;;
+      *) rank=3 color=$'\033[32m' state=idle ;; # no presence file yet
       esac
-      # Drop the leading status glyph from the title; keep idle titles whole.
-      [[ "$state" != idle ]] && { title=${title:1}; title=${title# }; }
+      # Drop the leading status glyph claude still prefixes to the title.
+      [[ "$title" =~ ^[✳◐◑·⠀-⣿]\ ? ]] && title=${title:${#BASH_REMATCH[0]}}
       ((${#title} > max_title)) && title="${title:0:max_title-1}…"
       printf '%s\t%s\t%s\t%s%-7s\033[0m %s \033[2m%s\033[0m  \033[2;3m%s\033[0m\n' \
         "$rank" "$activity" "$id" "$color" "$state" "$session" "$loc" "$title"
