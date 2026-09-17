@@ -11,3 +11,6 @@ fish/local.fish
 tmux/plugins/
 nvim/plugin/
 nvim/spell/
+
+# Claude Code cloud skills sync (machine-generated, ~/.claude/skills symlinks here)
+skills/claude/synced/
