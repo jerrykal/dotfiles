@@ -7,13 +7,17 @@
 #                     [command...]
 #        popup-toggle.sh --gc | --mirror
 #
-#   -s pane|window|session|server|cwd|global   scope (default: session). A
+#   -s pane|window|session|server|cwd|project|global   scope (default:
+#      session). A
 #      scoped popup lives as long as its owner: when the owner pane/window/
 #      session closes, the popup session is killed by --gc (wired to hooks in
 #      tmux.conf). "server" popups are shared by every session and die with
 #      the server. "cwd" popups are shared by all panes in the same working
-#      directory and live while any pane still has that cwd. "global" popups
-#      are shared everywhere and never GC'd.
+#      directory and live while any pane still has that cwd. "project" popups
+#      are shared by all panes whose cwd is inside the same git repo (nearest
+#      parent holding a .git; outside a repo the cwd itself), start in the
+#      repo root, and live while any pane is still in that repo. "global"
+#      popups are shared everywhere and never GC'd.
 #   -n name    popup name, allows several popups per scope (default: scratch)
 #   command    run in the popup session (default: your shell)
 #
@@ -37,6 +41,20 @@ pt() { tmux -L "$SOCKET" "$@"; }
 # Session names can't contain '.' or ':', so cwd owners are a hash of the path.
 hash_dir() { cksum <<<"$1" | cut -d' ' -f1; }
 
+# Nearest ancestor of $1 (inclusive) holding a .git — dir, or the file a
+# worktree/submodule has — else $1 itself. Pure bash: gc runs this per pane cwd.
+project_root() {
+  local d=$1
+  while [[ -n $d ]]; do
+    if [[ -e $d/.git ]]; then
+      printf '%s' "$d"
+      return
+    fi
+    d=${d%/*}
+  done
+  printf '%s' "$1"
+}
+
 # Popup dimension spec ("90%" or cells) -> inner cells ($2 = client cells;
 # the border takes 2).
 cells() {
@@ -46,7 +64,8 @@ cells() {
 }
 
 # Popup session name wire format: <scope char><owner>-<name>. Chars are the
-# scope initials, except server is "v" since "s" is session's. Names get the
+# scope initials, except server is "v" since "s" is session's and project is
+# "r" (repo) since "p" is pane's. Names get the
 # same '.'/':' cleaning as cwd owners get hashed (see hash_dir).
 sname_clean() { printf '%s' "${1//[.:]/_}"; }
 sname_encode() { printf '%s%s-%s' "$1" "$2" "$(sname_clean "$3")"; }
@@ -60,8 +79,8 @@ sname_name() { printf '%s' "${1#*-}"; }
 # strings as the owner construction in main below. pane/window/session owners
 # embed the main server's pid (the server owner is the pid): a restarted
 # server reuses pane/window/session ids, so popups from a dead server must
-# never match the new owners. cwd owners are pid-less path hashes — a
-# directory's identity survives restarts. On a sessionless or dead main
+# never match the new owners. cwd/project owners are pid-less path hashes —
+# a directory's identity survives restarts. On a sessionless or dead main
 # server these fail; that means "no owners", not an error.
 alive_ids() {
   case $1 in
@@ -71,10 +90,12 @@ alive_ids() {
   v) tmux list-sessions -F '#{pid}' ;;
   c) tmux list-panes -a -F '#{pane_current_path}' | sort -u |
     while IFS= read -r p; do hash_dir "$p"; done ;;
+  r) tmux list-panes -a -F '#{pane_current_path}' | sort -u |
+    while IFS= read -r p; do hash_dir "$(project_root "$p")"; done ;;
   esac 2>/dev/null || true
 }
 
-# cwd popups may only be swept while the main server is up, else they'd never
+# cwd/project popups may only be swept while the main server is up, else they'd never
 # survive a restart. A sessionless server is ambiguous: closing the last
 # window leaves the server idling until this very hook job exits, while
 # kill-server takes it down despite us — wait a beat to tell them apart.
@@ -87,16 +108,16 @@ main_alive() {
 }
 
 gc() {
-  local sessions s prefix sweep_cwd=1
+  local sessions s prefix sweep_dirs=1
   local -A alive=()
   sessions=$(pt list-sessions -F '#{session_name}' 2>/dev/null) || return 0
-  main_alive || sweep_cwd=0
+  main_alive || sweep_dirs=0
   while IFS= read -r s; do
     case $s in
-    [pwsvc][0-9]*) prefix=${s:0:1} ;;
+    [pwsvcr][0-9]*) prefix=${s:0:1} ;;
     *) continue ;;
     esac
-    [[ $prefix == c && $sweep_cwd == 0 ]] && continue
+    [[ $prefix == [cr] && $sweep_dirs == 0 ]] && continue
     [[ -v alive[$prefix] ]] || alive[$prefix]=$(alive_ids "$prefix")
     grep -qxF "$(sname_owner "$s")" <<<"${alive[$prefix]}" ||
       pt kill-session -t "=$s" 2>/dev/null || true
@@ -202,7 +223,7 @@ while getopts :s:n:w:h:k:P:C: opt; do
   P) cursess=$OPTARG ;; # internal: popup session the key was pressed in
   C) mclient=$OPTARG ;; # internal: main-server client to open the popup on
   *)
-    echo "usage: popup-toggle.sh [-s pane|window|session|server|cwd|global] [-n name] [-w width] [-h height] [command...]" >&2
+    echo "usage: popup-toggle.sh [-s pane|window|session|server|cwd|project|global] [-n name] [-w width] [-h height] [command...]" >&2
     exit 1
     ;;
   esac
@@ -215,9 +236,10 @@ window) sc=w ;;
 session) sc=s ;;
 server) sc=v ;;
 cwd) sc=c ;;
+project) sc=r ;;
 global) sc=g ;;
 *)
-  echo "popup-toggle.sh: bad scope '$scope' (pane|window|session|server|cwd|global)" >&2
+  echo "popup-toggle.sh: bad scope '$scope' (pane|window|session|server|cwd|project|global)" >&2
   exit 1
   ;;
 esac
@@ -250,6 +272,10 @@ w) owner="${srv}_${win}" ;;
 s) owner="${srv}_${sess}" ;;
 v) owner="$srv" ;;
 c) owner=$(hash_dir "$cwd") ;;
+r)
+  cwd=$(project_root "$cwd") # shared across subdirs, so start at the root
+  owner=$(hash_dir "$cwd")
+  ;;
 g) owner="" ;;
 esac
 sname=$(sname_encode "$sc" "$owner" "$name")
