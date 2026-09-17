@@ -16,6 +16,7 @@
 "~/.config/nvim" = "nvim"
 "~/.config/ruff" = "ruff"
 "~/.config/tmux" = "tmux"
+"~/.config/tuicr" = "tuicr"
 
 # Per-file links into directories that also hold unmanaged/runtime files.
 # manifest = "git" links only tracked files.

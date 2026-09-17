@@ -1,0 +1,5 @@
+# Local theme: themes/rose-pine.toml
+theme = "rose-pine"
+
+leader = " "
+cursor_line = false

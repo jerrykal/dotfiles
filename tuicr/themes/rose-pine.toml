@@ -1,0 +1,65 @@
+# Rosé Pine ("main" variant), following the rose-pine/neovim highlight groups:
+# git_add=foam, git_change=rose, git_delete=love, git_rename=pine,
+# error=love, warn=gold, info=foam, hint=iris, note=pine, ok=leaf.
+# Blended backgrounds are the palette colour over base #191724.
+
+# base
+panel_bg     = "#191724"  # base (Normal)
+bg_highlight = "#332d41"  # iris @15% (Visual)
+fg_primary   = "#e0def4"  # text
+fg_secondary = "#908caa"  # subtle
+fg_dim       = "#6e6a86"  # muted
+
+# diff (DiffAdd / DiffDelete blend 20)
+diff_add            = "#9ccfd8"  # foam
+diff_add_bg         = "#333c48"  # foam @20%
+diff_del            = "#eb6f92"  # love
+diff_del_bg         = "#43293a"  # love @20%
+diff_context        = "#e0def4"  # text
+diff_hunk_header    = "#c4a7e7"  # iris
+expanded_context_fg = "#6e6a86"  # muted
+
+# line backgrounds under syntax-highlighted code
+syntax_add_bg = "#333c48"  # foam @20%
+syntax_del_bg = "#43293a"  # love @20%
+# Shared with bat; resolved relative to this file.
+syntax_theme = "../../bat/themes/rose-pine.tmTheme"
+
+# file status
+file_added    = "#9ccfd8"  # foam
+file_modified = "#ebbcba"  # rose
+file_deleted  = "#eb6f92"  # love
+file_renamed  = "#31748f"  # pine
+
+# review status; tuicr blends pending @30% for search matches (Search = gold)
+reviewed = "#9ccfd8"  # foam
+pending  = "#f6c177"  # gold
+
+# comment types
+comment_note       = "#31748f"  # pine (note)
+comment_suggestion = "#c4a7e7"  # iris (hint)
+comment_issue      = "#eb6f92"  # love (error)
+comment_praise     = "#95b1ac"  # leaf (ok)
+
+# chrome
+border_focused   = "#c4a7e7"  # iris
+border_unfocused = "#524f67"  # highlight-high (border)
+status_bar_bg    = "#1f1d2e"  # surface (StatusLine)
+cursor_color     = "#c4a7e7"  # iris
+cursor_line_bg   = "#26233a"  # overlay (CursorLine)
+branch_name      = "#9ccfd8"  # foam
+help_indicator   = "#6e6a86"  # muted
+
+# messages
+message_info_fg    = "#191724"  # base
+message_info_bg    = "#9ccfd8"  # foam
+message_warning_fg = "#191724"  # base
+message_warning_bg = "#f6c177"  # gold
+message_error_fg   = "#191724"  # base
+message_error_bg   = "#eb6f92"  # love
+update_badge_fg    = "#191724"  # base
+update_badge_bg    = "#f6c177"  # gold
+
+# mode indicator
+mode_fg = "#191724"  # base
+mode_bg = "#c4a7e7"  # iris
