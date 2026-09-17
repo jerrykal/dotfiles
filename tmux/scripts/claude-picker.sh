@@ -5,6 +5,12 @@
 # selected pane.
 # Usage: claude-picker.sh [--all]  (start in all-sessions scope; default current)
 
+# Re-exec under `mise exec` so jq/fzf resolve to real binaries: tmux run-shell
+# finds them as mise shims, which re-resolve the whole toolset on every call.
+if [[ -z "${__MISE_EXEC:-}" ]] && command -v mise >/dev/null 2>&1; then
+  __MISE_EXEC=1 exec mise exec -- "${BASH_SOURCE[0]}" "$@"
+fi
+
 max_height=15
 max_title=40
 
@@ -20,17 +26,17 @@ IFS=' ' read -r orig session \
 # static (always ✳), so the title carries no state anymore.
 declare -A presence
 load_presence() {
-  local f tmux_loc pid status
+  local files tmux_loc pid status
   shopt -s nullglob
-  for f in ~/.claude/sessions/*.json; do
-    IFS=$'\t' read -r tmux_loc pid status < <(
-      jq -r 'select(.tmux != null) | [.tmux, .pid, .status // "idle"] | @tsv' "$f" 2>/dev/null
-    )
-    [[ -n "$tmux_loc" ]] || continue
+  files=(~/.claude/sessions/*.json)
+  shopt -u nullglob
+  ((${#files[@]})) || return
+  while IFS=$'\t' read -r tmux_loc pid status; do
     kill -0 "$pid" 2>/dev/null || continue # stale file from a dead session
     presence["${tmux_loc##*.}"]=$status
-  done
-  shopt -u nullglob
+  done < <(
+    jq -r 'select(.tmux != null) | [.tmux, .pid, .status // "idle"] | @tsv' "${files[@]}" 2>/dev/null
+  )
 }
 
 list_panes() { # $1: current|all

@@ -4,6 +4,13 @@
 # Subcommands (used internally by fzf bindings): --list, --preview <target>.
 # Optional positional arg: skip the picker, connect to the first matching entry.
 
+# Re-exec under `mise exec` so zoxide/fzf/eza resolve to real binaries: tmux
+# run-shell finds them as mise shims, which re-resolve the whole toolset on
+# every call. fzf's --list/--preview children inherit the resolved PATH.
+if [[ -z "${__MISE_EXEC:-}" ]] && command -v mise >/dev/null 2>&1; then
+  __MISE_EXEC=1 exec mise exec -- "${BASH_SOURCE[0]}" "$@"
+fi
+
 self=$(realpath "${BASH_SOURCE[0]}")
 
 session_icon=$'\033[34m\033[39m'
