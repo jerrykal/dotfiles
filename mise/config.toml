@@ -28,6 +28,7 @@ ripgrep = "latest"
 rust = "latest"
 tree-sitter = "latest"
 uv = "latest"
+worktrunk = "latest"
 zoxide = "latest"
 
 [tasks."update:system"]

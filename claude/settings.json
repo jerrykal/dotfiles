@@ -66,16 +66,13 @@
       }
     ]
   },
-  "worktree": {
-    "baseRef": "fresh",
-    "bgIsolation": "none"
-  },
   "statusLine": {
     "type": "command",
     "command": "bash ~/.claude/statusline.sh"
   },
   "enabledPlugins": {
-    "astral@astral-sh": true
+    "astral@astral-sh": true,
+    "worktrunk@worktrunk": true
   },
   "extraKnownMarketplaces": {
     "astral-sh": {
@@ -84,6 +81,12 @@
         "repo": "astral-sh/claude-code-plugins"
       },
       "autoUpdate": true
+    },
+    "worktrunk": {
+      "source": {
+        "source": "github",
+        "repo": "max-sixty/worktrunk"
+      }
     }
   },
   "outputStyle": "Concise",

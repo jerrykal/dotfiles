@@ -22,6 +22,9 @@ type -q atuin; and atuin init fish --disable-up-arrow | source
 # Initialize zoxide
 type -q zoxide; and zoxide init fish | source
 
+# Initialize worktrunk shell integration (lets `wt switch` cd the shell)
+type -q wt; and wt config shell init fish | source
+
 # Ghostty shell integration — Ghostty only auto-injects it into the shell it
 # spawns, but our setup launches fish via exec fish, so fish must source it itself.
 set -q GHOSTTY_RESOURCES_DIR; and source $GHOSTTY_RESOURCES_DIR/shell-integration/fish/vendor_conf.d/ghostty-shell-integration.fish
