@@ -2,6 +2,6 @@
 theme = "rose-pine"
 
 leader = " "
-cursor_line = false
+relative_line_numbers = true
 scroll_offset = 5
 comment_vim = true
