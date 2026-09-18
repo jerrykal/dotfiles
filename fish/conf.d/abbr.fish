@@ -43,6 +43,9 @@ abbr -a gbd git branch -d
 # Lazygit
 type -q lazygit; and abbr -a lg lazygit
 
+# Herdr
+type -q herdr; and abbr -a h herdr
+
 # uv
 if type -q uv
     abbr -a uvi uv init

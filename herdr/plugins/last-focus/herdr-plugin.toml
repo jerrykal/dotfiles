@@ -1,0 +1,36 @@
+id = "last-focus"
+name = "last-focus"
+version = "0.1.0"
+min_herdr_version = "0.7.0"
+description = "Jump back to the previously focused pane, tab or workspace"
+platforms = ["linux", "macos"]
+
+[[events]]
+on = "pane.focused"
+command = ["bash", "last-focus.sh", "record"]
+
+[[events]]
+on = "tab.focused"
+command = ["bash", "last-focus.sh", "record"]
+
+[[events]]
+on = "workspace.focused"
+command = ["bash", "last-focus.sh", "record"]
+
+[[actions]]
+id = "pane"
+title = "Last pane"
+contexts = ["global"]
+command = ["bash", "last-focus.sh", "pane"]
+
+[[actions]]
+id = "tab"
+title = "Last tab"
+contexts = ["global"]
+command = ["bash", "last-focus.sh", "tab"]
+
+[[actions]]
+id = "workspace"
+title = "Last workspace"
+contexts = ["global"]
+command = ["bash", "last-focus.sh", "workspace"]

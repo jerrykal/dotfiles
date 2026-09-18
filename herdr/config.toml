@@ -1,0 +1,134 @@
+onboarding = false
+
+[theme]
+name = "rose-pine"
+auto_switch = false
+
+[ui]
+pane_gaps = false
+pane_outer_borders = false
+
+[ui.toast]
+delivery = "herdr"
+
+[keys]
+prefix = "ctrl+space"
+detach = "prefix+d"
+
+# Panes
+split_horizontal = ["prefix+h"]
+split_vertical = ["prefix+v"]
+zoom = ["prefix+z", "alt+enter"]
+last_pane = "prefix+'"           # global; prefix+; is the tab-scoped last-focus.pane
+focus_pane_right = ""            # frees prefix+l for last tab
+
+resize_pane_left = "alt+h"
+resize_pane_down = "alt+j"
+resize_pane_up = "alt+k"
+resize_pane_right = "alt+l"
+
+# Tabs
+rename_tab = "prefix+,"
+move_tab_previous = "alt+,"
+move_tab_next = "alt+."
+
+# Workspaces
+rename_workspace = "prefix+$"
+
+[[keys.command]]
+key = "ctrl+h"
+type = "plugin_action"
+command = "smart-splits.nvim.left"
+description = "navigate left (vim/herdr)"
+
+[[keys.command]]
+key = "ctrl+j"
+type = "plugin_action"
+command = "smart-splits.nvim.down"
+description = "navigate down (vim/herdr)"
+
+[[keys.command]]
+key = "ctrl+k"
+type = "plugin_action"
+command = "smart-splits.nvim.up"
+description = "navigate up (vim/herdr)"
+
+[[keys.command]]
+key = "ctrl+l"
+type = "plugin_action"
+command = "smart-splits.nvim.right"
+description = "navigate right (vim/herdr)"
+
+[[keys.command]]
+key = "prefix+;"
+type = "plugin_action"
+command = "last-focus.pane"
+description = "last pane (current tab)"
+
+[[keys.command]]
+key = "prefix+l"
+type = "plugin_action"
+command = "last-focus.tab"
+description = "last tab"
+
+[[keys.command]]
+key = "prefix+shift+l"
+type = "plugin_action"
+command = "last-focus.workspace"
+description = "last workspace"
+
+# Worktrees via worktrunk (prefix+shift+g overrides herdr's built-in new worktree)
+[[keys.command]]
+key = "prefix+shift+g"
+type = "plugin_action"
+command = "worktrunk.open"
+description = "worktree: switch / create from default branch"
+
+[[keys.command]]
+key = "prefix+shift+c"
+type = "plugin_action"
+command = "worktrunk.open-current"
+description = "worktree: switch / create from current branch"
+
+[[keys.command]]
+key = "prefix+shift+r"
+type = "plugin_action"
+command = "worktrunk.open-with-remotes"
+description = "worktree: switch / create incl. remote branches"
+
+[[keys.command]]
+key = "prefix+shift+d"
+type = "plugin_action"
+command = "worktrunk.remove"
+description = "worktree: remove"
+
+[[keys.command]]
+key = "prefix+shift+m"
+type = "plugin_action"
+command = "worktrunk.merge"
+description = "worktree: merge into the target branch"
+
+# prefix+ctrl+h/j/k/l send the raw key to the pane (e.g. ctrl+l to clear screen)
+[[keys.command]]
+key = "prefix+ctrl+h"
+type = "shell"
+command = '"$HERDR_BIN_PATH" pane send-keys "$HERDR_ACTIVE_PANE_ID" ctrl+h'
+description = "send ctrl+h"
+
+[[keys.command]]
+key = "prefix+ctrl+j"
+type = "shell"
+command = '"$HERDR_BIN_PATH" pane send-keys "$HERDR_ACTIVE_PANE_ID" ctrl+j'
+description = "send ctrl+j"
+
+[[keys.command]]
+key = "prefix+ctrl+k"
+type = "shell"
+command = '"$HERDR_BIN_PATH" pane send-keys "$HERDR_ACTIVE_PANE_ID" ctrl+k'
+description = "send ctrl+k"
+
+[[keys.command]]
+key = "prefix+ctrl+l"
+type = "shell"
+command = '"$HERDR_BIN_PATH" pane send-keys "$HERDR_ACTIVE_PANE_ID" ctrl+l'
+description = "send ctrl+l"

@@ -12,7 +12,7 @@ mise run setup:git "Your Name" you@example.com   # git identity -> ~/.gitconfig.
 ## Day to day
 
 ```sh
-mise bootstrap                        # converge packages, dotfiles, tools
+mise bootstrap                        # converge packages, dotfiles, tools, plugins
 mise bootstrap dotfiles status        # what is linked / missing / drifted
 mise bootstrap dotfiles apply         # (re)link after adding tracked files
 mise bootstrap dotfiles unapply       # remove the links
