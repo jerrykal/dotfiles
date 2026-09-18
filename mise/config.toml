@@ -1,6 +1,4 @@
 [settings]
-auto_update = true
-auto_update_check_duration = "1d"
 minimum_release_age_excludes = ["claude", "herdr"]
 
 [tools]
