@@ -79,6 +79,12 @@ type = "plugin_action"
 command = "last-focus.workspace"
 description = "last workspace"
 
+[[keys.command]]
+key = "prefix+o"
+type = "plugin_action"
+command = "herdr-picker.open"
+description = "pick a workspace or directory"
+
 # prefix+ctrl+h/j/k/l send the raw key to the pane (e.g. ctrl+l to clear screen)
 [[keys.command]]
 key = "prefix+ctrl+h"
