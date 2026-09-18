@@ -7,11 +7,25 @@ auto_switch = false
 [ui]
 pane_gaps = false
 pane_outer_borders = false
-prompt_new_tab_name = false
 tab_bar_right = [{ type = "hostname" }]
 
+[ui.sidebar.agents]
+row_gap = 0
+rows = [
+  [
+    "state_icon",
+    "machine",
+    "workspace",
+    "tab",
+  ],
+  [
+    "terminal_title_stripped",
+  ],
+]
+
+
 [ui.toast]
-delivery = "herdr"
+delivery = "terminal"
 
 [keys]
 prefix = "ctrl+space"
@@ -36,6 +50,10 @@ move_tab_next = "alt+."
 
 # Workspaces
 rename_workspace = "prefix+$"
+
+# Navigator
+navigate_workspace_up = "k"
+navigate_workspace_down = "j"
 
 [[keys.command]]
 key = "ctrl+h"

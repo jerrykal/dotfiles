@@ -4,3 +4,5 @@ type -q batcat; and alias cat="batcat"; and alias bat="batcat"
 alias mkdir="mkdir -p"
 
 alias t="~/.config/tmux/scripts/session-picker.sh"
+
+alias hr="herdr --remote-keybindings server --remote"
