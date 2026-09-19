@@ -42,9 +42,9 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/microsoft/playwright-cli.git",
       "skillPath": "skills/playwright-cli/SKILL.md",
-      "skillFolderHash": "10104bd92881e5ca5688f0a2cd1372e3c0e413a9",
+      "skillFolderHash": "4b040465accc10048d4b16479bb54d6d1d3bdeb6",
       "installedAt": "2026-07-11T03:39:38.257Z",
-      "updatedAt": "2026-09-15T05:36:02.273Z"
+      "updatedAt": "2026-09-19T04:03:46.548Z"
     },
     "writing-for-agents": {
       "source": "mattpocock/skills",
