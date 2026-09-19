@@ -71,7 +71,8 @@
   },
   "enabledPlugins": {
     "astral@astral-sh": true,
-    "worktrunk@worktrunk": true
+    "worktrunk@worktrunk": true,
+    "codex@openai-codex": true
   },
   "extraKnownMarketplaces": {
     "astral-sh": {
@@ -85,6 +86,12 @@
       "source": {
         "source": "github",
         "repo": "max-sixty/worktrunk"
+      }
+    },
+    "openai-codex": {
+      "source": {
+        "source": "github",
+        "repo": "openai/codex-plugin-cc"
       }
     }
   },
