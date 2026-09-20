@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
-# Pick a claude pane with fzf and jump to it. Tab toggles between panes of
-# the launching session (default) and all sessions. Ctrl-x kills the
-# selected pane.
+# Pick a claude pane with fzf and jump to it, the ones needing you first and
+# the windows you used most recently ahead of the rest (the same @mru stamps
+# window-picker.sh lists by — see mru.sh). Tab toggles between panes of the
+# launching session (default) and all sessions. Ctrl-x kills the selected
+# pane.
 # Usage: claude-picker.sh [--all|--current] [--client <name>]
 #   --all              start in all-sessions scope (default: current)
 #   --client <name>    the client to switch; the keybindings pass
@@ -36,6 +38,7 @@ max_title=40
 us=$'\x1f'
 
 source "$(dirname "${BASH_SOURCE[0]}")/claude-pattern.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/mru.sh" || exit 1
 
 scope=current
 client=''
@@ -120,6 +123,7 @@ snapshot() {
   done
 }
 snapshot
+mru_seed
 
 # Claude Code (>= 2.1.x) publishes each session's state in
 # ~/.claude/sessions/<pid>.json: status busy|waiting|idle plus a "tmux"
@@ -144,8 +148,8 @@ list_panes() { # $1: current|all
   local flags=(-a)
   [[ "$1" == current ]] && flags=(-s -t "$orig_session")
   load_presence
-  tmux list-panes "${flags[@]}" -F "#{pane_current_command}${us}#{pane_id}${us}#{session_name}${us}#{window_index}:#{pane_index}${us}#{window_activity}${us}#{pane_title}" |
-    while IFS=$us read -r cmd id sess loc activity title; do
+  tmux list-panes "${flags[@]}" -F "#{pane_current_command}${us}#{pane_id}${us}#{session_name}${us}#{window_index}:#{pane_index}${us}#{@mru}${us}#{window_activity}${us}#{pane_title}" |
+    while IFS=$us read -r cmd id sess loc mru activity title; do
       [[ "$cmd" =~ $pattern ]] || continue
       case "${presence[$id]:-}" in
       busy) rank=2 color=$'\033[33m' state=working ;;
@@ -156,11 +160,14 @@ list_panes() { # $1: current|all
       # Drop the leading status glyph claude still prefixes to the title.
       [[ "$title" =~ ^[✳◐◑·⠀-⣿]\ ? ]] && title=${title:${#BASH_REMATCH[0]}}
       ((${#title} > max_title)) && title="${title:0:max_title-1}…"
-      printf '%s\t%s\t%s\t%s%-7s\033[0m %s \033[2m%s\033[0m  \033[2;3m%s\033[0m\n' \
-        "$rank" "$activity" "$id" "$color" "$state" "$sess" "$loc" "$title"
+      printf '%s\t%s\t%s\t%s\t%s%-7s\033[0m %s \033[2m%s\033[0m  \033[2;3m%s\033[0m\n' \
+        "$rank" "${mru:-0}" "$activity" "$id" "$color" "$state" "$sess" "$loc" "$title"
     done |
-    # needs-you first (blocked > done > working > idle), then most recent
-    sort -t$'\t' -k1,1n -k2,2rn | cut -f3-
+    # needs-you first (blocked > done > working > idle), then the window you
+    # were in most recently — the same @mru order window-picker lists.
+    # Activity only decides between windows seeding hasn't reached, such as
+    # one opened while this picker has the stamps frozen.
+    sort -t$'\t' -k1,1n -k2,2rn -k3,3rn | cut -f4-
 }
 
 # Undo the preview: one tmux command list, so the server redraws once at the
@@ -226,9 +233,8 @@ finish() {
     tmux has-session -t "$desired_last" 2>/dev/null; then
     restore+=("${switch[@]}" -t "$desired_last" ';')
   fi
-  restore+=("${switch[@]}" -t "$target" ';'
-    set -gF @mru_seq "#{e|+|:#{@mru_seq},1}" ';'
-    setw -Ft "$target" @mru "#{@mru_seq}")
+  mru_stamp_cmds "$target"
+  restore+=("${switch[@]}" -t "$target" ';' "${mru_stamp[@]}")
   # Picking the pane you came from is a no-op the focus hook would have
   # skipped; writing it would leave last-pane pointing at the current pane.
   [[ "$target" != "$orig" ]] && alive "$orig" &&

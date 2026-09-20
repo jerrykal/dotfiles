@@ -10,12 +10,13 @@
 # list is read) and say pos(2) rather than a direction, which would depend on
 # whether --layout reverse is in effect.
 #
-# Browsing leaves no trace: @picker_busy freezes the @mru stamps (see the
-# session-window-changed hook in tmux.conf) and the window stack tmux's own
-# last-window rides on is replayed on the way out. The one thing replaying
-# can't undo is an entry that wasn't there before — selecting is the only way
-# to touch the stack, and it can only push — so previewing from a session with
-# no history at all leaves the last window you looked at as its last-window.
+# Browsing leaves no trace: @picker_busy freezes the @mru stamps (see mru.sh
+# and the session-window-changed hook in tmux.conf) and the window stack
+# tmux's own last-window rides on is replayed on the way out. The one thing
+# replaying can't undo is an entry that wasn't there before — selecting is the
+# only way to touch the stack, and it can only push — so previewing from a
+# session with no history at all leaves the last window you looked at as its
+# last-window.
 
 # Re-exec under `mise exec` so fzf resolves to a real binary: tmux run-shell
 # finds it as a mise shim, which re-resolves the whole toolset on every call.
@@ -34,6 +35,8 @@ max_height=15
 max_name=24
 max_path=32
 us=$'\x1f'
+
+source "$(dirname "${BASH_SOURCE[0]}")/mru.sh" || exit 1
 
 # US-separated, and ids rather than names: session names can hold spaces, and
 # a bare window id resolves against any session the window is linked into.
@@ -61,29 +64,7 @@ mapfile -t stack < <(
     awk -F"$us" '$1 > 0' | sort -rn | cut -d"$us" -f2
 )
 
-# A window the hook never stamped falls back to window_activity, which
-# selecting a window bumps — so the preview alone could reorder it. If any
-# window is unstamped, renumber the whole session in the order the list would
-# have shown it (oldest first) and the order stops moving. Renumbering all of
-# them, not just the strays, keeps a fresh stamp from jumping over an old one.
-seed_stamps() {
-  local row id cmds=() rows stray=0
-  # Sorted the way the list is, but oldest first. The current window sorts
-  # last whatever its stamp says: it is the one you are on.
-  mapfile -t rows < <(
-    tmux list-windows -t "$sid" \
-      -F "#{?window_active,9999999999,#{@mru}}${us}#{window_activity}${us}#{window_id}${us}#{@mru}" |
-      sort -t"$us" -k1,1n -k2,2n
-  )
-  for row in "${rows[@]}"; do [[ "$row" == *"$us" ]] && stray=1; done
-  ((stray)) || return 0 # every window already carries a stamp
-  for row in "${rows[@]}"; do
-    id=$(cut -d"$us" -f3 <<<"$row")
-    cmds+=(set -gF @mru_seq "#{e|+|:#{@mru_seq},1}" ';' setw -Ft "$sid:$id" @mru "#{@mru_seq}" ';')
-  done
-  tmux "${cmds[@]:0:${#cmds[@]}-1}"
-}
-seed_stamps
+mru_seed
 
 # Replay as one tmux command list: the server redraws once at the end, so the
 # windows it walks through never reach the screen. A command that fails aborts
@@ -107,9 +88,14 @@ build_replay() {
 
 restore() { build_replay && tmux "${replay[@]}" 2>/dev/null; }
 
+# The launching window heads the list whatever its stamp says — it can be
+# older than its neighbours', since a window that has been current since it
+# was created never fired the hook that stamps one. Pinned to $orig rather
+# than window_active, which the live preview moves: after ctrl-x the list is
+# rebuilt while the last previewed window is the active one.
 list_windows() {
-  tmux list-windows -t "$sid" -F "#{@mru}${us}#{window_activity}${us}#{window_id}${us}#{window_index}${us}#{window_name}${us}#{window_panes}${us}#{window_zoomed_flag}${us}#{pane_current_command}${us}#{pane_current_path}" |
-    while IFS=$us read -r mru activity id index name panes zoomed cmd path; do
+  tmux list-windows -t "$sid" -F "#{?#{==:#{window_id},$orig},9999999999,#{@mru}}${us}#{window_activity}${us}#{window_id}${us}#{window_index}${us}#{window_name}${us}#{window_panes}${us}#{window_zoomed_flag}${us}#{pane_current_command}${us}#{pane_current_path}" |
+    while IFS=$us read -r key activity id index name panes zoomed cmd path; do
       ((${#name} > max_name)) && name="${name:0:max_name-1}…"
       path=${path/#"$HOME"/\~}
       ((${#path} > max_path)) && path="…${path: -(max_path - 1)}"
@@ -117,7 +103,7 @@ list_windows() {
       ((panes > 1)) && flags=" ${panes}p"
       ((zoomed)) && flags+=" 󰊓"
       printf '%s\t%s\t%s\t\033[33m%2s\033[0m %-*s\033[2m%-4s\033[0m \033[2m%s\033[0m  \033[2;3m%s\033[0m\n' \
-        "${mru:-0}" "$activity" "$id" "$index" "$max_name" "$name" "$flags" "$cmd" "$path"
+        "${key:-0}" "$activity" "$id" "$index" "$max_name" "$name" "$flags" "$cmd" "$path"
     done |
     sort -t$'\t' -k1,1nr -k2,2nr | cut -f3-
 }
@@ -156,11 +142,9 @@ while :; do
 
   # Land on the target from the restored stack, and write the history by hand:
   # both hooks are still frozen (they run after this command list), so the
-  # @mru stamp and the last-pane pair are ours to set. The counter is bumped
-  # inside the list so two pickers can't hand out the same stamp.
-  land=(select-window -t "$sid:$target" ';'
-    set -gF @mru_seq "#{e|+|:#{@mru_seq},1}" ';'
-    setw -Ft "$sid:$target" @mru "#{@mru_seq}")
+  # @mru stamp and the last-pane pair are ours to set.
+  mru_stamp_cmds "$sid:$target"
+  land=(select-window -t "$sid:$target" ';' "${mru_stamp[@]}")
   if [[ "$target" != "$orig" && -n "$orig_pane" ]]; then
     target_pane=$(tmux list-panes -t "$sid:$target" -F '#{?pane_active,#{pane_id},}' | grep .)
     land+=(';' set -g @last-pane "$orig_pane" ';' set -g @current-pane "$target_pane")
