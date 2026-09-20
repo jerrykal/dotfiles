@@ -4,6 +4,7 @@ minimum_release_age_excludes = ["claude", "codex", "herdr"]
 [tools]
 atuin = "latest"
 bat = "latest"
+bun = "latest"
 claude = "latest"
 codex = "latest"
 delta = "latest"
