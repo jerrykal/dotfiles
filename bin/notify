@@ -8,7 +8,7 @@
 # desktop notification. Shared by Claude Code's hooks (~/.claude/scripts) and
 # the fish long-command notifier (fish conf.d/notify.fish).
 #
-# Inside tmux, write the sequence straight to each attached client's terminal
+# Inside tmux, write the sequence straight to an attached client's terminal
 # (the real emulator) instead of routing it through this pane via the tmux
 # passthrough sequence. Passthrough only reaches the emulator for the *visible*
 # pane, so a notification fired from a background tmux window never arrives.
@@ -17,7 +17,14 @@
 TITLE=${1:-${TITLE:-Notification}}
 BODY=${2:-${BODY:-}}
 
-emit() { printf '\e]777;notify;%s;%s\a' "$TITLE" "$BODY"; }
+# The payload is ;-delimited and terminated by BEL, so a stray control byte
+# truncates the sequence and everything after it lands on the client's screen
+# as literal text — writing to a client tty bypasses tmux's own sanitizer.
+# Ghostty takes everything past the title's ';' as the body, so only the title
+# needs its semicolons collapsed. Scrubbing here, where the sequence is built,
+# keeps later edits to TITLE/BODY from reopening the hole.
+scrub() { local s=${1//[$'\t\r\n']/ }; printf '%s' "${s//[[:cntrl:]]/}"; }
+emit() { printf '\e]777;notify;%s;%s\a' "$(scrub "${TITLE//;/,}")" "$(scrub "$BODY")"; }
 
 # Disambiguate otherwise-identical notifications. Ghostty (and most emulators)
 # suppress a notification whose title+body exactly matches the previous one, so
@@ -27,28 +34,40 @@ emit() { printf '\e]777;notify;%s;%s\a' "$TITLE" "$BODY"; }
 BODY="${BODY:+$BODY · }$(date +%H:%M:%S)"
 
 if [ -z "$TMUX" ]; then
-  emit
+  # A hook's stdout is captured by its caller rather than wired to the
+  # terminal, so aim at the controlling tty; fall back to stdout for plain
+  # shell use, where the two are the same thing anyway.
+  emit 2>/dev/null >/dev/tty || emit
   exit 0
 fi
+
+# Everything about the triggering pane in one round-trip.
+IFS='|' read -r pane_tty my_pane loc < <(tmux display-message -pt "$TMUX_PANE" \
+  '#{pane_tty}|#{pane_id}|#{session_name}:#{window_index} #{window_name}' 2>/dev/null)
 
 # Ring a bell inside the pane so tmux raises a bell alert on its window
 # (monitor-bell flag / bell-style). Writing to the hook's stdout wouldn't do —
 # hook output is captured by the caller, not the pane — so write straight to
 # the pane's pty, where tmux sees the BEL and flags the window.
-pane_tty=$(tmux display-message -pt "$TMUX_PANE" '#{pane_tty}' 2>/dev/null)
 [ -n "$pane_tty" ] && printf '\a' >"$pane_tty" 2>/dev/null
 
-# Window holding the pane that triggered this notification, plus a
-# human-readable "session:index name" tag so it says where it came from.
-my_window=$(tmux display-message -pt "$TMUX_PANE" '#{window_id}' 2>/dev/null)
-loc=$(tmux display-message -pt "$TMUX_PANE" '#{session_name}:#{window_index} #{window_name}' 2>/dev/null)
+# Human-readable "session:index name" tag so the title says where it came from.
 [ -n "$loc" ] && TITLE="$TITLE — $loc"
 
-# Notify every attached client, except one that is focused *and* already
-# viewing the triggering window — the user is watching, so stay quiet there.
-# Fields are space-free (tty, @window, 0/1), so default word-splitting is safe.
-while read -r ctty cwindow cfocused; do
+# Notify once per event, not once per attached client. Stay silent altogether
+# when a focused client already sits on the triggering pane — the user is
+# watching it. Compare panes rather than windows: a popup or another zoomed
+# pane can cover the triggering pane while the window still matches. Skip
+# control-mode clients, whose protocol stream an OSC would corrupt.
+# Fields are space-free (tty, %pane, 0/1), so default word-splitting is safe.
+target=
+while read -r ctty cpane ccontrol cfocused; do
   [ -n "$ctty" ] || continue
-  [ "$cfocused" = 1 ] && [ "$cwindow" = "$my_window" ] && continue
-  emit >"$ctty" 2>/dev/null
-done < <(tmux list-clients -F '#{client_tty} #{window_id} #{?#{m:*focused*,#{client_flags}},1,0}' 2>/dev/null)
+  [ "$ccontrol" = 1 ] && continue
+  [ "$cfocused" = 1 ] && [ "$cpane" = "$my_pane" ] && exit 0
+  [ -n "$target" ] || target=$ctty
+done < <(tmux list-clients -F \
+  '#{client_tty} #{pane_id} #{client_control_mode} #{?#{m:*focused*,#{client_flags}},1,0}' 2>/dev/null)
+
+[ -n "$target" ] && emit >"$target" 2>/dev/null
+exit 0

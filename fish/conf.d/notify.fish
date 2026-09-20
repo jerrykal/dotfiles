@@ -20,20 +20,37 @@ function __notify_postexec --on-event fish_postexec
     # $CMD_DURATION is the just-finished command's runtime in ms.
     test "$CMD_DURATION" -ge (math "$notify_min_duration x 1000"); or return
 
-    # Empty line (bare Enter) fires postexec too — nothing to report.
-    set -l cmd (string trim -- $argv[1])
+    # Command substitution splits on newlines, so a multi-line command line
+    # would arrive as several elements and shift the body out of notify's $2.
+    # Flattening whitespace first keeps it a single argument.
+    set -l cmd (string replace -ra '\s+' ' ' -- $argv[1] | string trim)
     test -n "$cmd"; or return
 
-    # Skip interactive programs: match the first bare word, after stripping any
-    # leading VAR=val assignments and a `sudo`/`command`/`env` wrapper.
-    set -l words (string split -n ' ' -- $cmd)
-    while set -q words[1]; and string match -qr '^\w+=' -- $words[1]
-        set -e words[1]
+    # Skip interactive programs. Walk off leading VAR=val assignments and
+    # sudo/command/env wrappers together — `env FOO=bar vim` interleaves them —
+    # along with the options those wrappers take, then match on the basename so
+    # /usr/bin/less counts as less. --tokenize honours quoting, so an
+    # assignment like FOO="a b" stays one token.
+    echo $cmd | read -lat words
+    set -l opt_with_arg -u -g -U -C -p -h -r -t -T -R --user --group --chdir
+    while set -q words[1]
+        if string match -qr '^\w+=' -- $words[1]
+            set -e words[1]
+        else if contains -- $words[1] sudo doas command env builtin nice nohup
+            set -e words[1]
+        else if test "$words[1]" = --
+            set -e words[1]
+            break
+        else if string match -q -- '-*' $words[1]
+            if contains -- $words[1] $opt_with_arg; and set -q words[2]
+                set -e words[2]
+            end
+            set -e words[1]
+        else
+            break
+        end
     end
-    while set -q words[1]; and contains -- $words[1] sudo command env builtin
-        set -e words[1]
-    end
-    set -q words[1]; and contains -- $words[1] $notify_skip; and return
+    set -q words[1]; and contains -- (path basename -- $words[1]) $notify_skip; and return
 
     set -l secs (math -s0 "$CMD_DURATION / 1000")
     set -l dur
