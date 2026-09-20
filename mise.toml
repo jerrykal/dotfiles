@@ -46,39 +46,8 @@
 "brew:zsh" = "latest"
 
 # Runs as the last phase of `mise bootstrap`; must be safe to repeat.
+# The *:plugins tasks live in mise/config.toml so `update:plugins` can reuse
+# them; global tasks merge into this config's task list.
 [tasks.bootstrap]
 description = "Post-bootstrap setup that needs installed tools."
 depends = ["fish:plugins", "herdr:plugins", "nvim:plugins", "tmux:plugins"]
-
-# Each *:plugins task installs only what is missing; `update:plugins` upgrades.
-[tasks."fish:plugins"]
-description = "Install fish plugins"
-# Starting fish installs fisher itself when $fisher_path is missing (conf.d/__init__.fish).
-run = """
-  fish -c '
-    set -l want (sort $__fish_config_dir/fish_plugins | string collect)
-    set -l have (fisher list | sort | string collect)
-    test "$want" = "$have"; or fisher update
-  '
-"""
-
-[tasks."herdr:plugins"]
-description = "Install herdr plugins"
-run = [
-  "herdr plugin list | grep -q smart-splits.nvim || herdr plugin install mrjones2014/smart-splits.nvim -y",
-  "herdr plugin list | grep -q last-focus || herdr plugin link {{config_root}}/herdr/plugins/last-focus",
-  "herdr plugin list | grep -q herdr-picker || herdr plugin link {{config_root}}/herdr/plugins/herdr-picker",
-]
-
-[tasks."nvim:plugins"]
-description = "Install Neovim plugins"
-# lazy.nvim clones itself on first start and installs at lazy-lock.json commits.
-run = "nvim --headless '+Lazy! install' +qa"
-
-[tasks."tmux:plugins"]
-description = "Install tmux plugins"
-run = """
-  tpm="$HOME/.config/tmux/plugins/tpm"
-  [ -d "$tpm" ] || git clone https://github.com/tmux-plugins/tpm "$tpm"
-  "$tpm/bin/install_plugins"
-"""

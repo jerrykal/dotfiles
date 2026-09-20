@@ -30,6 +30,55 @@ uv = "latest"
 worktrunk = "latest"
 zoxide = "latest"
 
+[tasks."fish:plugins"]
+description = "Install or update fish plugins"
+usage = 'flag "--update" help="Upgrade, not just install what is missing"'
+# Starting fish installs fisher itself when $fisher_path is missing (conf.d/__init__.fish).
+run = """
+  fish -c '
+    if test -n "$usage_update"; fisher update; exit; end
+    set -l want (sort $__fish_config_dir/fish_plugins | string collect)
+    set -l have (fisher list | sort | string collect)
+    test "$want" = "$have"; or fisher update
+  '
+"""
+
+[tasks."herdr:plugins"]
+description = "Install or update herdr plugins"
+usage = 'flag "--update" help="Upgrade, not just install what is missing"'
+# herdr has no `plugin update`; re-running install refetches. Linked local
+# plugins live in the repo, so they are always current.
+run = """
+  plugins="$HOME/.dotfiles/herdr/plugins"
+  if [ -n "${usage_update:-}" ] || ! herdr plugin list | grep -q smart-splits.nvim; then
+    herdr plugin install mrjones2014/smart-splits.nvim -y
+  fi
+  herdr plugin list | grep -q last-focus || herdr plugin link "$plugins/last-focus"
+  herdr plugin list | grep -q herdr-picker || herdr plugin link "$plugins/herdr-picker"
+"""
+
+[tasks."nvim:plugins"]
+description = "Install or update Neovim plugins"
+usage = 'flag "--update" help="Upgrade, not just install what is missing"'
+# lazy.nvim clones itself on first start and installs at lazy-lock.json commits.
+run = """
+  if [ -n "${usage_update:-}" ]; then cmd='+Lazy! sync'; else cmd='+Lazy! install'; fi
+  nvim --headless "$cmd" +qa
+"""
+
+[tasks."tmux:plugins"]
+description = "Install or update tmux plugins"
+usage = 'flag "--update" help="Upgrade, not just install what is missing"'
+run = """
+  tpm="$HOME/.config/tmux/plugins/tpm"
+  [ -d "$tpm" ] || git clone https://github.com/tmux-plugins/tpm "$tpm"
+  if [ -n "${usage_update:-}" ]; then
+    "$tpm/bin/update_plugins" all
+  else
+    "$tpm/bin/install_plugins"
+  fi
+"""
+
 [tasks."update:system"]
 description = "Update Homebrew packages."
 run = """
@@ -51,17 +100,13 @@ run = """
 """
 
 [tasks."update:plugins"]
-description = "Update Neovim, fish, and tmux plugins."
-run = """
-  echo "==> neovim"
-  nvim --headless '+Lazy! sync' +qa
-
-  echo "==> fish"
-  fish -c 'fisher update'
-
-  echo "==> tmux"
-  ~/.config/tmux/plugins/tpm/bin/update_plugins all
-"""
+description = "Update Neovim, fish, tmux, and herdr plugins."
+run = [
+  { task = "nvim:plugins --update" },
+  { task = "fish:plugins --update" },
+  { task = "tmux:plugins --update" },
+  { task = "herdr:plugins --update" },
+]
 
 [tasks."update:skills"]
 description = "Update agent skills tracked in ~/.local/state/skills/.skill-lock.json."
