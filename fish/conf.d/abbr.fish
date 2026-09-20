@@ -69,3 +69,20 @@ if type -q hunk
     abbr -a hd hunk diff
     abbr -a hds hunk diff --staged
 end
+
+# worktrunk
+if type -q wt
+    abbr -a ws wt switch
+    abbr -a wsc wt switch --create
+    abbr -a wl wt list
+    abbr -a wlf wt list --full
+    abbr -a wm wt merge
+    abbr -a wrm wt remove
+    abbr -a wd wt step diff
+    abbr -a wcm wt step commit
+    abbr -a wpr wt step prune
+    if type -q claude
+        abbr -a wsx wt switch -x claude
+        abbr -a wscx wt switch --create -x claude
+    end
+end
