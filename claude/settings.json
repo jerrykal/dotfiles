@@ -11,6 +11,7 @@
   "permissions": {
     "defaultMode": "auto",
     "deny": [
+      "AskUserQuestion",
       "Bash(tmux kill-server:*)",
       "Bash(tmux kill-server)"
     ]
