@@ -1,0 +1,211 @@
+#!/usr/bin/env bash
+# tmux-ref — yank from tmux copy mode with the scrollback location attached.
+#
+#   tmux-ref yank <pane-id> <sel-start> <sel-end>   # selection on stdin
+#   tmux-ref show <pane-id>:<start>[-<end>] [-C n] [-B n] [-A n] [-n]
+#
+# `yank` backs the Y key in copy-mode-vi (tmux.conf): it puts the selection on
+# the clipboard behind a header naming the pane it came from and the scrollback
+# lines it occupies, so pasting that into an agent is enough for the agent to
+# pull the surrounding output back with `show`.
+#
+# Line numbers are tmux grid indices — 0 is the oldest line still in the pane's
+# history — so they survive further scrolling, unlike capture-pane's own -S/-E
+# coordinates, which are relative to the bottom of the pane. Once the history
+# fills up and its oldest lines are dropped the indices do slide; `show` takes
+# that slide back out by looking for the yanked text again, which it can only
+# do because `yank` saved a copy of it under $XDG_STATE_HOME/tmux-ref.
+
+set -euo pipefail
+
+us=$'\x1f'
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/tmux-ref"
+scratch=()
+notify=0
+server=''
+
+cleanup() { ((${#scratch[@]})) && rm -f -- "${scratch[@]}"; return 0; }
+trap cleanup EXIT
+
+# Under `send -X pipe` the tmux server owns stderr and throws it away, so a
+# failing Y would otherwise look like a dead key.
+die() {
+  printf 'tmux-ref: %s\n' "$*" >&2
+  ((notify)) && tmux display-message "tmux-ref: $*"
+  exit 1
+}
+
+usage() {
+  cat <<'USAGE'
+tmux-ref yank <pane-id> <sel-start> <sel-end>   # selection on stdin
+tmux-ref show <pane-id>:<start>[-<end>] [-C n] [-B n] [-A n] [-n]
+USAGE
+}
+
+# Pane ids restart at %0 with every new tmux server, so the server's pid keeps
+# one server's saved copies from being read as another's. Two yanks of the same
+# rows still share a file: they are the same reference, and only the saved copy
+# (used for re-anchoring and as a fallback) differs, so the last one wins.
+snapshot_for() { # $1 = pane id, $2 = start, $3 = end
+  printf '%s/%s-%s-%s-%s.txt' "$state_dir" "$server" "${1#%}" "$2" "$3"
+}
+
+cmd_yank() {
+  notify=1
+  local pane=${1:-} start=${2:-} end=${3:-}
+  [[ $pane == %* && $start =~ ^[0-9]+$ && $end =~ ^[0-9]+$ ]] ||
+    die "usage: tmux-ref yank <pane-id> <sel-start> <sel-end>"
+  # A selection dragged upwards reports its ends the other way round.
+  if ((start > end)); then local swap=$start; start=$end; end=$swap; fi
+
+  # The trailing `.` survives the newline stripping that command substitution
+  # would otherwise do, so blank rows at the end of a selection are kept.
+  local text; text=$(cat; printf .); text=${text%.}
+  [[ -n $text ]] || die "nothing selected"
+
+  local ref="$pane:$start-$end"
+  local info sess win win_name pane_idx cmd path
+  info=$(tmux display-message -p -t "$pane" \
+    "#{pid}$us#{session_name}$us#{window_index}$us#{window_name}$us#{pane_index}$us#{pane_current_command}$us#{pane_current_path}")
+  IFS="$us" read -r server sess win win_name pane_idx cmd path <<<"$info"
+
+  # Spelt out rather than as ${path/#$HOME/~}, whose replacement bash 5.2 tilde-
+  # expands straight back into $HOME while bash 3.2 keeps the backslash that
+  # would suppress it.
+  case $path in "$HOME"/*) path="~${path#"$HOME"}" ;; esac
+
+  # Piped rather than passed as an argument: tmux caps a command at 16KB, which
+  # a yank of a screenful of output already exceeds.
+  {
+    printf '%s\n' \
+      "tmux-ref $ref — $sess:$win.$pane_idx \"$win_name\" ($cmd) in $path, $(date '+%Y-%m-%d %H:%M')" \
+      "for the surrounding scrollback, run: tmux-ref show $ref -C 40" \
+      "----- copied text -----"
+    printf '%s' "$text"
+    [[ $text == *$'\n' ]] || printf '\n'
+    printf '%s\n' "----- end -----"
+  } | tmux load-buffer -w -
+
+  mkdir -p "$state_dir"
+  local snap tmp; snap=$(snapshot_for "$pane" "$start" "$end")
+  tmp=$(mktemp "$state_dir/.tmp.XXXXXX"); scratch+=("$tmp")
+  printf '%s' "$text" >"$tmp"
+  mv -f -- "$tmp" "$snap"
+  find "$state_dir" -type f -mtime +14 -delete 2>/dev/null || true
+
+  tmux display-message "copied $(printf '%s' "$text" | awk 'END{print NR}') line(s) as $ref"
+}
+
+cmd_show() {
+  local ref='' before=0 after=0 number=0
+  while (($#)); do
+    case $1 in
+      -C|--context|-B|--before|-A|--after)
+        [[ ${2:-} =~ ^[0-9]+$ ]] || die "$1 wants a non-negative number, got '${2-}'"
+        case $1 in
+          -C|--context) before=$2; after=$2 ;;
+          -B|--before) before=$2 ;;
+          *) after=$2 ;;
+        esac
+        shift 2 ;;
+      -n|--number) number=1; shift ;;
+      -h|--help) usage; exit 0 ;;
+      -*) die "unknown option: $1" ;;
+      *) [[ -z $ref ]] || die "only one reference at a time (got '$ref' and '$1')"; ref=$1; shift ;;
+    esac
+  done
+  [[ $ref =~ ^%?([0-9]+):([0-9]+)(-([0-9]+))?$ ]] ||
+    die "usage: tmux-ref show <pane-id>:<start>[-<end>] [-C n] [-B n] [-A n] [-n]"
+  # 10# so that a copy-pasted 08 is not read as octal.
+  local pane="%$((10#${BASH_REMATCH[1]}))"
+  local start=$((10#${BASH_REMATCH[2]})) end=$((10#${BASH_REMATCH[4]:-${BASH_REMATCH[2]}}))
+  ((end >= start)) || die "$ref ends before it starts"
+  ref="$pane:$start-$end"
+
+  server=$(tmux display-message -p '#{pid}' 2>/dev/null) ||
+    die "no tmux server running; pane ids reset with each one, so $ref cannot be resolved"
+
+  local snap; snap=$(snapshot_for "$pane" "$start" "$end")
+  local capture; capture=$(mktemp); scratch+=("$capture")
+
+  if ! tmux capture-pane -p -t "$pane" -S - -E - >"$capture" 2>/dev/null; then
+    [[ -f $snap ]] || die "pane $pane is gone and nothing was saved for $ref"
+    printf 'tmux-ref: pane %s is gone; showing %s as it was copied\n' "$pane" "$ref" >&2
+    cat "$snap"
+    return
+  fi
+
+  # The saved copy goes in first so awk can tell the two files apart by FNR==NR.
+  local files=("$capture") have_snap=0
+  if [[ -f $snap ]]; then files=("$snap" "$capture"); have_snap=1; fi
+
+  local status=0
+  awk -v want="$((start + 1))" -v span="$((end - start + 1))" \
+      -v before="$before" -v after="$after" -v number="$number" \
+      -v have_snap="$have_snap" -v ref="$ref" '
+    function bare(s) { gsub(/[[:space:]]+/, "", s); return s }
+    function warn(s) { printf "tmux-ref: %s\n", s > "/dev/stderr" }
+    # The yanked text with its whitespace squeezed out, so that a selection
+    # that started or ended mid-line still matches the full lines captured
+    # here, and so that a soft-wrapped line — which copy mode joins but
+    # capture-pane leaves split across its grid rows — matches as well.
+    function rows(lo, hi,   i, s) {
+      if (lo < 1) return ""
+      for (i = lo; i <= hi && i <= n; i++) s = s stripped[i]
+      return s
+    }
+    function holds(lo) { return index(rows(lo, lo + probe - 1), head) > 0 }
+
+    FNR == NR && have_snap { sig = sig bare($0); next }
+    { n++; line[n] = $0; stripped[n] = bare($0) }
+    END {
+      # A long selection is matched on its opening rows alone; scanning the
+      # whole history against the whole of it would be gratuitous.
+      probe = span > 200 ? 200 : span
+      head = substr(sig, 1, 120)
+      first = want
+
+      if (head == "") {
+        warn(ref " has no text to match on, so its line numbers are taken at face value")
+      } else if (holds(want)) {
+        first = want
+      } else {
+        for (d = 1; d + span - 1 <= n; d++) {
+          if (!holds(d)) continue
+          dist = d > want ? d - want : want - d
+          if (best == 0 || dist < bestd) { best = d; bestd = dist }
+        }
+        if (best == 0) {
+          warn(ref " is no longer in the pane, in this shape or at all")
+          exit 3
+        }
+        warn(sprintf("%s slid %+d lines since it was copied", ref, best - want))
+        first = best
+      }
+
+      if (first > n || first + span - 1 < 1) {
+        warn(sprintf("%s is outside the pane, which holds lines 0-%d", ref, n - 1))
+        exit 4
+      }
+      lo = first - before; if (lo < 1) lo = 1
+      hi = first + span - 1 + after; if (hi > n) hi = n
+      warn(sprintf("%s lines %d-%d", ref, lo - 1, hi - 1))
+      for (i = lo; i <= hi; i++) {
+        if (number) printf "%d\t%s\n", i - 1, line[i]
+        else print line[i]
+      }
+    }' "${files[@]}" || status=$?
+
+  case $status in
+    0) ;;
+    3) printf 'tmux-ref: showing %s as it was copied\n' "$ref" >&2; cat "$snap" ;;
+    *) exit "$status" ;;
+  esac
+}
+
+case ${1:-} in
+  yank) shift; cmd_yank "$@" ;;
+  show) shift; cmd_show "$@" ;;
+  -h|--help|'') usage ;;
+  *) die "unknown command: $1" ;;
+esac
