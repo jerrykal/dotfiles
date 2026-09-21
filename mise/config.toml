@@ -44,6 +44,20 @@ run = """
   '
 """
 
+[tasks."gh:extensions"]
+description = "Install or update gh CLI extensions"
+usage = 'flag "--update" help="Upgrade, not just install what is missing"'
+run = """
+  if [ -n "${usage_update:-}" ]; then
+    gh extension upgrade --all
+    exit 0
+  fi
+  installed="$(gh extension list | cut -f2)"
+  for ext in dlvhdr/gh-dash; do
+    echo "$installed" | grep -qx "$ext" || gh extension install "$ext"
+  done
+"""
+
 [tasks."herdr:plugins"]
 description = "Install or update herdr plugins"
 usage = 'flag "--update" help="Upgrade, not just install what is missing"'
@@ -101,12 +115,13 @@ run = """
 """
 
 [tasks."update:plugins"]
-description = "Update Neovim, fish, tmux, and herdr plugins."
+description = "Update Neovim, fish, tmux, and herdr plugins, and gh extensions."
 run = [
   { task = "nvim:plugins --update" },
   { task = "fish:plugins --update" },
   { task = "tmux:plugins --update" },
   { task = "herdr:plugins --update" },
+  { task = "gh:extensions --update" },
 ]
 
 [tasks."update:skills"]

@@ -10,6 +10,7 @@
 "~/.config/btop" = "btop"
 "~/.config/eza" = "eza"
 "~/.config/fish" = "fish"
+"~/.config/gh-dash" = "gh-dash"
 "~/.config/git" = "git"
 "~/.config/hunk" = "hunk"
 "~/.config/lazygit" = "lazygit"
@@ -51,4 +52,4 @@
 # them; global tasks merge into this config's task list.
 [tasks.bootstrap]
 description = "Post-bootstrap setup that needs installed tools."
-depends = ["fish:plugins", "herdr:plugins", "nvim:plugins", "tmux:plugins"]
+depends = ["fish:plugins", "gh:extensions", "herdr:plugins", "nvim:plugins", "tmux:plugins"]
