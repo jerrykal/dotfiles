@@ -75,6 +75,21 @@ sname_owner() {
 }
 sname_name() { printf '%s' "${1#*-}"; }
 
+# Scope char -> the -s word it came from, and the popup title built from a
+# popup session name: " <name>(<scope>) ".
+scope_word() {
+  case $1 in
+  p) printf pane ;;
+  w) printf window ;;
+  s) printf session ;;
+  v) printf server ;;
+  c) printf cwd ;;
+  r) printf project ;;
+  g) printf global ;;
+  esac
+}
+popup_title() { printf ' %s(%s) ' "$(sname_name "$1")" "$(scope_word "${1:0:1}")"; }
+
 # Live owner ids per scope initial, one per line; must produce the same
 # strings as the owner construction in main below. pane/window/session owners
 # embed the main server's pid (the server owner is the pid): a restarted
@@ -200,7 +215,7 @@ if [[ "${1:-}" == "--fs" ]]; then
     w=100% h=100%
   fi
   close_wait "$s"
-  exec env -u TMUX tmux display-popup -c "$client" -w "$w" -h "$h" -T " $(sname_name "$s") " -E -- \
+  exec env -u TMUX tmux display-popup -c "$client" -w "$w" -h "$h" -T "$(popup_title "$s")" -E -- \
     tmux -L "$SOCKET" new-session -A -s "$s"
 fi
 
@@ -305,5 +320,5 @@ fs=$(pt set-option -t "=$sname:" @popup_w "$width" \; \
 
 [[ $fs == 1 ]] && width=100% height=100%
 
-exec tmux display-popup -c "$ctty" -w "$width" -h "$height" -T " $name " -E -- \
+exec tmux display-popup -c "$ctty" -w "$width" -h "$height" -T "$(popup_title "$sname")" -E -- \
   tmux -L "$SOCKET" new-session -A -s "$sname" -c "$cwd" "$@"
