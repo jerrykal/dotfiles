@@ -13,10 +13,22 @@ set -euo pipefail
 # ──────────────────────────────────────────────────────────────────────────
 
 if [[ -t 1 ]] && command -v tput >/dev/null 2>&1 && [[ "$(tput colors 2>/dev/null || echo 0)" -ge 8 ]]; then
-  BOLD=$(tput bold); DIM=$(tput dim); RESET=$(tput sgr0)
-  BLUE=$(tput setaf 4); GREEN=$(tput setaf 2); YELLOW=$(tput setaf 3); RED=$(tput setaf 1)
+  # Some 8-colour terminals (cygwin, putty, st) lack a capability; tput then fails.
+  BOLD=$(tput bold 2>/dev/null || true)
+  DIM=$(tput dim 2>/dev/null || true)
+  RESET=$(tput sgr0 2>/dev/null || true)
+  BLUE=$(tput setaf 4 2>/dev/null || true)
+  GREEN=$(tput setaf 2 2>/dev/null || true)
+  YELLOW=$(tput setaf 3 2>/dev/null || true)
+  RED=$(tput setaf 1 2>/dev/null || true)
 else
-  BOLD=""; DIM=""; RESET=""; BLUE=""; GREEN=""; YELLOW=""; RED=""
+  BOLD=""
+  DIM=""
+  RESET=""
+  BLUE=""
+  GREEN=""
+  YELLOW=""
+  RED=""
 fi
 
 # Author sets this at the top of the stages section.
@@ -56,7 +68,7 @@ stage() {
 }
 
 # say "..." prints a plain instruction line.
-say()  { printf '  %s\n' "$1"; }
+say() { printf '  %s\n' "$1"; }
 # step "..." is a numbered-feeling action the human takes in the browser.
 step() { printf '  %s•%s %s\n' "$BLUE" "$RESET" "$1"; }
 note() { printf '  %s%s%s\n' "$DIM" "$1" "$RESET"; }
@@ -66,11 +78,19 @@ warn() { printf '  %s⚠ %s%s\n' "$YELLOW" "$1" "$RESET"; }
 open_url() {
   local url="$1"
   printf '  %s↗ opening%s %s\n' "$GREEN" "$RESET" "$url"
-  { if   command -v wslview     >/dev/null 2>&1; then wslview "$url"
-    elif command -v explorer.exe >/dev/null 2>&1; then explorer.exe "$url"
-    elif command -v xdg-open    >/dev/null 2>&1; then xdg-open "$url"
-    elif command -v open        >/dev/null 2>&1; then open "$url"
-    else warn "couldn't open a browser; visit it manually: $url"; fi
+  {
+    if command -v wslview >/dev/null 2>&1; then
+      wslview "$url"
+    # explorer.exe exits 1 even after opening the URL.
+    elif command -v explorer.exe >/dev/null 2>&1; then
+      explorer.exe "$url" || true
+    # Without a display, xdg-open can fall back to a terminal browser and hang,
+    # and Linux's `open` is openvt, so print the URL instead.
+    elif command -v xdg-open >/dev/null 2>&1; then
+      if [[ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]]; then xdg-open "$url"; else false; fi
+    elif command -v open >/dev/null 2>&1; then
+      open "$url"
+    else false; fi
   } >/dev/null 2>&1 || warn "couldn't open a browser, so visit it manually: $url"
 }
 
@@ -91,7 +111,8 @@ confirm() {
 # _existing KEY: current value of KEY in ENV_FILE, if any.
 _existing() {
   [[ -f "$ENV_FILE" ]] || return 1
-  local line; line=$(grep -E "^${1}=" "$ENV_FILE" | tail -n1) || return 1
+  local line
+  line=$(grep -E "^${1}=" "$ENV_FILE" | tail -n1) || return 1
   printf '%s' "${line#*=}"
 }
 
@@ -131,8 +152,8 @@ write_env() {
   local key="$1" value="$2" tmp
   touch "$ENV_FILE"
   tmp=$(mktemp)
-  grep -vE "^${key}=" "$ENV_FILE" > "$tmp" || true
-  printf '%s=%s\n' "$key" "$value" >> "$tmp"
+  grep -vE "^${key}=" "$ENV_FILE" >"$tmp" || true
+  printf '%s=%s\n' "$key" "$value" >>"$tmp"
   mv "$tmp" "$ENV_FILE"
   WRITTEN_ENV+=("$key")
   printf '  %s✓ wrote%s %s → %s\n' "$GREEN" "$RESET" "$key" "$ENV_FILE"
@@ -170,10 +191,11 @@ set_var() {
 finish() {
   _clear
   printf '\n%s%s  ✓ Setup complete%s\n' "$BOLD" "$GREEN" "$RESET"
-  (( ${#WRITTEN_ENV[@]} ))    && note "wrote ${#WRITTEN_ENV[@]} value(s) to $ENV_FILE: ${WRITTEN_ENV[*]}"
-  (( ${#WRITTEN_SECRET[@]} )) && note "set ${#WRITTEN_SECRET[@]} GitHub secret(s): ${WRITTEN_SECRET[*]}"
-  if (( ${#SKIPPED[@]} )); then
-    printf '\n'; warn "still to do by hand:"
+  ((${#WRITTEN_ENV[@]})) && note "wrote ${#WRITTEN_ENV[@]} value(s) to $ENV_FILE: ${WRITTEN_ENV[*]}"
+  ((${#WRITTEN_SECRET[@]})) && note "set ${#WRITTEN_SECRET[@]} GitHub secret(s): ${WRITTEN_SECRET[*]}"
+  if ((${#SKIPPED[@]})); then
+    printf '\n'
+    warn "still to do by hand:"
     for s in "${SKIPPED[@]}"; do note "  - $s"; done
   fi
   printf '\n'
@@ -181,7 +203,8 @@ finish() {
 
 # ──────────────────────────────────────────────────────────────────────────
 # STAGES: Google Workspace MCP (github.com/taylorwilsdon/google_workspace_mcp)
-# for a single local user talking to Claude Code over streamable HTTP.
+# for a single local user talking to Claude Code (and optionally Claude Desktop)
+# over streamable HTTP.
 # ──────────────────────────────────────────────────────────────────────────
 
 TOTAL_STAGES=7
@@ -190,22 +213,101 @@ CONFIG_DIR="$HOME/.config/workspace-mcp"
 ENV_FILE="${WORKSPACE_MCP_ENV_FILE:-$CONFIG_DIR/.env}"
 LAUNCHER="$CONFIG_DIR/start"
 MCP_NAME="workspace-mcp"
-mkdir -p "$CONFIG_DIR"
+CRED_DIR="$HOME/.google_workspace_mcp/credentials"
+
+# PLATFORM is mac, linux, wsl or windows (Git Bash/MSYS/Cygwin). WSL and
+# windows both mean the Windows build of Claude Desktop.
+case "$(uname -s)" in
+  Darwin) PLATFORM=mac ;;
+  MINGW* | MSYS* | CYGWIN*) PLATFORM=windows ;;
+  *) if grep -qi microsoft /proc/version 2>/dev/null; then PLATFORM=wsl; else PLATFORM=linux; fi ;;
+esac
+
+desktop_config_path() {
+  local appdata
+  case "$PLATFORM" in
+    mac) echo "$HOME/Library/Application Support/Claude/claude_desktop_config.json" ;;
+    linux) echo "${XDG_CONFIG_HOME:-$HOME/.config}/Claude/claude_desktop_config.json" ;;
+    windows) [[ -n "${APPDATA:-}" ]] &&
+      echo "$(cygpath -u "$APPDATA" 2>/dev/null || echo "$APPDATA")/Claude/claude_desktop_config.json" ;;
+    wsl)
+      appdata=$(cmd.exe /c 'echo %APPDATA%' 2>/dev/null | tr -d '\r' || true)
+      [[ -n "$appdata" ]] && echo "$(wslpath -u "$appdata")/Claude/claude_desktop_config.json"
+      ;;
+  esac
+  return 0
+}
+DESKTOP_CONFIG=$(desktop_config_path)
+
+usage() {
+  cat <<USAGE
+Usage: ${0##*/} [--redo | --uninstall]
+
+  (no flag)    set up, skipping stages whose work is already in place
+  --redo       run every stage again, e.g. to rotate the client secret or
+               get asked again about a Claude registration you declined
+  --uninstall  stop the server, revoke the sign-in and remove the local setup
+USAGE
+}
+
+REDO=0
+UNINSTALL=0
+case "${1:-}" in
+  "") ;;
+  --redo) REDO=1 ;;
+  --uninstall) UNINSTALL=1 ;;
+  -h | --help)
+    usage
+    exit 0
+    ;;
+  *)
+    usage >&2
+    exit 2
+    ;;
+esac
+
+ALREADY=() # stages skipped because their work was in place
+
+ok() { printf '  %s✓%s %s\n' "$GREEN" "$RESET" "$1"; }
+
+# skip_stage "Name" "why" counts a stage as done without clearing the screen,
+# so a run of skipped stages stays visible until the next real stage.
+skip_stage() {
+  _STAGE_INDEX=$((_STAGE_INDEX + 1))
+  printf '  %s✓ Stage %s/%s · %s%s %s(%s)%s\n' \
+    "$GREEN" "$_STAGE_INDEX" "$TOTAL_STAGES" "$1" "$RESET" "$DIM" "$2" "$RESET"
+  ALREADY+=("$1")
+}
+
+# The launcher sources the env file as shell, so lists are stored
+# comma-separated there and kept space-separated in memory.
+LIST_KEYS=" WIZARD_TOOLS WIZARD_APIS_ENABLED WIZARD_TEST_USERS "
+write_list() { write_env "$1" "$(printf '%s' "$2" | tr ' ' ',')"; }
+
+# ask_required ask|ask_secret KEY "Prompt" re-asks until the answer is non-empty.
+ask_required() {
+  local fn="$1" key="$2"
+  while :; do
+    "$fn" "$key" "$3"
+    [[ -n "${!key}" ]] && return
+    warn "this can't be empty"
+  done
+}
 
 # service name → Google API id, matching the server's core/api_enablement.py
 # (contacts and apps script are not in that map; ids taken from the API library).
 api_for() {
   case "$1" in
     calendar) echo calendar-json.googleapis.com ;;
-    drive)    echo drive.googleapis.com ;;
-    gmail)    echo gmail.googleapis.com ;;
-    docs)     echo docs.googleapis.com ;;
-    sheets)   echo sheets.googleapis.com ;;
-    slides)   echo slides.googleapis.com ;;
-    forms)    echo forms.googleapis.com ;;
-    tasks)    echo tasks.googleapis.com ;;
-    chat)     echo chat.googleapis.com ;;
-    search)   echo customsearch.googleapis.com ;;
+    drive) echo drive.googleapis.com ;;
+    gmail) echo gmail.googleapis.com ;;
+    docs) echo docs.googleapis.com ;;
+    sheets) echo sheets.googleapis.com ;;
+    slides) echo slides.googleapis.com ;;
+    forms) echo forms.googleapis.com ;;
+    tasks) echo tasks.googleapis.com ;;
+    chat) echo chat.googleapis.com ;;
+    search) echo customsearch.googleapis.com ;;
     contacts) echo people.googleapis.com ;;
     appscript) echo script.googleapis.com ;;
     *) return 1 ;;
@@ -214,12 +316,12 @@ api_for() {
 
 # choose_services shows a toggleable checklist of $SERVICES and sets
 # WIZARD_TOOLS to the chosen ones. j/k or arrows move, space toggles, Enter
-# confirms. Pre-checks whatever the env file saved on a previous run.
+# confirms. Pre-checks the services saved on a previous run.
 SERVICES=(gmail drive calendar docs sheets slides forms tasks contacts chat search appscript)
 choose_services() {
   local saved cur=0 i key n=${#SERVICES[@]}
   local -a on
-  saved=" $(_existing WIZARD_TOOLS || echo "gmail drive calendar docs sheets") "
+  saved=" ${WIZARD_TOOLS:-gmail drive calendar docs sheets} "
   for i in "${!SERVICES[@]}"; do
     [[ "$saved" == *" ${SERVICES[$i]} "* ]] && on[i]=1 || on[i]=0
   done
@@ -228,8 +330,8 @@ choose_services() {
   while :; do
     for i in "${!SERVICES[@]}"; do
       local mark="[ ]" ptr="  "
-      (( on[i] )) && mark="[${GREEN}x${RESET}]"
-      (( i == cur )) && ptr="${BLUE}>${RESET} "
+      ((on[i])) && mark="[${GREEN}x${RESET}]"
+      ((i == cur)) && ptr="${BLUE}>${RESET} "
       printf '\033[2K  %s%s %s\n' "$ptr" "$mark" "${SERVICES[$i]}"
     done
     IFS= read -rsn1 key || key=""
@@ -239,9 +341,9 @@ choose_services() {
       case "$key" in '[A') key=k ;; '[B') key=j ;; *) key="esc" ;; esac
     fi
     case "$key" in
-      j) cur=$(( (cur + 1) % n )) ;;
-      k) cur=$(( (cur + n - 1) % n )) ;;
-      ' ') on[cur]=$(( 1 - on[cur] )) ;;
+      j) cur=$(((cur + 1) % n)) ;;
+      k) cur=$(((cur + n - 1) % n)) ;;
+      ' ') on[cur]=$((1 - on[cur])) ;;
       a) for i in "${!SERVICES[@]}"; do on[i]=1; done ;;
       n) for i in "${!SERVICES[@]}"; do on[i]=0; done ;;
       '') break ;;
@@ -251,7 +353,7 @@ choose_services() {
   printf '\033[?25h'
   WIZARD_TOOLS=""
   for i in "${!SERVICES[@]}"; do
-    (( on[i] )) && WIZARD_TOOLS="${WIZARD_TOOLS:+$WIZARD_TOOLS }${SERVICES[$i]}"
+    ((on[i])) && WIZARD_TOOLS="${WIZARD_TOOLS:+$WIZARD_TOOLS }${SERVICES[$i]}"
   done
   if [[ -z "$WIZARD_TOOLS" ]]; then
     warn "pick at least one service"
@@ -259,126 +361,487 @@ choose_services() {
   fi
 }
 
-banner "Google Workspace MCP setup"
+needed_apis() {
+  local svc
+  for svc in $WIZARD_TOOLS; do api_for "$svc"; done
+}
 
-# ── 1 ─────────────────────────────────────────────────────────────────────
-stage "Prerequisites and choices"
-say "The server runs with uvx and Claude Code connects to it over HTTP."
-for tool in uv claude; do
-  if command -v "$tool" >/dev/null 2>&1; then
-    note "✓ $tool found"
+in_list() { [[ " $2 " == *" $1 "* ]]; }
+
+signed_in() {
+  local cred="$CRED_DIR/$USER_GOOGLE_EMAIL.json"
+  [[ -n "$USER_GOOGLE_EMAIL" && -f "$cred" ]] && grep -q '"refresh_token"' "$cred"
+}
+
+apis_enabled() {
+  local api
+  [[ -n "$WIZARD_APIS_ENABLED" ]] || return 1
+  for api in $(needed_apis); do
+    in_list "$api" "$WIZARD_APIS_ENABLED" || return 1
+  done
+}
+
+consent_done() {
+  [[ -n "$GOOGLE_CLOUD_PROJECT" && "$WIZARD_CONSENT_PROJECT" == "$GOOGLE_CLOUD_PROJECT" ]] &&
+    in_list "$USER_GOOGLE_EMAIL" "$WIZARD_TEST_USERS"
+}
+
+# Finding the server's process needs lsof (macOS, most Linux) or ss (iproute2).
+can_find_pids() { command -v lsof >/dev/null 2>&1 || command -v ss >/dev/null 2>&1; }
+
+# proc_cmdline PID: /proc works where ps lacks -o (BusyBox); macOS has no /proc.
+proc_cmdline() {
+  if [[ -r "/proc/$1/cmdline" ]]; then
+    tr '\0' ' ' <"/proc/$1/cmdline"
   else
-    warn "$tool not found on PATH"
-    SKIPPED+=("install $tool before starting the server")
+    ps -o command= -p "$1" 2>/dev/null || true
   fi
-done
-printf '\n'
-say "Pick the services to enable:"
-note "Chat needs a Workspace account plus a one-time Chat app config; leave it off unless you need it."
-choose_services
-ask WIZARD_TOOL_TIER "Tool tier: core (lean), extended, or complete (default: core):"
-[[ -z "$WIZARD_TOOL_TIER" ]] && WIZARD_TOOL_TIER=core
-ask USER_GOOGLE_EMAIL "Google account email to sign in with:"
-ask WORKSPACE_MCP_PORT "Local port for the server (default: 8765):"
-[[ -z "$WORKSPACE_MCP_PORT" ]] && WORKSPACE_MCP_PORT=8765
-[[ "$WORKSPACE_MCP_PORT" =~ ^[0-9]+$ ]] || { warn "port must be a number"; exit 1; }
-MCP_URL="http://localhost:$WORKSPACE_MCP_PORT/mcp"
-write_env WIZARD_TOOLS "$WIZARD_TOOLS"
-write_env WIZARD_TOOL_TIER "$WIZARD_TOOL_TIER"
-write_env USER_GOOGLE_EMAIL "$USER_GOOGLE_EMAIL"
-write_env WORKSPACE_MCP_PORT "$WORKSPACE_MCP_PORT"
-write_env WORKSPACE_MCP_HOST 127.0.0.1   # legacy HTTP mode has no MCP-level auth; never expose it
+}
 
-# ── 2 ─────────────────────────────────────────────────────────────────────
-stage "Google Cloud: project"
-say "Every OAuth client lives in a Cloud project. Reuse one or create a fresh one."
-open_url "https://console.cloud.google.com/projectcreate"
-step "Name it (e.g. 'workspace-mcp') and click Create, or close the dialog to reuse an existing project."
-step "Copy the Project ID (not the name) from the project picker at the top of the console."
-ask GOOGLE_CLOUD_PROJECT "Paste the project ID:"
-write_env GOOGLE_CLOUD_PROJECT "$GOOGLE_CLOUD_PROJECT"
+# server_pids PORT prints the pids of a workspace-mcp server listening on PORT,
+# so an unrelated process on the same port doesn't count.
+server_pids() {
+  local pid pids=""
+  if command -v lsof >/dev/null 2>&1; then
+    pids=$(lsof -tiTCP:"$1" -sTCP:LISTEN 2>/dev/null || true)
+  elif command -v ss >/dev/null 2>&1; then
+    pids=$(ss -ltnpH "sport = :$1" 2>/dev/null | grep -o 'pid=[0-9]*' | cut -d= -f2 | sort -u || true)
+  fi
+  for pid in $pids; do
+    if proc_cmdline "$pid" | grep -q workspace-mcp; then echo "$pid"; fi
+  done
+}
 
-# ── 3 ─────────────────────────────────────────────────────────────────────
-stage "Google Cloud: enable APIs"
-apiids=""
-for svc in $WIZARD_TOOLS; do apiids="${apiids:+$apiids,}$(api_for "$svc")"; done
-say "This flow enables every API your chosen services need in one go."
-open_url "https://console.cloud.google.com/flows/enableapi?apiid=${apiids}&project=${GOOGLE_CLOUD_PROJECT}"
-step "Confirm the project, then click Next → Enable and wait for the green ticks."
-if [[ " $WIZARD_TOOLS " == *" appscript "* ]]; then
-  warn "Apps Script also needs the per-user toggle: https://script.google.com/home/usersettings → Google Apps Script API → On"
-fi
-pause "Enabled? Press Enter"
+# Without lsof or ss, any HTTP answer on the port is the best evidence available.
+server_up() {
+  if can_find_pids; then
+    [[ -n "$(server_pids "$WORKSPACE_MCP_PORT")" ]]
+  else
+    [[ "$(curl -s -o /dev/null -w '%{http_code}' --max-time 2 "$MCP_URL" || true)" != 000 ]]
+  fi
+}
 
-# ── 4 ─────────────────────────────────────────────────────────────────────
-stage "Google Cloud: OAuth consent screen"
-say "Google shows this screen at first sign-in. External + test users keeps it out of app review."
-open_url "https://console.cloud.google.com/auth/overview?project=${GOOGLE_CLOUD_PROJECT}"
-step "Click Get started. App name: 'Workspace MCP'; support email: your address."
-step "Audience: External. Contact email: your address. Agree and Create."
-note "If the overview already shows an app, skip straight to the test users below."
-pause "Consent screen created? Press Enter"
-open_url "https://console.cloud.google.com/auth/audience?project=${GOOGLE_CLOUD_PROJECT}"
-step "Under Test users click Add users, enter $USER_GOOGLE_EMAIL, Save."
-note "In Testing status Google expires the refresh token every 7 days, so you re-sign in weekly."
-note "To avoid that, publish the app: on Branding fill Homepage and Privacy policy (the upstream repo URL works for both:"
-note "https://github.com/taylorwilsdon/google_workspace_mcp) and add github.com under Authorised domains, save, then Publish app on the Audience page."
-note "Personal use needs no verification; you just click through an 'unverified app' warning at sign-in."
-pause "Test user added? Press Enter"
+# server_current: the running server was started with today's services and
+# tier. Unknowable without a pid, so assume yes rather than nag.
+server_current() {
+  local pid
+  can_find_pids || return 0
+  pid=$(server_pids "$WORKSPACE_MCP_PORT" | head -n1)
+  proc_cmdline "$pid" | grep -qF -- "--tool-tier $WIZARD_TOOL_TIER --tools $WIZARD_TOOLS"
+}
 
-# ── 5 ─────────────────────────────────────────────────────────────────────
-stage "Google Cloud: OAuth client"
-say "A Desktop-app client needs no redirect URIs and covers the local HTTP server."
-open_url "https://console.cloud.google.com/auth/clients/create?project=${GOOGLE_CLOUD_PROJECT}"
-step "Application type: Desktop app. Name: 'workspace-mcp'. Click Create."
-step "In the dialog copy the Client ID (ends in .apps.googleusercontent.com) and the Client secret."
-ask GOOGLE_OAUTH_CLIENT_ID "Paste the client ID:"
-ask_secret GOOGLE_OAUTH_CLIENT_SECRET "Paste the client secret:"
-write_env GOOGLE_OAUTH_CLIENT_ID "$GOOGLE_OAUTH_CLIENT_ID"
-write_env GOOGLE_OAUTH_CLIENT_SECRET "$GOOGLE_OAUTH_CLIENT_SECRET"
-write_env OAUTHLIB_INSECURE_TRANSPORT 1   # the callback is plain http://localhost
-chmod 600 "$ENV_FILE"
-
-# ── 6 ─────────────────────────────────────────────────────────────────────
-stage "Launcher and Claude Code registration"
-cat > "$LAUNCHER" <<LAUNCH
+launcher_script() {
+  cat <<LAUNCH
 #!/usr/bin/env bash
 # Generated by wizard/google-workspace-mcp.sh; re-run the wizard to change services.
 set -euo pipefail
 set -a; . "$ENV_FILE"; set +a
 # shellcheck disable=SC2086
-exec uvx workspace-mcp --transport streamable-http --tool-tier "\$WIZARD_TOOL_TIER" --tools \$WIZARD_TOOLS "\$@"
+exec uvx workspace-mcp --transport streamable-http --tool-tier "\$WIZARD_TOOL_TIER" --tools \${WIZARD_TOOLS//,/ } "\$@"
 LAUNCH
-chmod +x "$LAUNCHER"
-printf '  %s✓ wrote%s launcher → %s\n' "$GREEN" "$RESET" "$LAUNCHER"
-say "Start the server in another terminal now and keep it running:"
-printf '\n      %s%s%s\n\n' "$BOLD" "$LAUNCHER" "$RESET"
-note "First run downloads the package with uvx; wait for 'Uvicorn running on http://127.0.0.1:$WORKSPACE_MCP_PORT'."
-pause "Server up? Press Enter"
-if command -v claude >/dev/null 2>&1; then
-  if confirm "Register $MCP_NAME with Claude Code (user scope) now?"; then
-    claude mcp remove --scope user "$MCP_NAME" >/dev/null 2>&1 || true
-    if claude mcp add --scope user --transport http "$MCP_NAME" "$MCP_URL"; then
-      printf '  %s✓ registered%s %s → %s\n' "$GREEN" "$RESET" "$MCP_NAME" "$MCP_URL"
-    else
-      SKIPPED+=("claude mcp add --scope user --transport http $MCP_NAME $MCP_URL")
-      warn "registration failed; run it by hand later"
-    fi
+}
+launcher_current() { [[ -f "$LAUNCHER" && "$(cat "$LAUNCHER")" == "$(launcher_script)" ]]; }
+
+# claude_code_state prints registered, declined, missing (no claude CLI) or todo.
+claude_code_state() {
+  if ! command -v claude >/dev/null 2>&1; then
+    echo missing
+  elif claude mcp get "$MCP_NAME" 2>/dev/null | grep -qF "URL: $MCP_URL"; then
+    echo registered
+  elif ((! REDO)) && [[ "$WIZARD_CLAUDE_CODE" == off ]]; then
+    echo declined
   else
-    SKIPPED+=("claude mcp add --scope user --transport http $MCP_NAME $MCP_URL")
+    echo todo
   fi
+}
+
+# desktop_entry prints the mcpServers entry for Claude Desktop as JSON.
+desktop_entry() {
+  local npx node_dir shims="${MISE_DATA_DIR:-$HOME/.local/share/mise}/shims"
+  case "$PLATFORM" in
+    # The Windows app can't run WSL binaries or a bare npx.cmd; cmd /c finds
+    # the Windows npx, and WSL forwards localhost to the Linux server.
+    windows | wsl)
+      jq -n --arg url "$MCP_URL" '{command: "cmd", args: ["/c", "npx", "-y", "mcp-remote", $url]}'
+      ;;
+    *)
+      # Desktop launches without the shell's PATH, so pin absolute paths. mise
+      # shims survive node upgrades, unlike the versioned install dir.
+      if [[ -x "$shims/npx" && -x "$shims/node" ]]; then
+        npx="$shims/npx" node_dir="$shims"
+      else
+        npx=$(command -v npx) node_dir=$(dirname "$(command -v node)")
+      fi
+      jq -n --arg npx "$npx" --arg url "$MCP_URL" --arg path "$node_dir:/usr/bin:/bin" \
+        '{command: $npx, args: ["-y", "mcp-remote", $url], env: {PATH: $path}}'
+      ;;
+  esac
+}
+
+# desktop_state prints absent (no Claude Desktop), missing (no jq/node/npx),
+# registered, declined or todo. Registered means the entry matches exactly,
+# so a moved npx or port is re-registered.
+desktop_state() {
+  if [[ -z "$DESKTOP_CONFIG" || ! -f "$DESKTOP_CONFIG" ]]; then
+    echo absent
+  elif ! command -v jq >/dev/null 2>&1; then
+    echo missing
+  elif [[ "$PLATFORM" != windows && "$PLATFORM" != wsl ]] &&
+    { ! command -v npx >/dev/null 2>&1 || ! command -v node >/dev/null 2>&1; }; then
+    echo missing
+  elif jq -e --arg n "$MCP_NAME" --argjson e "$(desktop_entry)" '.mcpServers[$n] == $e' \
+    "$DESKTOP_CONFIG" >/dev/null 2>&1; then
+    echo registered
+  elif ((! REDO)) && [[ "$WIZARD_CLAUDE_DESKTOP" == off ]]; then
+    echo declined
+  else
+    echo todo
+  fi
+}
+
+# edit_desktop_config JQ-ARGS... rewrites the Desktop config through jq,
+# keeping a .bak; leaves the config untouched if jq fails. Writing through
+# with cat keeps a symlinked config linked and its mode unchanged.
+edit_desktop_config() {
+  local tmp
+  tmp=$(mktemp)
+  if jq "$@" "$DESKTOP_CONFIG" >"$tmp"; then
+    cp "$DESKTOP_CONFIG" "$DESKTOP_CONFIG.bak"
+    cat "$tmp" >"$DESKTOP_CONFIG"
+    rm -f "$tmp"
+  else
+    rm -f "$tmp"
+    return 1
+  fi
+}
+
+for key in WIZARD_TOOLS WIZARD_TOOL_TIER USER_GOOGLE_EMAIL WORKSPACE_MCP_PORT \
+  GOOGLE_CLOUD_PROJECT GOOGLE_OAUTH_CLIENT_ID GOOGLE_OAUTH_CLIENT_SECRET \
+  WIZARD_APIS_ENABLED WIZARD_CONSENT_PROJECT WIZARD_TEST_USERS \
+  WIZARD_CLAUDE_CODE WIZARD_CLAUDE_DESKTOP; do
+  value=$(_existing "$key" || true)
+  in_list "$key" "$LIST_KEYS" && value=${value//,/ }
+  printf -v "$key" '%s' "$value"
+done
+# 127.0.0.1, not localhost: the server binds IPv4 loopback only, and some
+# clients try ::1 first.
+MCP_URL="http://127.0.0.1:${WORKSPACE_MCP_PORT:-8765}/mcp"
+
+uninstall() {
+  local port="${WORKSPACE_MCP_PORT:-8765}" cred="$CRED_DIR/$USER_GOOGLE_EMAIL.json" pid rt
+  TOTAL_STAGES=2
+  _clear
+  printf '\n%s%s  Google Workspace MCP uninstall%s\n\n' "$BOLD" "$RED" "$RESET"
+  say "This removes:"
+  step "the server listening on port $port, if running"
+  signed_in && step "the Google sign-in for $USER_GOOGLE_EMAIL (revoked, then deleted)"
+  step "the $MCP_NAME entry in Claude Code and Claude Desktop"
+  step "$ENV_FILE (holds the client secret) and $CONFIG_DIR"
+  note "The Google Cloud project and OAuth client stay; the last stage walks you through deleting them."
+  printf '\n'
+  confirm "Uninstall?" || exit 0
+
+  stage "Local cleanup"
+  for pid in $(server_pids "$port"); do
+    kill "$pid" && ok "stopped the server (pid $pid)"
+  done
+  if ! can_find_pids && WORKSPACE_MCP_PORT=$port server_up; then
+    warn "something answers on port $port, but without lsof or ss it can't be stopped from here; stop the server yourself"
+  fi
+  if signed_in; then
+    rt=$(sed -n 's/.*"refresh_token": *"\([^"]*\)".*/\1/p' "$cred")
+    if [[ -n "$rt" ]] && curl -fs -o /dev/null --data-urlencode "token=$rt" https://oauth2.googleapis.com/revoke; then
+      ok "revoked the Google sign-in"
+    else
+      warn "couldn't revoke; remove access at https://myaccount.google.com/permissions"
+    fi
+  fi
+  if [[ -f "$cred" ]]; then
+    rm -f "$cred"
+    ok "deleted $cred"
+  fi
+  # Drop the server's state dir only once no other account is signed in there.
+  if [[ -d "$HOME/.google_workspace_mcp" ]] && ! ls "$CRED_DIR"/*@*.json >/dev/null 2>&1; then
+    rm -rf "$HOME/.google_workspace_mcp"
+    ok "deleted ~/.google_workspace_mcp"
+  fi
+  if command -v claude >/dev/null 2>&1 && claude mcp get "$MCP_NAME" >/dev/null 2>&1; then
+    claude mcp remove --scope user "$MCP_NAME" >/dev/null && ok "unregistered $MCP_NAME from Claude Code"
+  fi
+  if [[ -f "$DESKTOP_CONFIG" ]] && command -v jq >/dev/null 2>&1 &&
+    jq -e --arg n "$MCP_NAME" '.mcpServers[$n]' "$DESKTOP_CONFIG" >/dev/null 2>&1; then
+    if edit_desktop_config --arg n "$MCP_NAME" 'del(.mcpServers[$n])'; then
+      ok "removed $MCP_NAME from Claude Desktop (backup: $DESKTOP_CONFIG.bak)"
+      note "Quit and reopen Claude Desktop to drop it."
+    else
+      warn "couldn't update $DESKTOP_CONFIG; remove the $MCP_NAME entry by hand"
+    fi
+  fi
+  if [[ -f "$ENV_FILE" ]]; then
+    rm -f "$ENV_FILE"
+    ok "deleted $ENV_FILE"
+  fi
+  if [[ -d "$CONFIG_DIR" ]]; then
+    rm -rf "$CONFIG_DIR"
+    ok "deleted $CONFIG_DIR"
+  fi
+  pause "Press Enter for the Google Cloud cleanup"
+
+  stage "Google Cloud (optional)"
+  if [[ -n "$GOOGLE_CLOUD_PROJECT" ]]; then
+    if confirm "Was $GOOGLE_CLOUD_PROJECT created only for this, so the whole project can go?"; then
+      open_url "https://console.cloud.google.com/iam-admin/settings?project=$GOOGLE_CLOUD_PROJECT"
+      step "Click Shut down, type the project ID and confirm. Google deletes it after 30 days."
+    else
+      open_url "https://console.cloud.google.com/auth/clients?project=$GOOGLE_CLOUD_PROJECT"
+      step "Delete the 'workspace-mcp' OAuth client."
+    fi
+    pause "Done? Press Enter"
+  else
+    note "No project was recorded, so there is nothing to point you at."
+    pause
+  fi
+
+  _clear
+  printf '\n%s%s  ✓ Uninstalled%s\n\n' "$BOLD" "$GREEN" "$RESET"
+  exit 0
+}
+
+((UNINSTALL)) && uninstall
+
+mkdir -p "$CONFIG_DIR"
+
+# Upgrade env files written by older versions of this wizard, before stage 1
+# can change the services: space-separated lists broke the launcher, and a
+# cached sign-in proves the APIs and test user for the services it used.
+if [[ "$(_existing WIZARD_TOOLS || true)" == *" "* ]]; then
+  write_list WIZARD_TOOLS "$WIZARD_TOOLS" >/dev/null
+fi
+if [[ -z "$WIZARD_APIS_ENABLED" ]] && signed_in; then
+  WIZARD_APIS_ENABLED=$(needed_apis | paste -sd' ' -)
+  write_list WIZARD_APIS_ENABLED "$WIZARD_APIS_ENABLED" >/dev/null
+fi
+if [[ -z "$WIZARD_CONSENT_PROJECT" && -n "$GOOGLE_CLOUD_PROJECT" ]] && signed_in; then
+  WIZARD_CONSENT_PROJECT=$GOOGLE_CLOUD_PROJECT
+  WIZARD_TEST_USERS=$USER_GOOGLE_EMAIL
+  write_env WIZARD_CONSENT_PROJECT "$WIZARD_CONSENT_PROJECT" >/dev/null
+  write_list WIZARD_TEST_USERS "$WIZARD_TEST_USERS" >/dev/null
+fi
+LOADED_PORT=$WORKSPACE_MCP_PORT
+
+banner "Google Workspace MCP setup"
+
+# ── 1 ─────────────────────────────────────────────────────────────────────
+stage "Prerequisites and choices"
+say "The server runs with uvx; Claude Code and Claude Desktop connect to it over HTTP."
+for tool in uv claude; do
+  if command -v "$tool" >/dev/null 2>&1; then
+    note "✓ $tool found"
+  else
+    warn "$tool not found on PATH"
+    [[ "$tool" == uv ]] && SKIPPED+=("install uv before starting the server")
+  fi
+done
+printf '\n'
+choose=1
+if ((! REDO)) && [[ -n "$WIZARD_TOOLS" && -n "$WIZARD_TOOL_TIER" && -n "$USER_GOOGLE_EMAIL" && -n "$WORKSPACE_MCP_PORT" ]]; then
+  say "Saved choices:"
+  note "services: $WIZARD_TOOLS · tier: $WIZARD_TOOL_TIER · account: $USER_GOOGLE_EMAIL · port: $WORKSPACE_MCP_PORT"
+  confirm "Change them?" || choose=0
+fi
+if ((choose)); then
+  say "Pick the services to enable:"
+  note "Chat needs a Workspace account plus a one-time Chat app config; leave it off unless you need it."
+  choose_services
+  ask WIZARD_TOOL_TIER "Tool tier: core (lean), extended, or complete (default: core):"
+  [[ -z "$WIZARD_TOOL_TIER" ]] && WIZARD_TOOL_TIER=core
+  ask_required ask USER_GOOGLE_EMAIL "Google account email to sign in with:"
+  while :; do
+    ask WORKSPACE_MCP_PORT "Local port for the server (default: 8765):"
+    [[ -z "$WORKSPACE_MCP_PORT" ]] && WORKSPACE_MCP_PORT=8765
+    [[ "$WORKSPACE_MCP_PORT" =~ ^[0-9]+$ ]] && break
+    warn "port must be a number"
+  done
+  write_list WIZARD_TOOLS "$WIZARD_TOOLS"
+  write_env WIZARD_TOOL_TIER "$WIZARD_TOOL_TIER"
+  write_env USER_GOOGLE_EMAIL "$USER_GOOGLE_EMAIL"
+  write_env WORKSPACE_MCP_PORT "$WORKSPACE_MCP_PORT"
+  write_env WORKSPACE_MCP_HOST 127.0.0.1 # legacy HTTP mode has no MCP-level auth; never expose it
+fi
+MCP_URL="http://127.0.0.1:$WORKSPACE_MCP_PORT/mcp"
+
+# ── 2 ─────────────────────────────────────────────────────────────────────
+if ((! REDO)) && [[ -n "$GOOGLE_CLOUD_PROJECT" ]]; then
+  skip_stage "Google Cloud: project" "$GOOGLE_CLOUD_PROJECT"
 else
-  SKIPPED+=("claude mcp add --scope user --transport http $MCP_NAME $MCP_URL")
+  stage "Google Cloud: project"
+  say "Every OAuth client lives in a Cloud project. Reuse one or create a fresh one."
+  open_url "https://console.cloud.google.com/projectcreate"
+  step "Name it (e.g. 'workspace-mcp') and click Create, or close the dialog to reuse an existing project."
+  step "Copy the Project ID (not the name) from the project picker at the top of the console."
+  ask_required ask GOOGLE_CLOUD_PROJECT "Paste the project ID:"
+  write_env GOOGLE_CLOUD_PROJECT "$GOOGLE_CLOUD_PROJECT"
+fi
+
+# ── 3 ─────────────────────────────────────────────────────────────────────
+if ((! REDO)) && apis_enabled; then
+  skip_stage "Google Cloud: enable APIs" "$WIZARD_TOOLS"
+else
+  stage "Google Cloud: enable APIs"
+  apiids=$(needed_apis | paste -sd, -)
+  say "This flow enables every API your chosen services need in one go."
+  open_url "https://console.cloud.google.com/flows/enableapi?apiid=${apiids}&project=${GOOGLE_CLOUD_PROJECT}"
+  step "Confirm the project, then click Next → Enable and wait for the green ticks."
+  if in_list appscript "$WIZARD_TOOLS"; then
+    warn "Apps Script also needs the per-user toggle: https://script.google.com/home/usersettings → Google Apps Script API → On"
+  fi
+  pause "Enabled? Press Enter"
+  # Enabling never disables anything, so remember the union across runs.
+  # shellcheck disable=SC2046 # word splitting is the point
+  WIZARD_APIS_ENABLED=$(printf '%s\n' $WIZARD_APIS_ENABLED $(needed_apis) | sort -u | paste -sd' ' -)
+  write_list WIZARD_APIS_ENABLED "$WIZARD_APIS_ENABLED"
+fi
+
+# ── 4 ─────────────────────────────────────────────────────────────────────
+if ((! REDO)) && consent_done; then
+  skip_stage "Google Cloud: OAuth consent screen" "$USER_GOOGLE_EMAIL is a test user"
+else
+  stage "Google Cloud: OAuth consent screen"
+  # A new project needs the screen itself; the same project only a new test user.
+  if ((REDO)) || [[ "$WIZARD_CONSENT_PROJECT" != "$GOOGLE_CLOUD_PROJECT" ]]; then
+    say "Google shows this screen at first sign-in. External + test users keeps it out of app review."
+    open_url "https://console.cloud.google.com/auth/overview?project=${GOOGLE_CLOUD_PROJECT}"
+    step "Click Get started. App name: 'Workspace MCP'; support email: your address."
+    step "Audience: External. Contact email: your address. Agree and Create."
+    note "If the overview already shows an app, skip straight to the test users below."
+    pause "Consent screen created? Press Enter"
+    WIZARD_TEST_USERS=""
+  fi
+  open_url "https://console.cloud.google.com/auth/audience?project=${GOOGLE_CLOUD_PROJECT}"
+  step "Under Test users click Add users, enter $USER_GOOGLE_EMAIL, Save."
+  note "In Testing status Google expires the refresh token every 7 days, so you re-sign in weekly."
+  note "To avoid that, publish the app: on Branding fill Homepage and Privacy policy (the upstream repo URL works for both:"
+  note "https://github.com/taylorwilsdon/google_workspace_mcp) and add github.com under Authorised domains, save, then Publish app on the Audience page."
+  note "Personal use needs no verification; you just click through an 'unverified app' warning at sign-in."
+  pause "Test user added? Press Enter"
+  in_list "$USER_GOOGLE_EMAIL" "$WIZARD_TEST_USERS" ||
+    WIZARD_TEST_USERS="${WIZARD_TEST_USERS:+$WIZARD_TEST_USERS }$USER_GOOGLE_EMAIL"
+  write_env WIZARD_CONSENT_PROJECT "$GOOGLE_CLOUD_PROJECT"
+  write_list WIZARD_TEST_USERS "$WIZARD_TEST_USERS"
+fi
+
+# ── 5 ─────────────────────────────────────────────────────────────────────
+if ((! REDO)) && [[ -n "$GOOGLE_OAUTH_CLIENT_ID" && -n "$GOOGLE_OAUTH_CLIENT_SECRET" ]]; then
+  skip_stage "Google Cloud: OAuth client" "${GOOGLE_OAUTH_CLIENT_ID%%-*}-…"
+else
+  stage "Google Cloud: OAuth client"
+  say "A Desktop-app client needs no redirect URIs and covers the local HTTP server."
+  open_url "https://console.cloud.google.com/auth/clients/create?project=${GOOGLE_CLOUD_PROJECT}"
+  step "Application type: Desktop app. Name: 'workspace-mcp'. Click Create."
+  step "In the dialog copy the Client ID (ends in .apps.googleusercontent.com) and the Client secret."
+  ask_required ask GOOGLE_OAUTH_CLIENT_ID "Paste the client ID:"
+  ask_required ask_secret GOOGLE_OAUTH_CLIENT_SECRET "Paste the client secret:"
+  write_env GOOGLE_OAUTH_CLIENT_ID "$GOOGLE_OAUTH_CLIENT_ID"
+  write_env GOOGLE_OAUTH_CLIENT_SECRET "$GOOGLE_OAUTH_CLIENT_SECRET"
+  write_env OAUTHLIB_INSECURE_TRANSPORT 1 # the callback is plain http://localhost
+fi
+chmod 600 "$ENV_FILE"
+
+# ── 6 ─────────────────────────────────────────────────────────────────────
+CC_ADD="claude mcp add --scope user --transport http $MCP_NAME $MCP_URL"
+cc=$(claude_code_state)
+desk=$(desktop_state)
+[[ "$cc" == missing ]] && SKIPPED+=("install claude, then: $CC_ADD")
+[[ "$desk" == missing ]] && SKIPPED+=("Claude Desktop registration (needs jq, node and npx on PATH)")
+launcher_ok=0
+launcher_current && launcher_ok=1
+
+if ((! REDO && launcher_ok)) && [[ "$cc" != todo && "$desk" != todo ]]; then
+  skip_stage "Launcher and Claude registration" "$MCP_URL"
+else
+  stage "Launcher and Claude registration"
+  if ((! launcher_ok)); then
+    launcher_script >"$LAUNCHER"
+    chmod +x "$LAUNCHER"
+    ok "wrote launcher → $LAUNCHER"
+  fi
+
+  case "$cc" in
+    registered) ok "already registered with Claude Code" ;;
+    missing) warn "skipped Claude Code: claude not found on PATH" ;;
+    declined) note "Claude Code: declined earlier; --redo asks again" ;;
+    todo)
+      if confirm "Register $MCP_NAME with Claude Code (user scope) now?"; then
+        claude mcp remove --scope user "$MCP_NAME" >/dev/null 2>&1 || true
+        if $CC_ADD; then
+          ok "registered $MCP_NAME → $MCP_URL"
+          write_env WIZARD_CLAUDE_CODE on
+        else
+          SKIPPED+=("$CC_ADD")
+          warn "registration failed; run it by hand later"
+        fi
+      else
+        write_env WIZARD_CLAUDE_CODE off
+        SKIPPED+=("$CC_ADD")
+      fi
+      ;;
+  esac
+
+  # Desktop's config file only takes servers it spawns, so mcp-remote bridges
+  # stdio to the already-running HTTP server and both apps share one sign-in.
+  case "$desk" in
+    registered) ok "already registered with Claude Desktop" ;;
+    absent) note "Claude Desktop config not found${DESKTOP_CONFIG:+ at $DESKTOP_CONFIG}; skipped Desktop" ;;
+    missing) warn "skipped Claude Desktop: jq, node or npx missing" ;;
+    declined) note "Claude Desktop: declined earlier; --redo asks again" ;;
+    todo)
+      if confirm "Register $MCP_NAME with Claude Desktop (via mcp-remote) too?"; then
+        if edit_desktop_config --arg name "$MCP_NAME" --argjson e "$(desktop_entry)" '.mcpServers[$name] = $e'; then
+          ok "registered $MCP_NAME in Claude Desktop (backup: $DESKTOP_CONFIG.bak)"
+          note "Quit and reopen Claude Desktop to load it; it only works while the launcher is running."
+          write_env WIZARD_CLAUDE_DESKTOP on
+        else
+          SKIPPED+=("Claude Desktop registration (couldn't parse $DESKTOP_CONFIG)")
+          warn "couldn't update the Claude Desktop config"
+        fi
+      else
+        write_env WIZARD_CLAUDE_DESKTOP off
+        SKIPPED+=("Claude Desktop registration: add an mcp-remote entry for $MCP_URL")
+      fi
+      ;;
+  esac
+  pause "Press Enter to continue"
 fi
 
 # ── 7 ─────────────────────────────────────────────────────────────────────
-stage "First sign-in"
-say "The first tool call opens Google's consent page; the server stores the refresh token under ~/.google_workspace_mcp/."
-step "Open a new Claude Code session and ask e.g. 'list my 3 most recent unread emails'."
-step "Sign in as $USER_GOOGLE_EMAIL. On 'Google hasn't verified this app' click Continue, then allow the scopes."
-step "The browser shows a success page; the tool call completes in Claude."
-note "If the call fails with an API-not-enabled error, the message links the exact enable page."
-pause "Signed in? Press Enter"
+if ((! REDO)) && signed_in; then
+  skip_stage "First sign-in" "token cached for $USER_GOOGLE_EMAIL"
+else
+  stage "First sign-in"
+  if ! server_up; then
+    say "Start the server in another terminal now and keep it running:"
+    printf '\n      %s%s%s\n\n' "$BOLD" "$LAUNCHER" "$RESET"
+    note "First run downloads the package with uvx; wait for 'Uvicorn running on http://127.0.0.1:$WORKSPACE_MCP_PORT'."
+    pause "Server up? Press Enter"
+  fi
+  say "The first tool call opens Google's consent page; the server stores the refresh token under ~/.google_workspace_mcp/."
+  step "Open a new Claude session and ask e.g. 'list my 3 most recent unread emails'."
+  step "Sign in as $USER_GOOGLE_EMAIL. On 'Google hasn't verified this app' click Continue, then allow the scopes."
+  step "The browser shows a success page; the tool call completes in Claude."
+  note "If the call fails with an API-not-enabled error, the message links the exact enable page."
+  pause "Signed in? Press Enter"
+fi
 
 finish
-note "Later: start the server with $LAUNCHER, re-run this wizard to change services or rotate the secret."
+((${#ALREADY[@]})) && note "already in place, skipped: $(
+  IFS=,
+  echo "${ALREADY[*]}" | sed 's/,/, /g'
+)"
+if server_up; then
+  server_current || warn "the running server has old settings; stop it and start $LAUNCHER again"
+elif [[ -n "$LOADED_PORT" && "$LOADED_PORT" != "$WORKSPACE_MCP_PORT" && -n "$(server_pids "$LOADED_PORT")" ]]; then
+  warn "a server still runs on the old port $LOADED_PORT; stop it and start $LAUNCHER"
+else
+  note "The server isn't running; start it with $LAUNCHER"
+fi
+note "Re-run to change services, --redo to rotate the secret, --uninstall to remove everything."
