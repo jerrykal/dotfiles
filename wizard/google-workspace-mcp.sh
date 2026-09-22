@@ -189,9 +189,7 @@ TOTAL_STAGES=7
 CONFIG_DIR="$HOME/.config/workspace-mcp"
 ENV_FILE="${WORKSPACE_MCP_ENV_FILE:-$CONFIG_DIR/.env}"
 LAUNCHER="$CONFIG_DIR/start"
-PORT=8000
 MCP_NAME="workspace-mcp"
-MCP_URL="http://localhost:$PORT/mcp"
 mkdir -p "$CONFIG_DIR"
 
 # service name → Google API id, matching the server's core/api_enablement.py
@@ -281,9 +279,15 @@ choose_services
 ask WIZARD_TOOL_TIER "Tool tier: core (lean), extended, or complete (default: core):"
 [[ -z "$WIZARD_TOOL_TIER" ]] && WIZARD_TOOL_TIER=core
 ask USER_GOOGLE_EMAIL "Google account email to sign in with:"
+ask WORKSPACE_MCP_PORT "Local port for the server (default: 8765):"
+[[ -z "$WORKSPACE_MCP_PORT" ]] && WORKSPACE_MCP_PORT=8765
+[[ "$WORKSPACE_MCP_PORT" =~ ^[0-9]+$ ]] || { warn "port must be a number"; exit 1; }
+MCP_URL="http://localhost:$WORKSPACE_MCP_PORT/mcp"
 write_env WIZARD_TOOLS "$WIZARD_TOOLS"
 write_env WIZARD_TOOL_TIER "$WIZARD_TOOL_TIER"
 write_env USER_GOOGLE_EMAIL "$USER_GOOGLE_EMAIL"
+write_env WORKSPACE_MCP_PORT "$WORKSPACE_MCP_PORT"
+write_env WORKSPACE_MCP_HOST 127.0.0.1   # legacy HTTP mode has no MCP-level auth; never expose it
 
 # ── 2 ─────────────────────────────────────────────────────────────────────
 stage "Google Cloud: project"
@@ -317,7 +321,9 @@ pause "Consent screen created? Press Enter"
 open_url "https://console.cloud.google.com/auth/audience?project=${GOOGLE_CLOUD_PROJECT}"
 step "Under Test users click Add users, enter $USER_GOOGLE_EMAIL, Save."
 note "In Testing status Google expires the refresh token every 7 days, so you re-sign in weekly."
-note "To avoid that, click Publish app on the overview page: personal use needs no verification, you just see an 'unverified app' warning at sign-in."
+note "To avoid that, publish the app: on Branding fill Homepage and Privacy policy (the upstream repo URL works for both:"
+note "https://github.com/taylorwilsdon/google_workspace_mcp) and add github.com under Authorised domains, save, then Publish app on the Audience page."
+note "Personal use needs no verification; you just click through an 'unverified app' warning at sign-in."
 pause "Test user added? Press Enter"
 
 # ── 5 ─────────────────────────────────────────────────────────────────────
@@ -330,7 +336,6 @@ ask GOOGLE_OAUTH_CLIENT_ID "Paste the client ID:"
 ask_secret GOOGLE_OAUTH_CLIENT_SECRET "Paste the client secret:"
 write_env GOOGLE_OAUTH_CLIENT_ID "$GOOGLE_OAUTH_CLIENT_ID"
 write_env GOOGLE_OAUTH_CLIENT_SECRET "$GOOGLE_OAUTH_CLIENT_SECRET"
-write_env WORKSPACE_MCP_PORT "$PORT"
 write_env OAUTHLIB_INSECURE_TRANSPORT 1   # the callback is plain http://localhost
 chmod 600 "$ENV_FILE"
 
@@ -348,7 +353,7 @@ chmod +x "$LAUNCHER"
 printf '  %s✓ wrote%s launcher → %s\n' "$GREEN" "$RESET" "$LAUNCHER"
 say "Start the server in another terminal now and keep it running:"
 printf '\n      %s%s%s\n\n' "$BOLD" "$LAUNCHER" "$RESET"
-note "First run downloads the package with uvx; wait for 'Uvicorn running on http://0.0.0.0:$PORT'."
+note "First run downloads the package with uvx; wait for 'Uvicorn running on http://127.0.0.1:$WORKSPACE_MCP_PORT'."
 pause "Server up? Press Enter"
 if command -v claude >/dev/null 2>&1; then
   if confirm "Register $MCP_NAME with Claude Code (user scope) now?"; then
