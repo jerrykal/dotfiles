@@ -109,6 +109,7 @@
   },
   "outputStyle": "Concise",
   "spinnerTipsEnabled": false,
+  "promptSuggestionEnabled": false,
   "modelSettings": {
     "claude-fable-5-1": {
       "effortLevel": "medium"
