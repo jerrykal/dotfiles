@@ -54,7 +54,11 @@ run = """
   fi
   installed="$(gh extension list | cut -f2)"
   for ext in dlvhdr/gh-dash; do
-    echo "$installed" | grep -qx "$ext" || gh extension install "$ext"
+    echo "$installed" | grep -qx "$ext" && continue
+    # A half-finished install leaves an empty dir that lists with no repo yet
+    # still claims the command name, so install refuses until it's removed.
+    gh extension remove "${ext#*/gh-}" 2>/dev/null
+    gh extension install "$ext"
   done
 """
 
