@@ -1,5 +1,5 @@
 [settings]
-minimum_release_age_excludes = ["claude", "codex", "herdr"]
+minimum_release_age_excludes = ["claude", "codex"]
 
 [tools]
 atuin = "latest"
@@ -14,7 +14,6 @@ fzf = "latest"
 gh = "latest"
 "github:agavra/tuicr" = "latest"
 go = "latest"
-herdr = "latest"
 hunk = "latest"
 jq = "latest"
 just = "latest"
@@ -62,20 +61,6 @@ run = """
   done
 """
 
-[tasks."herdr:plugins"]
-description = "Install or update herdr plugins"
-usage = 'flag "--update" help="Upgrade, not just install what is missing"'
-# herdr has no `plugin update`; re-running install refetches. Linked local
-# plugins live in the repo, so they are always current.
-run = """
-  plugins="$HOME/.dotfiles/herdr/plugins"
-  if [ -n "${usage_update:-}" ] || ! herdr plugin list | grep -q smart-splits.nvim; then
-    herdr plugin install mrjones2014/smart-splits.nvim -y
-  fi
-  herdr plugin list | grep -q last-focus || herdr plugin link "$plugins/last-focus"
-  herdr plugin list | grep -q herdr-picker || herdr plugin link "$plugins/herdr-picker"
-"""
-
 [tasks."nvim:plugins"]
 description = "Install or update Neovim plugins"
 usage = 'flag "--update" help="Upgrade, not just install what is missing"'
@@ -119,12 +104,11 @@ run = """
 """
 
 [tasks."update:plugins"]
-description = "Update Neovim, fish, tmux, and herdr plugins, and gh extensions."
+description = "Update Neovim, fish, and tmux plugins, and gh extensions."
 run = [
   { task = "nvim:plugins --update" },
   { task = "fish:plugins --update" },
   { task = "tmux:plugins --update" },
-  { task = "herdr:plugins --update" },
   { task = "gh:extensions --update" },
 ]
 

@@ -1,6 +1,6 @@
 ---
 name: tuicr
-description: Use tuicr's review CLI to read and add comments in active TUI review sessions, and launch tuicr in cmux, tmux, Zellij, or Herdr when a user needs an interactive review pane.
+description: Use tuicr's review CLI to read and add comments in active TUI review sessions, and launch tuicr in cmux, tmux, or Zellij when a user needs an interactive review pane.
 ---
 
 # tuicr Review Workflow
@@ -67,7 +67,7 @@ If the user's intent is ambiguous, ask which workflow they want.
      `"active": true` as a convenience signal. If slug resolution fails, ask the
      user for the slug or repo path used by the session.
 
-The CLI works even if the agent is not running inside tmux, Zellij, or Herdr,
+The CLI works even if the agent is not running inside tmux or Zellij,
 so do not require a multiplexer just to connect to an existing active session.
 
 ## Start A Session
@@ -79,7 +79,6 @@ When the user needs an interactive tuicr pane and no active session exists:
 | `$CMUX_WORKSPACE_ID` is set | Run `tuicr-wrapper-cmux.sh /path/to/repo -- <scope>` |
 | `$TMUX` is set | Run `tuicr-wrapper.sh /path/to/repo -- <scope>` |
 | `$ZELLIJ` is set | Run `tuicr-wrapper-zellij.sh /path/to/repo -- <scope>` |
-| `$HERDR_ENV` is `1` | Run `tuicr-wrapper-herdr.sh /path/to/repo -- <scope>` |
 | None is set | Tell the user you are waiting for them to start `tuicr` in the repo, then attach with `tuicr review list` after they say it is ready |
 
 `<scope>` is `-w` for uncommitted working-tree changes or `-r <revset>` for a
@@ -101,11 +100,7 @@ Wrapper paths are relative to this skill directory:
 <skill-directory>/tuicr-wrapper-cmux.sh /path/to/repo -- -w
 <skill-directory>/tuicr-wrapper.sh /path/to/repo -- -w
 <skill-directory>/tuicr-wrapper-zellij.sh /path/to/repo -- -w
-<skill-directory>/tuicr-wrapper-herdr.sh /path/to/repo -- -w
 ```
-
-The Herdr wrapper requires `jq` to read pane IDs and completion results from
-Herdr's JSON responses.
 
 Every wrapper accepts pass-through tuicr arguments after `--`, which is how
 you scope the review instead of leaving the scope selector for the user to
@@ -114,7 +109,7 @@ fill in — for example `-- -w` for uncommitted working-tree changes or
 launching a review pane.
 
 If your tool supports command timeouts, use a long timeout, such as 10 minutes,
-because the tmux, Zellij, and Herdr wrappers wait for the TUI to exit. The cmux
+because the tmux and Zellij wrappers wait for the TUI to exit. The cmux
 wrapper is the exception: it returns as soon as the pane is running and prints
 the new surface ref between `=== TUICR SURFACE ===` markers. Capture that ref —
 it is how you close the pane later with `cmux close-surface --surface <ref>`.
@@ -284,17 +279,12 @@ zellij:
 - Toggle fullscreen: `Alt-f`
 - Cycle stacked panes: `Alt` + `[` / `]`
 
-Herdr:
-
-- Select a pane: click it in the Herdr UI
-- Close tuicr: press `q`; the wrapper then closes the review pane
-
 ## Error Handling
 
 | Situation | Action |
 |-----------|--------|
 | Multiple plausible active sessions | Ask which session slug to use |
-| No active session, cmux/tmux/Zellij/Herdr available | Start a new tuicr pane with the matching wrapper |
+| No active session, cmux/tmux/Zellij available | Start a new tuicr pane with the matching wrapper |
 | No active session, no multiplexer | Tell the user you are waiting for them to start `tuicr` |
 | cmux wrapper printed no surface ref | Run `cmux list-panes` to find the pane, or ask the user to start `tuicr` themselves |
 | `tuicr` not installed | Tell the user to install tuicr |
