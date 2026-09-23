@@ -42,7 +42,26 @@ return {
             ignored = false,
             finder = function(opts, ctx)
               local cwd = ctx:cwd()
-              local args = { "--type", "d", "--type", "l", "--color", "never", "-E", ".git" }
+              -- --follow so symlinked directories count as directories and get descended into
+              local args = { "--type", "d", "--follow", "--color", "never" }
+              -- excluded even with --no-ignore, since a symlink into one of these would otherwise be walked in full
+              for _, dir in ipairs({
+                ".git",
+                "node_modules",
+                ".venv",
+                "venv",
+                "__pycache__",
+                ".mypy_cache",
+                ".pytest_cache",
+                ".ruff_cache",
+                ".tox",
+                "target",
+                ".next",
+                ".cache",
+                ".direnv",
+              }) do
+                vim.list_extend(args, { "-E", dir })
+              end
               if opts.hidden then
                 table.insert(args, "--hidden")
               end
@@ -55,10 +74,6 @@ return {
                   args = args,
                   cwd = cwd,
                   transform = function(item)
-                    -- `--type l` also matches symlinks to files; keep only those resolving to directories
-                    if vim.fn.isdirectory(cwd .. "/" .. item.text) == 0 then
-                      return false
-                    end
                     item.cwd, item.file, item.dir = cwd, item.text, true
                   end,
                 }),
