@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# xclip stand-in for headless machines, where TUIs that shell out to xclip for
+# the clipboard (gh-dash, via atotto/clipboard) otherwise fail. Copies go out
+# over OSC 52, through tmux when inside it, so they land on the local
+# clipboard of whichever terminal is attached. With a display the real xclip
+# takes over.
+
+set -euo pipefail
+
+self=$(readlink -f "$0")
+if [[ -n ${DISPLAY:-} ]]; then
+  IFS=: read -ra dirs <<<"$PATH"
+  for dir in "${dirs[@]}"; do
+    bin=$dir/xclip
+    if [[ -x $bin && $(readlink -f "$bin") != "$self" ]]; then
+      exec "$bin" "$@"
+    fi
+  done
+fi
+
+mode=in
+for arg in "$@"; do
+  case $arg in
+  -o | -out) mode=out ;;
+  esac
+done
+
+if [[ $mode == out ]]; then
+  # OSC 52 reads are rarely allowed, so paste what tmux last copied instead.
+  [[ -n ${TMUX:-} ]] && exec tmux save-buffer -
+  exit 1
+fi
+
+if [[ -n ${TMUX:-} ]]; then
+  exec tmux load-buffer -w -
+fi
+printf '\e]52;c;%s\a' "$(base64 | tr -d '\n')" >/dev/tty
