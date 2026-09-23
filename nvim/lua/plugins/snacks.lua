@@ -41,24 +41,25 @@ return {
             hidden = true,
             ignored = false,
             finder = function(opts, ctx)
-              local args = { "--type", "d", "--color", "never", "-E", ".git" }
-
+              local cwd = ctx:cwd()
+              local args = { "--type", "d", "--type", "l", "--color", "never", "-E", ".git" }
               if opts.hidden then
                 table.insert(args, "--hidden")
               end
               if opts.ignored then
                 table.insert(args, "--no-ignore")
               end
-
               return require("snacks.picker.source.proc").proc(
                 ctx:opts({
                   cmd = "fd",
                   args = args,
-                  cwd = ctx:cwd(),
+                  cwd = cwd,
                   transform = function(item)
-                    item.cwd = ctx:cwd()
-                    item.file = item.text
-                    item.dir = true
+                    -- `--type l` also matches symlinks to files; keep only those resolving to directories
+                    if vim.fn.isdirectory(cwd .. "/" .. item.text) == 0 then
+                      return false
+                    end
+                    item.cwd, item.file, item.dir = cwd, item.text, true
                   end,
                 }),
                 ctx
@@ -68,14 +69,6 @@ return {
             preview = "file",
             show_empty = true,
             supports_live = true,
-            confirm = function(picker, item)
-              picker:close()
-              if item then
-                vim.schedule(function()
-                  require("oil").open(require("snacks.picker.util").path(item))
-                end)
-              end
-            end,
           },
           files = {
             hidden = true,
