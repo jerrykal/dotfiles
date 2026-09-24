@@ -121,6 +121,7 @@
   "skipDangerousModePermissionPrompt": true,
   "theme": "custom:rose-pine",
   "remoteControlAtStartup": true,
+  "preferredNotifChannel": "notifications_disabled",
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true
