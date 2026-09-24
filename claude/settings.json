@@ -30,6 +30,18 @@
         ]
       }
     ],
+    "PostToolUse": [
+      {
+        "matcher": "Monitor",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "printf '%s' '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"Arm a one-shot CronCreate fallback a few minutes after this Monitor should fire. When it fires, check the condition directly. CronDelete it if the Monitor reports first.\"}}'",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
     "Notification": [
       {
         "matcher": "^(?!idle_prompt$).*",
