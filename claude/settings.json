@@ -9,12 +9,12 @@
     "sessionUrl": false
   },
   "permissions": {
-    "defaultMode": "auto",
     "deny": [
       "AskUserQuestion",
       "Bash(tmux kill-server:*)",
       "Bash(tmux kill-server)"
-    ]
+    ],
+    "defaultMode": "auto"
   },
   "model": "opus[1m]",
   "hooks": {
@@ -108,12 +108,12 @@
     }
   },
   "spinnerTipsEnabled": false,
-  "promptSuggestionEnabled": false,
   "modelSettings": {
     "claude-fable-5-1": {
       "effortLevel": "medium"
     }
   },
+  "promptSuggestionEnabled": false,
   "awaySummaryEnabled": false,
   "tui": "fullscreen",
   "autoMemoryEnabled": false,
