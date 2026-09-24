@@ -19,6 +19,8 @@ function __notify_postexec --on-event fish_postexec
 
     # $CMD_DURATION is the just-finished command's runtime in ms.
     test "$CMD_DURATION" -ge (math "$notify_min_duration x 1000"); or return
+    # 130 is Ctrl-C: whoever stopped it is already at the terminal.
+    test $exit_code -eq 130; and return
 
     # Command substitution splits on newlines, so a multi-line command line
     # would arrive as several elements and shift the body out of notify's $2.
@@ -27,16 +29,16 @@ function __notify_postexec --on-event fish_postexec
     test -n "$cmd"; or return
 
     # Skip interactive programs. Walk off leading VAR=val assignments and
-    # sudo/command/env wrappers together — `env FOO=bar vim` interleaves them —
-    # along with the options those wrappers take, then match on the basename so
-    # /usr/bin/less counts as less. --tokenize honours quoting, so an
-    # assignment like FOO="a b" stays one token.
+    # sudo/command/env/time wrappers together — `env FOO=bar vim` interleaves
+    # them — along with the options those wrappers take, then match on the
+    # basename so /usr/bin/less counts as less. --tokenize honours quoting, so
+    # an assignment like FOO="a b" stays one token.
     echo $cmd | read -lat words
-    set -l opt_with_arg -u -g -U -C -p -h -r -t -T -R --user --group --chdir
+    set -l opt_with_arg -u -g -U -C -p -h -r -t -T -R -n --user --group --chdir
     while set -q words[1]
         if string match -qr '^\w+=' -- $words[1]
             set -e words[1]
-        else if contains -- $words[1] sudo doas command env builtin nice nohup
+        else if contains -- $words[1] sudo doas command env builtin nice nohup time
             set -e words[1]
         else if test "$words[1]" = --
             set -e words[1]
