@@ -1,5 +1,19 @@
 [settings]
-minimum_release_age_excludes = ["claude", "codex"]
+minimum_release_age = "7d"
+minimum_release_age_excludes = [
+  "claude",
+  "codex",
+  "worktrunk",
+  "github:agavra/tuicr",
+  "bun",
+  "gh",
+  "go",
+  "neovim",
+  "node",
+  "python",
+  "rust",
+  "uv",
+]
 
 [tools]
 atuin = "latest"
