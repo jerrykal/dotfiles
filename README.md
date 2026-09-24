@@ -9,6 +9,16 @@ curl -fsSL https://raw.githubusercontent.com/jerrykal/dotfiles/main/install.sh |
 mise run setup:git "Your Name" you@example.com   # git identity -> ~/.gitconfig.local (prompts if omitted)
 ```
 
+### Google Workspace (`gws`)
+
+The `gws` CLI and `gcloud` come from `mise/config.toml`; the `gws-*` agent
+skills use them. Authorize once per machine:
+
+```sh
+gws auth setup   # create a GCP project + OAuth client via gcloud (first time only)
+gws auth login   # browser OAuth; credentials are stored locally
+```
+
 ## Day to day
 
 ```sh
