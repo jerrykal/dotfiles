@@ -3,16 +3,14 @@
 #
 #   notify-hook.sh notification|stop|failure     # hook JSON on stdin
 #
-# Hands Claude Code the OSC 777 sequence as `terminalSequence` and lets it do
-# the writing, rather than shelling out to `notify`: a hook's stdout is
-# captured by its caller instead of being wired to the terminal, so a sequence
-# printed from here would never reach the emulator. These hooks must stay
-# synchronous — Claude discards the output of an `async` hook, terminalSequence
-# included.
+# Inside tmux, hand off to the shared `notify`, which picks one attached client,
+# stays silent when a focused client already sits on this pane, tags the title
+# with the session and window, and rings the pane's bell.
 #
-# The allowlist takes a list of sequences and accepts a bare BEL among them, so
-# one rides along after the OSC to make tmux flag the window (monitor-bell,
-# window-status-bell-style) the way writing to the pane's pty used to.
+# Outside tmux, return the OSC 777 sequence as `terminalSequence` and let Claude
+# Code write it: a hook's stdout is captured by its caller instead of being
+# wired to the terminal. These hooks must stay synchronous — Claude discards the
+# output of an `async` hook, terminalSequence included.
 set -u
 
 mode=${1:-notification}
@@ -34,7 +32,7 @@ stop)
   # Signals (Stop hook stdin JSON, Claude Code >= 2.1.145):
   #   session_crons    — pending scheduled wakeups; non-empty means auto-resume
   #   background_tasks — anything not "completed" will re-invoke the session
-  # Fail open: if jq is missing or the fields aren't there, notify as before.
+  # Fail open: if the fields aren't there, notify.
   pending=$(jq -r '
     ((.session_crons // []) | length) +
     ([(.background_tasks // [])[] | select(.status != "completed")] | length)
@@ -47,23 +45,22 @@ failure)
   body='Task failed'
   ;;
 *)
-  body=$(jq -r '.message // empty' <<<"$input" 2>/dev/null)
+  # Claude drops a terminalSequence over 4096 bytes whole, and .message has no
+  # length bound, so cap it.
+  body=$(jq -r '.message // empty | .[:200]' <<<"$input" 2>/dev/null)
   body=${body:-Notification}
   ;;
 esac
 
-# Same payload rules as bin/notify: the sequence is ;-delimited and ends at
-# BEL, so a control byte truncates it, and Ghostty reads everything past the
-# title's ';' as body — only the title needs its semicolons collapsed.
+[ -n "${TMUX:-}" ] && exec "$HOME/.local/bin/notify" "$title" "$body"
+
+# Same payload rules as bin/notify: the sequence ends at BEL, so a control byte
+# would truncate it. The title is a constant, so only the body needs scrubbing.
 scrub() { local s=${1//[$'\t\r\n']/ }; printf '%s' "${s//[[:cntrl:]]/}"; }
 
 # A second-resolution timestamp keeps back-to-back notifications distinct;
 # emulators coalesce ones whose title and body match exactly.
 body="$body · $(date +%H:%M:%S)"
 
-seq=$(printf '\e]777;notify;%s;%s\a\a' "$(scrub "${title//;/,}")" "$(scrub "$body")")
-
-# Without jq there is no way to emit the JSON; fall back to the shared
-# notifier, which routes itself.
-command -v jq >/dev/null 2>&1 || exec "$HOME/.local/bin/notify" "$title" "$body"
-jq -cn --arg seq "$seq" '{terminalSequence: $seq}'
+jq -cn --arg seq "$(printf '\e]777;notify;%s;%s\a' "$title" "$(scrub "$body")")" \
+  '{terminalSequence: $seq}'

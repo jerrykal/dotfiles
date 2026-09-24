@@ -8,11 +8,12 @@
 # desktop notification. Shared by Claude Code's hooks (~/.claude/scripts) and
 # the fish long-command notifier (fish conf.d/notify.fish).
 #
-# Inside tmux, write the sequence straight to an attached client's terminal
+# Inside tmux, write the sequence straight to one attached client's terminal
 # (the real emulator) instead of routing it through this pane via the tmux
-# passthrough sequence. Passthrough only reaches the emulator for the *visible*
-# pane, so a notification fired from a background tmux window never arrives.
-# Writing to #{client_tty} sidesteps that regardless of which window is active.
+# passthrough sequence. Passthrough hands it to every client attached to a
+# session holding the window, whether or not anyone is looking at the pane;
+# picking the client here delivers once and stays silent when the user is
+# already watching.
 
 TITLE=${1:-${TITLE:-Notification}}
 BODY=${2:-${BODY:-}}
@@ -42,8 +43,8 @@ if [ -z "$TMUX" ]; then
 fi
 
 # Everything about the triggering pane in one round-trip.
-IFS='|' read -r pane_tty my_pane loc < <(tmux display-message -pt "$TMUX_PANE" \
-  '#{pane_tty}|#{pane_id}|#{session_name}:#{window_index} #{window_name}' 2>/dev/null)
+IFS='|' read -r pane_tty my_pane my_session loc < <(tmux display-message -pt "$TMUX_PANE" \
+  '#{pane_tty}|#{pane_id}|#{session_id}|#{session_name}:#{window_index} #{window_name}' 2>/dev/null)
 
 # Ring a bell inside the pane so tmux raises a bell alert on its window
 # (monitor-bell flag / bell-style). Writing to the hook's stdout wouldn't do —
@@ -58,16 +59,21 @@ IFS='|' read -r pane_tty my_pane loc < <(tmux display-message -pt "$TMUX_PANE" \
 # when a focused client already sits on the triggering pane — the user is
 # watching it. Compare panes rather than windows: a popup or another zoomed
 # pane can cover the triggering pane while the window still matches. Skip
-# control-mode clients, whose protocol stream an OSC would corrupt.
-# Fields are space-free (tty, %pane, 0/1), so default word-splitting is safe.
-target=
-while read -r ctty cpane ccontrol cfocused; do
+# control-mode clients, whose protocol stream an OSC would corrupt. Prefer a
+# client on the pane's own session, so clicking the notification raises the
+# emulator window that can switch to it.
+# Fields are space-free (tty, %pane, $session, 0/1), so default word-splitting
+# is safe.
+target= fallback=
+while read -r ctty cpane csession ccontrol cfocused; do
   [ -n "$ctty" ] || continue
   [ "$ccontrol" = 1 ] && continue
   [ "$cfocused" = 1 ] && [ "$cpane" = "$my_pane" ] && exit 0
-  [ -n "$target" ] || target=$ctty
+  [ -z "$target" ] && [ "$csession" = "$my_session" ] && target=$ctty
+  [ -n "$fallback" ] || fallback=$ctty
 done < <(tmux list-clients -F \
-  '#{client_tty} #{pane_id} #{client_control_mode} #{?#{m:*focused*,#{client_flags}},1,0}' 2>/dev/null)
+  '#{client_tty} #{pane_id} #{session_id} #{client_control_mode} #{?#{m:*focused*,#{client_flags}},1,0}' 2>/dev/null)
 
+target=${target:-$fallback}
 [ -n "$target" ] && emit >"$target" 2>/dev/null
 exit 0
