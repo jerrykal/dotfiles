@@ -70,9 +70,9 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/agavra/tuicr.git",
       "skillPath": "skills/tuicr/SKILL.md",
-      "skillFolderHash": "e562ca662244ca6908a1733646cccf5c4d36d609",
+      "skillFolderHash": "0034f4b0686e5856ab7950653f5b517bbde99a03",
       "installedAt": "2026-09-21T16:54:57.955Z",
-      "updatedAt": "2026-09-21T16:54:57.955Z"
+      "updatedAt": "2026-09-24T10:47:11.384Z"
     },
     "wizard": {
       "source": "mattpocock/skills",
