@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# mermaid-link — self-installing shim. The script and its npm manifest live
+# next to this file and run from a copy under $XDG_CACHE_HOME/mermaid-link/<key>,
+# where <key> is a checksum of the manifest: a manifest change installs into a
+# fresh directory rather than on top of a live one. Node resolves imports from
+# a module's real path, so the script is copied in rather than symlinked.
+set -euo pipefail
+
+self=$(readlink -f "$0")
+src=${self%/*}
+root="${XDG_CACHE_HOME:-$HOME/.cache}/mermaid-link"
+deps=$root/$(cat "$src"/package{,-lock}.json | cksum | cut -d' ' -f1)
+
+# jsdom needs a recent Node, and a bare `node` follows whatever the caller's
+# project pins.
+export MISE_QUIET=1
+node=(mise x node@lts -- node)
+npm=(mise x node@lts -- npm)
+
+if [[ ! -d $deps ]]; then
+  mkdir -p "$root"
+  tmp=$(mktemp -d "$root/.tmp.XXXXXX")
+  trap 'rm -rf "$tmp"' EXIT
+  cp "$src"/package{,-lock}.json "$tmp"/
+  echo "mermaid-link: installing dependencies..." >&2
+  (cd "$tmp" && "${npm[@]}" ci --loglevel=error --no-audit --no-fund) >&2
+  # Concurrent first runs each install privately; the first rename wins and
+  # the rest discard theirs. mv would nest into an existing target instead.
+  if "${node[@]}" -e 'require("fs").renameSync(...process.argv.slice(1))' "$tmp" "$deps" 2>/dev/null; then
+    find "$root" -mindepth 1 -maxdepth 1 ! -name "${deps##*/}" ! -name '.tmp.*' -exec rm -rf {} +
+  fi
+  # exec below skips the EXIT trap.
+  rm -rf "$tmp"
+fi
+
+script=$deps/mermaid-link.mjs
+if ! cmp -s "$src/mermaid-link.mjs" "$script"; then
+  cp "$src/mermaid-link.mjs" "$script.$$"
+  mv -f "$script.$$" "$script"
+fi
+
+exec "${node[@]}" "$script" "$@"
