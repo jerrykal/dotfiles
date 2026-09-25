@@ -8,9 +8,35 @@ path="$1"
 
 source "$(dirname "${BASH_SOURCE[0]}")/claude-pattern.sh"
 
+# Print the port of the claudecode.nvim IDE server running in the current
+# pane, if any. Its lockfile's pid is `nvim --embed`, a descendant of the
+# pane's shell, so walk each lockfile pid's ancestors looking for pane_pid.
+nvim_ide_port() {
+  local pane_pid lock pid
+  [[ "$(tmux display-message -p '#{pane_current_command}')" == nvim ]] || return
+  pane_pid=$(tmux display-message -p '#{pane_pid}')
+  for lock in "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/ide/*.lock; do
+    [[ -e "$lock" ]] || continue
+    pid=$(grep -oE '"pid": *[0-9]+' "$lock")
+    pid=${pid##*[: ]}
+    while ((pid > 1)); do
+      if ((pid == pane_pid)); then
+        basename "$lock" .lock
+        return
+      fi
+      pid=$(ps -o ppid= -p "$pid")
+    done
+  done
+}
+
 launch_claude() { # $1 = width of the new pane
+  # Same env claudecode.nvim sets when it launches claude itself: connects
+  # to that IDE server at startup, as if picked via /ide.
+  local env=() port
+  port=$(nvim_ide_port)
+  [[ -n "$port" ]] && env=(-e CLAUDE_CODE_SSE_PORT="$port" -e ENABLE_IDE_INTEGRATION=true)
   # Launch via a login fish so mise-managed runtimes are on claude's PATH.
-  tmux split-window -h -l "$1" -c "$path" "fish -lc 'exec claude'"
+  tmux split-window -h -l "$1" -c "$path" "${env[@]}" "fish -lc 'exec claude'"
 }
 
 current=$(tmux display-message -p '#{pane_id}')
