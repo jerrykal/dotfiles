@@ -1,8 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "syncClaudeAiSkills": false,
+  "syncClaudeAiPlugins": false,
   "env": {
-    "CLAUDE_CODE_SCROLL_SPEED": "0.5",
-    "ENABLE_CLAUDEAI_MCP_SERVERS": "false"
+    "CLAUDE_CODE_SCROLL_SPEED": "0.5"
   },
   "attribution": {
     "commit": "",
@@ -18,6 +19,7 @@
     "defaultMode": "auto"
   },
   "model": "opus[1m]",
+  "disableClaudeAiConnectors": true,
   "hooks": {
     "PreToolUse": [
       {
@@ -109,21 +111,16 @@
     }
   },
   "spinnerTipsEnabled": false,
-  "modelSettings": {
-    "claude-fable-5-1": {
-      "effortLevel": "medium"
-    }
-  },
+  "maxProseWidth": 100,
   "promptSuggestionEnabled": false,
   "awaySummaryEnabled": false,
   "tui": "fullscreen",
-  "maxProseWidth": 100,
   "autoMemoryEnabled": false,
   "showThinkingSummaries": true,
   "skipDangerousModePermissionPrompt": true,
   "theme": "custom:rose-pine",
-  "remoteControlAtStartup": true,
   "preferredNotifChannel": "notifications_disabled",
+  "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true
