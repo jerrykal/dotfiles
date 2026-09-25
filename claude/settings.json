@@ -110,7 +110,6 @@
     }
   },
   "spinnerTipsEnabled": false,
-  "maxProseWidth": 100,
   "promptSuggestionEnabled": false,
   "awaySummaryEnabled": false,
   "tui": "fullscreen",
