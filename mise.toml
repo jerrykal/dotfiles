@@ -30,6 +30,14 @@
 # module beside it into $XDG_CACHE_HOME on first run and whenever sources change.
 "~/.local/bin/pf" = "tools/pf/pf"
 
+# Edit entry: ~/.ssh/config stays private (host names/IPs); only this block is
+# managed. Appended last so per-host settings above it win (ssh takes the
+# first value it sees).
+"~/.ssh/config/keepalive" = { block = """
+Host *
+    ServerAliveInterval 15
+    ConnectTimeout 10""", comment = "#" }
+
 # Agent skills
 "~/.agents/skills" = "skills/agents"
 "~/.claude/skills" = "skills/claude"
