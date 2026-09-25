@@ -110,6 +110,7 @@
     }
   },
   "spinnerTipsEnabled": false,
+  "advisorModel": "fable",
   "promptSuggestionEnabled": false,
   "awaySummaryEnabled": false,
   "tui": "fullscreen",
