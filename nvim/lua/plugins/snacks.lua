@@ -286,7 +286,22 @@ return {
               vim.lsp.inlay_hint.enable(state)
             end,
           })):map("<leader>uh")
-          persist(Snacks.toggle.diagnostics()):map("<leader>ud")
+          -- tiny-inline-diagnostic only re-renders on diagnostic/cursor events,
+          -- so disabling vim.diagnostic leaves its extmarks on screen
+          local diagnostics = Snacks.toggle.diagnostics()
+          local set_diagnostics = diagnostics.opts.set
+          diagnostics.opts.set = function(state)
+            set_diagnostics(state)
+            local tiny = package.loaded["tiny-inline-diagnostic"]
+            if tiny then
+              if state then
+                tiny.enable()
+              else
+                tiny.disable()
+              end
+            end
+          end
+          persist(diagnostics):map("<leader>ud")
           persist(Snacks.toggle({
             name = "Format on Save",
             get = function()
