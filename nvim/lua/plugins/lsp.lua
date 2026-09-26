@@ -14,10 +14,12 @@ return {
       servers = {
         -- Global configs applied to all servers
         ["*"] = {
-          workspace = {
-            fileOperations = {
-              didRename = true,
-              willRename = true,
+          capabilities = {
+            workspace = {
+              fileOperations = {
+                didRename = true,
+                willRename = true,
+              },
             },
           },
         },
@@ -122,7 +124,7 @@ return {
       { "<c-k>", mode = { "i" }, vim.lsp.buf.signature_help, desc = "Signature Help" },
       { "<leader>ca", mode = { "n", "x" }, vim.lsp.buf.code_action, desc = "Code Action" },
       { "<leader>cr", mode = { "n", "x" }, vim.lsp.codelens.run , desc = "Run Codelens"},
-      { "<leader>cR", mode = { "n", "x" }, vim.lsp.codelens.refresh , desc = "Refresh & Display Codelens"},
+      { "<leader>cR", mode = { "n", "x" }, function() vim.lsp.codelens.enable(true, { bufnr = 0 }) end, desc = "Refresh & Display Codelens"},
     },
   },
 

@@ -5,7 +5,6 @@ return {
     dependencies = {
       "mason-nvim-dap.nvim",
       "nvim-dap-view",
-      "plenary.nvim",
     },
     config = function()
       vim.fn.sign_define("DapBreakpoint", { text = "", texthl = "DiagnosticError" })
@@ -16,12 +15,6 @@ return {
         "DapStopped",
         { text = ">", texthl = "DiagnosticWarn", linehl = "DapStoppedLine", numhl = "DapStoppedLine" }
       )
-
-      -- Setup dap config by VsCode launch.json file
-      local json = require("plenary.json")
-      require("dap.ext.vscode").json_decode = function(str)
-        return vim.json.decode(json.json_strip_comments(str))
-      end
     end,
     -- stylua: ignore
     keys = {

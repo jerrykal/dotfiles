@@ -3,17 +3,17 @@ if vim.g.vscode then
   config_root = "config.vscode"
 end
 
-pcall(require, config_root .. ".options")
+require(config_root .. ".options")
 vim.api.nvim_create_autocmd("User", {
   group = vim.api.nvim_create_augroup("keymaps_and_autocmds", { clear = true }),
   pattern = "VeryLazy",
   callback = function()
     -- Key mappings
-    pcall(require, config_root .. ".keymaps")
+    require(config_root .. ".keymaps")
 
     -- Autocommands
-    pcall(require, config_root .. ".autocmds")
+    require(config_root .. ".autocmds")
   end,
 })
 
-pcall(require, "config.lazy")
+require("config.lazy")

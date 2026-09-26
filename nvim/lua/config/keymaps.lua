@@ -59,18 +59,24 @@ map("o", "N", "'nN'[v:searchforward]", { expr = true })
 -- Delete char to black-hole register so it doesn't clobber the last yank
 map("n", "x", '"_x')
 
--- Diagnostic
+-- Diagnostic: every jump, including the built-in ]d/[d, opens a float
+vim.diagnostic.config({
+  jump = {
+    on_jump = function(diagnostic, bufnr)
+      if diagnostic then
+        vim.diagnostic.open_float({ bufnr = bufnr, scope = "cursor", focus = false })
+      end
+    end,
+  },
+})
 local diagnostic_goto = function(next, severity)
   return function()
     vim.diagnostic.jump({
       count = (next and 1 or -1) * vim.v.count1,
-      severity = severity and vim.diagnostic.severity[severity] or nil,
-      float = true,
+      severity = vim.diagnostic.severity[severity],
     })
   end
 end
-map("n", "]d", diagnostic_goto(true), { desc = "Next Diagnostic" })
-map("n", "[d", diagnostic_goto(false), { desc = "Prev Diagnostic" })
 map("n", "]e", diagnostic_goto(true, "ERROR"), { desc = "Next Error" })
 map("n", "[e", diagnostic_goto(false, "ERROR"), { desc = "Prev Error" })
 map("n", "]w", diagnostic_goto(true, "WARN"), { desc = "Next Warning" })
