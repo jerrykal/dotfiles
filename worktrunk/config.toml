@@ -7,3 +7,18 @@ template-append = """
 
 [switch.picker]
 pager = "delta --paging=never"
+
+[pre-start]
+claude-local = """
+p={{ primary_worktree_path }}
+for f in CLAUDE.local.md .claude/settings.local.json; do
+  [ -e "$p/$f" ] && [ ! -e "$f" ] || continue
+  mkdir -p "$(dirname "$f")" && ln -s "$p/$f" "$f"
+done
+"""
+
+mise-local = """
+p={{ primary_worktree_path }}
+[ -e "$p/mise.local.toml" ] && [ ! -e mise.local.toml ] || exit 0
+ln -s "$p/mise.local.toml" mise.local.toml
+"""
