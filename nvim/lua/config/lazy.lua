@@ -21,11 +21,31 @@ local Event = require("lazy.core.handler.event")
 Event.mappings.LazyFile = { id = "LazyFile", event = { "BufReadPost", "BufNewFile", "BufWritePre" } }
 Event.mappings["User LazyFile"] = Event.mappings.LazyFile
 
+-- Plugins that still load inside VSCode
+local vscode_plugins = {
+  "dial.nvim",
+  "flash.nvim",
+  "lazy.nvim",
+  "mini.ai",
+  "mini.surround",
+  "nvim-treesitter",
+  "nvim-treesitter-textobjects",
+  "yanky.nvim",
+}
+
 -- Setup lazy.nvim
 require("lazy").setup({
   spec = {
     { import = "plugins" },
     { import = "plugins.lang" },
+  },
+  defaults = {
+    cond = vim.g.vscode and function(plugin)
+      return vim.tbl_contains(vscode_plugins, plugin.name)
+    end or nil,
+  },
+  change_detection = {
+    enabled = not vim.g.vscode,
   },
   install = {
     colorscheme = { "rose-pine" },

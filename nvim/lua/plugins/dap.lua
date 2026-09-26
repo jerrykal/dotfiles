@@ -98,7 +98,8 @@ return {
   {
     "nvim-treesitter",
     dependencies = { { "LiadOz/nvim-dap-repl-highlights", opts = {} } },
-    opts = { ensure_installed = { "dap_repl" } },
+    -- nvim-dap-repl-highlights doesn't load in VSCode, so dap_repl would be unknown
+    opts = { ensure_installed = not vim.g.vscode and { "dap_repl" } or nil },
   },
 
   -- Autocompletion source for DAP REPL using blink.cmp
