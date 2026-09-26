@@ -3,24 +3,23 @@ set -g fish_greeting
 
 status is-interactive; or return
 
-# Cursor shapes
-set -g fish_vi_force_cursor
-set -g fish_cursor_default block blink
-set -g fish_cursor_insert line blink
-set -g fish_cursor_replace_one underscore blink
-set -g fish_cursor_visual block
+fish_config theme choose "Rosé Pine"
+
+# pure's container detection forks `uname` every prompt and needs /proc
+test -e /proc/1/cgroup; or set -g pure_enable_container_detection false
 
 # Activate mise
-type -q mise; and mise activate fish | source
+command -q mise; and mise activate fish | source
 
-# Initialize fzf
-type -q fzf; and fzf --fish | source
+# Initialize fzf; atuin owns ctrl-r, so skip fzf's history widget
+command -q atuin; and set -g FZF_CTRL_R_COMMAND ''
+command -q fzf; and fzf --fish | source
 
 # Initialize atuin
-type -q atuin; and atuin init fish --disable-up-arrow | source
+command -q atuin; and atuin init fish --disable-up-arrow | source
 
 # Initialize zoxide
-type -q zoxide; and zoxide init fish | source
+command -q zoxide; and zoxide init fish | source
 
 # Ghostty shell integration — Ghostty only auto-injects it into the shell it
 # spawns, but our setup launches fish via exec fish, so fish must source it itself.

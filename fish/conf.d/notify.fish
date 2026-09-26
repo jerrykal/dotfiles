@@ -1,5 +1,5 @@
 status is-interactive; or return
-type -q notify; or return
+command -q notify; or return
 
 # Desktop notification when a long-running foreground command finishes, via the
 # shared `notify` bin (OSC 777, tmux-aware) — the same mechanism Claude Code

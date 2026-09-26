@@ -8,7 +8,7 @@ set fish_function_path $fish_function_path[1] $fisher_path/functions $fish_funct
 if not test -d $fisher_path
     functions -e fisher &>/dev/null
     mkdir -p $fisher_path
-    curl -sL https://git.io/fisher | source
+    curl -fsSL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source
     if test -s $__fish_config_dir/fish_plugins
         fisher update
     else

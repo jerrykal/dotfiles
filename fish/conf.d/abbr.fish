@@ -1,3 +1,5 @@
+status is-interactive; or return
+
 abbr -a lsl ls -l
 abbr -a ls1 ls -1
 abbr -a lsa ls -a
@@ -11,7 +13,7 @@ abbr -a rs rsync -avh
 abbr -a o open
 
 # vim
-if type -q nvim
+if command -q nvim
     abbr v nvim
     abbr vi nvim
 else
@@ -41,13 +43,13 @@ abbr -a gb git branch
 abbr -a gbd git branch -d
 
 # Lazygit
-type -q lazygit; and abbr -a lg lazygit
+command -q lazygit; and abbr -a lg lazygit
 
 # gh-dash
-type -q gh; and abbr -a ghd gh dash
+command -q gh; and abbr -a ghd gh dash
 
 # uv
-if type -q uv
+if command -q uv
     abbr -a uvi uv init
     abbr -a uva uv add
     abbr -a uvs uv sync
@@ -58,20 +60,20 @@ if type -q uv
 end
 
 # claude-code
-if type -q claude
+if command -q claude
     abbr -a c claude
     abbr -a cr claude -r
     abbr -a ca claude agents
 end
 
 # modem-dev/hunk
-if type -q hunk
+if command -q hunk
     abbr -a hd hunk diff
     abbr -a hds hunk diff --staged
 end
 
 # worktrunk
-if type -q wt
+if command -q wt
     abbr -a ws wt switch
     abbr -a wsc wt switch --create
     abbr -a wl wt list
@@ -81,7 +83,7 @@ if type -q wt
     abbr -a wd wt step diff
     abbr -a wcm wt step commit
     abbr -a wpr wt step prune
-    if type -q claude
+    if command -q claude
         abbr -a wsx wt switch -x claude
         abbr -a wscx wt switch --create -x claude
     end

@@ -40,6 +40,9 @@ export __PROFILE_SOURCED=1
 [ -z "$XDG_STATE_HOME" ] && export XDG_STATE_HOME="$HOME/.local/state"
 [ -z "$XDG_CACHE_HOME" ] && export XDG_CACHE_HOME="$HOME/.cache"
 
+# eza on macOS ignores XDG_CONFIG_HOME
+export EZA_CONFIG_DIR="$XDG_CONFIG_HOME/eza"
+
 # Homebrew (PATH order re-asserted below)
 if [ -x "/opt/homebrew/bin/brew" ]; then
   eval "$(/opt/homebrew/bin/brew shellenv)"
