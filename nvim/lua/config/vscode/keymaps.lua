@@ -16,7 +16,7 @@ map("v", "<", "<gv")
 map("v", ">", ">gv")
 
 -- VSCode API
-local vscode = require("vscode-neovim")
+local vscode = require("vscode")
 
 -- stylua: ignore start
 

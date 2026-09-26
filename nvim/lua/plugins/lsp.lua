@@ -81,9 +81,13 @@ return {
       end
 
       -- Folds
-      Snacks.util.lsp.on({ method = "textDocument/foldingRange" }, function()
-        vim.opt_local.foldmethod = "expr"
-        vim.opt_local.foldexpr = "v:lua.vim.lsp.foldexpr()"
+      -- Overrides the treesitter folds set on FileType, which stay as the
+      -- fallback for buffers without a folding-capable server
+      Snacks.util.lsp.on({ method = "textDocument/foldingRange" }, function(buf)
+        for _, win in ipairs(vim.fn.win_findbuf(buf)) do
+          vim.wo[win][0].foldmethod = "expr"
+          vim.wo[win][0].foldexpr = "v:lua.vim.lsp.foldexpr()"
+        end
       end)
 
       -- Configure LSP servers
@@ -119,7 +123,6 @@ return {
       { "<leader>@", function () Snacks.picker.lsp_symbols() end, desc = "Document Symbols"},
       { "<leader>#", function () Snacks.picker.lsp_workspace_symbols() end, desc = "Workspace Symbols"},
 
-      { "K", vim.lsp.buf.hover, desc = "Hover"},
       { "gk", vim.lsp.buf.signature_help, desc = "Signature Help"},
       { "<c-k>", mode = { "i" }, vim.lsp.buf.signature_help, desc = "Signature Help" },
       { "<leader>ca", mode = { "n", "x" }, vim.lsp.buf.code_action, desc = "Code Action" },

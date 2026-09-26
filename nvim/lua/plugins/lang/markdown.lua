@@ -82,7 +82,7 @@ return {
   },
 
   {
-    "dkarter/bullets.vim",
+    "bullets-vim/bullets.vim",
     ft = "markdown",
   },
 }

@@ -33,7 +33,6 @@ opt.termguicolors = true
 opt.timeoutlen = 300
 opt.undofile = true
 opt.undolevels = 10000
-opt.updatetime = 200
 opt.updatetime = 250
 opt.virtualedit = "block"
 opt.wrap = false
@@ -57,7 +56,6 @@ opt.foldenable = true
 
 -- Per project Global Marks
 opt.exrc = true
-opt.secure = true
 local workspace_path = vim.fn.getcwd()
 local cache_dir = vim.fn.stdpath("data")
 local unique_id = vim.fn.fnamemodify(workspace_path, ":t") .. "_" .. vim.fn.sha256(workspace_path):sub(1, 8) ---@type string
