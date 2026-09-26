@@ -76,6 +76,8 @@ nohup.out
 !.claude/skills/
 !.claude/hooks/
 
+CLAUDE.local.md
+
 # --- Python ---
 # Byte-compiled / optimized / DLL files
 __pycache__/
