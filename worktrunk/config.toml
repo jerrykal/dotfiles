@@ -1,40 +1,9 @@
-# Worktrunk user config -> ~/.config/worktrunk/config.toml
-#
-# Personal defaults for every repo. Project-wide automation belongs in a repo's
-# own .config/wt.toml instead. Reference: https://worktrunk.dev/config/
-# `wt config create` regenerates the fully annotated upstream template.
-#
-# Worktree layout stays at the default sibling path: <repo>.<branch>, e.g.
-# ~/workspace/exp-openwam.feat-prior-cotrain.
-
-# Commit and squash messages during `wt step commit` / `wt merge`.
 [commit.generation]
 command = "MAX_THINKING_TOKENS=0 claude -p --no-session-persistence --model=haiku --tools='' --safe-mode --setting-sources='user' --system-prompt=''"
 
-# The default template already mirrors recent commit style; this just pins the
-# conventional-commit habit for repos whose history is too short to infer it.
 template-append = """
 - Use Conventional Commits: `type(scope): subject`, lowercase subject
 """
 
-# Interactive `wt switch` preview. core.pager is delta, which would otherwise
-# spawn a pager inside the preview pane.
 [switch.picker]
 pager = "delta --paging=never"
-
-# mise trusts config files by path, so a fresh worktree is untrusted until this
-# runs. No-op (exit 0) in repos without mise config.
-[post-start]
-mise = "mise trust --quiet"
-
-# `wt step copy-ignored` copies every gitignored file by default. Keep it off
-# caches and virtualenvs, which are either huge or path-dependent.
-[step.copy-ignored]
-exclude = [
-  ".venv/",
-  "node_modules/",
-  "__pycache__/",
-  ".pytest_cache/",
-  ".ruff_cache/",
-  ".mypy_cache/",
-]
