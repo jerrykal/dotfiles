@@ -35,10 +35,10 @@ contextContentBg = "#191724"
 addedSignColor   = "#9ccfd8"  # foam
 removedSignColor = "#eb6f92"  # love
 
-# line numbers + cursor
+# line numbers + selection (cursor line is derived: text @20% over the row bg)
 lineNumberBg = "#191724"
 lineNumberFg = "#6e6a86"  # muted (LineNr)
-selectedHunk = "#26233a"  # overlay (CursorLine)
+selectedHunk = "#26233a"  # overlay; selection blends it 75% over the row bg
 
 # summary badges
 badgeAdded   = "#9ccfd8"  # foam
@@ -58,15 +58,22 @@ noteBackground      = "#2a2538"  # iris @10%
 noteTitleBackground = "#443b55"  # iris @25%
 noteTitleText       = "#e0def4"
 
-[custom_theme.syntax]
-default     = "#e0def4"  # text
-keyword     = "#31748f"  # pine
-string      = "#f6c177"  # gold
-comment     = "#6e6a86"  # muted
-number      = "#f6c177"  # gold
-function    = "#ebbcba"  # rose
-property    = "#9ccfd8"  # foam
-type        = "#9ccfd8"  # foam
-variable    = "#e0def4"  # text
-operator    = "#908caa"  # subtle
-punctuation = "#908caa"  # subtle
+[custom_theme.syntax_scopes]
+"source"                         = "#e0def4"  # text
+"keyword"                        = "#31748f"  # pine
+"string"                         = "#f6c177"  # gold
+"comment"                        = "#6e6a86"  # muted
+"punctuation.definition.comment" = "#6e6a86"  # muted
+"constant.numeric"               = "#f6c177"  # gold
+"entity.name.function"           = "#ebbcba"  # rose
+"support.function"               = "#ebbcba"  # rose
+"variable.function"              = "#ebbcba"  # rose
+"variable.other.property"        = "#9ccfd8"  # foam
+"support.variable.property"      = "#9ccfd8"  # foam
+"entity.name.type"               = "#9ccfd8"  # foam
+"entity.name.class"              = "#9ccfd8"  # foam
+"support.type"                   = "#9ccfd8"  # foam
+"support.class"                  = "#9ccfd8"  # foam
+"variable"                       = "#e0def4"  # text
+"keyword.operator"               = "#908caa"  # subtle
+"punctuation"                    = "#908caa"  # subtle
