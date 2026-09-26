@@ -7,11 +7,12 @@ input=$(cat)
 used_pct=$(echo "$input" | jq -r '.context_window.used_percentage // 0')
 total_tokens=$(echo "$input" | jq -r '.context_window.total_input_tokens // 0')
 model=$(echo "$input" | jq -r '.model.display_name // ""')
+effort=$(echo "$input" | jq -r '.effort.level // ""')
 
 # ANSI codes
 RESET='\033[0m'
 BOLD='\033[1m'
-DIM='\033[2m'
+DIM='\033[38;2;110;106;134m'  # muted #6e6a86
 
 # Rosé Pine palette (24-bit truecolor)
 pct_int=${used_pct%.*}
@@ -30,11 +31,6 @@ elif (( total_tokens >= 1000 )); then
   tokens_fmt="$(( total_tokens / 1000 ))k"
 else
   tokens_fmt="$total_tokens"
-fi
-
-printf "${BOLD}${COLOR}%s${RESET} ${DIM}(%d%%)${RESET}" "$tokens_fmt" "$pct_int"
-if [[ -n "$model" ]]; then
-  printf " ${DIM}·${RESET} ${DIM}%s${RESET}" "$model"
 fi
 
 # Git: <branch> +staged ~modified ?untracked ↑ahead ↓behind
@@ -65,11 +61,17 @@ if [[ -n "$cwd" ]] && git_out=$(git -C "$cwd" --no-optional-locks status --porce
   GOLD='\033[38;2;246;193;119m'  # gold #f6c177
   LOVE='\033[38;2;235;111;146m'  # love #eb6f92
 
-  printf " ${DIM}·${RESET} ${IRIS}%s${RESET}" "$branch"
+  printf "${IRIS}%s${RESET}" "$branch"
   (( staged > 0 )) && printf " ${FOAM}+%d${RESET}" "$staged"
   (( modified > 0 )) && printf " ${GOLD}~%d${RESET}" "$modified"
   (( untracked > 0 )) && printf " ${LOVE}?%d${RESET}" "$untracked"
   (( ahead > 0 )) && printf " ${DIM}↑%d${RESET}" "$ahead"
   (( behind > 0 )) && printf " ${DIM}↓%d${RESET}" "$behind"
+  printf " ${DIM}·${RESET} "
 fi
+
+if [[ -n "$model" ]]; then
+  printf "${DIM}%s ·${RESET} " "$model${effort:+ ($effort)}"
+fi
+printf "${BOLD}${COLOR}%s${RESET} ${DIM}(%d%%)${RESET}" "$tokens_fmt" "$pct_int"
 exit 0
