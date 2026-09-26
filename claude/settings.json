@@ -110,6 +110,7 @@
     }
   },
   "spinnerTipsEnabled": false,
+  "maxProseWidth": 100,
   "advisorModel": "fable",
   "promptSuggestionEnabled": false,
   "awaySummaryEnabled": false,
