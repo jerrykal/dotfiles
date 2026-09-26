@@ -4,6 +4,7 @@ theme = "rose-pine"
 leader = " "
 scroll_offset = 5
 comment_vim = true
+pr_comments_visibility = "hide"
 
 comment_types = [
   { id = "note", label = "question", definition = "ask for clarification", color = "yellow" },
