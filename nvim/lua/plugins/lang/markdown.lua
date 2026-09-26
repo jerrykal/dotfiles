@@ -3,7 +3,21 @@ return {
   {
     "OXY2DEV/markview.nvim",
     lazy = false, -- markview.nvim lazy loads itself
-    opts = {},
+    opts = function()
+      local presets = require("markview.presets")
+      return {
+        markdown = {
+          headings = presets.headings.glow,
+          tables = presets.tables.rounded,
+          code_blocks = { style = "block" },
+          horizontal_rules = presets.horizontal_rules.thin,
+          list_items = { shift_width = 2 },
+        },
+        markdown_inline = {
+          checkboxes = presets.checkboxes.nerd,
+        },
+      }
+    end,
     config = function(_, opts)
       require("markview").setup(opts)
 
