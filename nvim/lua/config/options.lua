@@ -5,7 +5,6 @@ vim.g.maplocalleader = "\\"
 local opt = vim.opt
 
 -- General options
-opt.completeopt = { "menu", "menuone", "noselect" }
 opt.confirm = true
 opt.fillchars = { foldopen = "", foldclose = "", fold = " ", foldsep = " ", diff = "╱", eob = " " }
 opt.guicursor =
@@ -29,7 +28,6 @@ opt.signcolumn = "yes:1"
 opt.splitbelow = true
 opt.splitkeep = "screen"
 opt.splitright = true
-opt.termguicolors = true
 opt.timeoutlen = 300
 opt.undofile = true
 opt.undolevels = 10000

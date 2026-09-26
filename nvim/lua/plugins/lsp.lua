@@ -147,7 +147,7 @@ return {
       mr.refresh(function()
         for _, pkg_name in ipairs(opts.ensure_installed) do
           local p = mr.get_package(pkg_name)
-          if not p:is_installed() then
+          if not p:is_installed() and not p:is_installing() then
             p:install()
           end
         end
