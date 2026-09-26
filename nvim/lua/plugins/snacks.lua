@@ -296,6 +296,16 @@ return {
               vim.g.disable_autoformat = not state
             end,
           })):map("<leader>uf")
+          -- Buffer-local, so not persisted per-workspace
+          Snacks.toggle({
+            name = "Format on Save (Buffer)",
+            get = function()
+              return not vim.b.disable_autoformat
+            end,
+            set = function(state)
+              vim.b.disable_autoformat = not state
+            end,
+          }):map("<leader>uF")
         end,
       })
     end,
